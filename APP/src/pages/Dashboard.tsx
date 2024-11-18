@@ -6,6 +6,7 @@ import { RevenueChart } from '@/components/dashboard/RevenueChart';
 import { UpcomingDeadlines } from '@/components/dashboard/UpcomingDeadlines';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { ClientOverview } from '@/components/dashboard/ClientOverview';
+import React from 'react';
 
 const container = {
   hidden: { opacity: 0 },

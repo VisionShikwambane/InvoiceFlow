@@ -12,6 +12,7 @@ import { Client } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 interface ClientsTableProps {
   clients: Client[];
@@ -111,8 +112,7 @@ export function ClientsTable({ clients, onEdit, onDelete }: ClientsTableProps) {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Project</TableHead>
+                {/* <TableHead>Phone</TableHead> */}
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -122,8 +122,7 @@ export function ClientsTable({ clients, onEdit, onDelete }: ClientsTableProps) {
                 <TableRow key={client.id}>
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell>{client.email}</TableCell>
-                  <TableCell>{client.phone}</TableCell>
-                  <TableCell>{client.projectName}</TableCell>
+                  {/* <TableCell>{client.phone}</TableCell> */}
                   <TableCell>
                     <Badge className={getStatusColor(client.status)}>
                       {client.status}

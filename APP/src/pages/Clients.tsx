@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,8 @@ import { ClientForm } from '@/components/clients/ClientForm';
 import { Client } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useConfirmDialog } from '@/hooks/use-confirm-dialog';
+import React from 'react'; 
+import { getClients, addClient } from '../services/clientService';
 
 const pageAnimations = {
   hidden: { opacity: 0 },
@@ -45,67 +47,65 @@ export function Clients() {
   const [selectedClient, setSelectedClient] = useState<Client | undefined>();
   const { toast } = useToast();
   const { confirm } = useConfirmDialog();
+  const [clients, setClients] = useState<Client[]>([]);
 
-  // Mock data - replace with actual data fetching
-  const [clients, setClients] = useState<Client[]>([
-    {
-      id: '1',
-      name: 'John Smith',
-      email: 'john@example.com',
-      phone: '+1 (555) 000-0000',
-      projectName: 'Website Redesign',
-      status: 'In Progress',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      name: 'Jane Doe',
-      email: 'jane@example.com',
-      phone: '+1 (555) 111-1111',
-      projectName: 'Mobile App Development',
-      status: 'Completed',
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getClients(); // Call the service
+        setClients(response.data); // Set the fetched data
+        console.log(response.data);
+       // setLoading(false);
+      } catch (err: any) {
+        console.error('Error fetching clients:', err);
+        //setError(err.message || 'Error fetching clients');
+        //setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+ 
 
   const filteredClients = clients.filter((client) => {
-    const matchesSearch = client.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    console.log("Client", client);
+    const matchesSearch = client?.name
+      ? client.name.toLowerCase().includes(search.toLowerCase())
+      : false;
     const matchesStatus = statusFilter === 'all'
       ? true
       : client.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const handleSubmit = (data: Omit<Client, 'id' | 'createdAt'>) => {
-    if (selectedClient) {
-      // Update existing client
-      setClients(clients.map(client => 
-        client.id === selectedClient.id 
-          ? { ...client, ...data }
-          : client
-      ));
-      toast({
-        title: 'Success',
-        description: 'Client updated successfully',
-      });
-    } else {
-      // Add new client
-      const newClient: Client = {
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        ...data,
-      };
-      setClients([...clients, newClient]);
-      toast({
-        title: 'Success',
-        description: 'Client added successfully',
-      });
-    }
+
+
+
+  const handleSubmit = async (data: Omit<Client, 'id' | 'createdAt'>) => {
+      try {
+        const response = await addClient(data);
+        setClients(prevClients => [...prevClients, response.data]);
+        
+        toast({
+          title: 'Success',
+          description: 'Client added successfully',
+        });
+      } catch (error: any) {
+        console.error('Error adding client:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to add client. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    
+
     setIsDialogOpen(false);
     setSelectedClient(undefined);
   };
+  
+
+ 
 
   const handleEdit = (client: Client) => {
     setSelectedClient(client);

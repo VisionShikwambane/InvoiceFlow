@@ -7,6 +7,7 @@ import { Tasks } from '@/pages/Tasks';
 import { Settings } from '@/pages/Settings';
 import { Landing } from '@/pages/Landing';
 import { DialogProvider } from '@/components/providers/dialog-provider';
+import React from 'react';
 
 export default function App() {
   return (

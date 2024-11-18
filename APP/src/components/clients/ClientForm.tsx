@@ -19,12 +19,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Client } from '@/types';
+import React from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().min(10, 'Phone number must be at least 10 characters'),
-  projectName: z.string().min(2, 'Project name must be at least 2 characters'),
   status: z.enum(['In Progress', 'Completed', 'On Hold']),
 });
 
@@ -40,8 +39,6 @@ export function ClientForm({ initialData, onSubmit, onCancel }: ClientFormProps)
     defaultValues: initialData || {
       name: '',
       email: '',
-      phone: '',
-      projectName: '',
       status: 'In Progress',
     },
   });
@@ -71,34 +68,6 @@ export function ClientForm({ initialData, onSubmit, onCancel }: ClientFormProps)
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="john@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input placeholder="+1 (555) 000-0000" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="projectName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Website Redesign" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
