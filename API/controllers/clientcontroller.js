@@ -8,8 +8,8 @@ const getAllClients = async (req, res) => {
 
 const addClient = async (req, res) => {
     try {
-      const { name, email, phone, status } = req.body;
-      const newClient = await ClientService.addClient({ name, email, phone, status });
+      const {id,  name, email, phone, status } = req.body;
+      const newClient = await ClientService.addClient({id, name, email, phone, status });
   
       res.status(201).json({
         isSuccess: true,
@@ -24,4 +24,20 @@ const addClient = async (req, res) => {
     }
   };
 
-module.exports = { getAllClients, addClient };
+  const deleteClient = async (req, res) => {
+    try {
+      const { id } = req.params; // Get client ID from URL params
+      const result = await ClientService.deleteClient(id);
+  
+      res.status(200).json({
+        isSuccess: true,
+        message: result.message,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: `Error deleting client: ${error.message}`,
+      });
+    }
+  };
+
+module.exports = { getAllClients, addClient, deleteClient };
