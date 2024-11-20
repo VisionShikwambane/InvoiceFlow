@@ -1,0 +1,46 @@
+/* Optional: Add any custom styles here */
+.modal-open {
+    overflow: hidden;
+  }
+  
+  /* Smooth transitions */
+  .preview-modal-enter {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  
+  .preview-modal-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+  }
+  
+  .preview-modal-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .preview-modal-exit-active {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 200ms ease-in, transform 200ms ease-in;
+  }
+  
+  /* Custom scrollbar for preview */
+  .preview-content::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .preview-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  .preview-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  .preview-content::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-select-invoice-template',
@@ -10,6 +11,12 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './select-invoice-template.component.css'
 })
 export class SelectInvoiceTemplateComponent {
+
+  constructor(
+    private router: Router, 
+  ) {
+   
+  }
 
   searchTerm = '';
   categories = ['All', 'Professional', 'Creative', 'Simple', 'Modern', 'Classic'];
@@ -85,8 +92,11 @@ export class SelectInvoiceTemplateComponent {
   }
 
   useTemplate(template: any) {
-    console.log('Using template:', template);
-    // Add your template selection logic here
+    this.router.navigate(['/create-invoice']);
+  }
+
+  goBack(){
+    this.router.navigate(['/invoices']);
   }
 
 }

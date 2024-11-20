@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
@@ -51,11 +51,12 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
                       hover:after:w-full">
               {{ link.text }}
             </a>
+           
           </div>
           
           <!-- Mobile Menu Button -->
           <button class="md:hidden group p-2 hover:bg-gray-100 rounded-lg transition-colors duration-300" 
-                  (click)="toggleMenu($event)">
+                  (click)="toggleMenu()">
             <div class="w-6 h-4 flex flex-col justify-between relative">
               <span class="w-full h-0.5 bg-gray-600 rounded-full transform transition-all duration-300"
                     [class.rotate-45]="isOpen"
@@ -82,6 +83,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
                       hover:text-indigo-600 rounded-lg transition-all duration-300">
               {{ link.text }}
             </a>
+
           </div>
         </div>
       </div>
@@ -97,16 +99,7 @@ export class NavigationComponent {
     { text: 'Settings', href: '#' }
   ];
 
-  toggleMenu(event: Event) {
+  toggleMenu() {
     this.isOpen = !this.isOpen;
-    event.stopPropagation(); // Prevent the click event from propagating to the document
-  }
-
-  @HostListener('document:click', ['$event'])
-  closeMenuOnOutsideClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('nav')) {
-      this.isOpen = false;
-    }
   }
 }
