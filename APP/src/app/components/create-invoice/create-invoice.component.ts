@@ -108,10 +108,35 @@ export class CreateInvoiceComponent implements OnInit {
     this.showPreview = !this.showPreview;
   }
 
-  onLogoUpload(e: any){
+  logoPreview: string | ArrayBuffer | null = null;
 
+ onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // FileReader to generate preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoPreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+
+      // Update the form control value
+     // this.companyForm.get('company.logo')?.setValue(file);
+    }
   }
-  companyLogo: any
+
+  onDetachLogo(fileInput: HTMLInputElement): void {
+    // Clear the preview and reset the form control
+    this.logoPreview = null;
+    //this.companyForm.get('company.logo')?.reset();
+
+    // Reset the file input to show "No file selected"
+    fileInput.value = '';
+  }
+
 
   async saveInvoice() {
     if (this.invoiceForm.valid) {
