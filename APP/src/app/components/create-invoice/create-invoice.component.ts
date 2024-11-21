@@ -2,12 +2,14 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ModernTemplateComponent } from '../invoiceTemplates/modern-template/modern-template.component';
+import { ProfessionalTemplateComponent } from '../invoiceTemplates/professional-template/professional-template.component';
 
 
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, ProfessionalTemplateComponent],
   templateUrl: './create-invoice.component.html',
   styleUrl: './create-invoice.component.css'
 })
@@ -105,6 +107,11 @@ export class CreateInvoiceComponent implements OnInit {
   togglePreview() {
     this.showPreview = !this.showPreview;
   }
+
+  onLogoUpload(e: any){
+
+  }
+  companyLogo: any
 
   async saveInvoice() {
     if (this.invoiceForm.valid) {
