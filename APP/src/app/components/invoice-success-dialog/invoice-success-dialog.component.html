@@ -1,0 +1,258 @@
+<div *ngIf="show" 
+class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
+<div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4">
+<!-- Header with Steps -->
+<div class="px-6 pt-6">
+ <div class="flex justify-between items-center mb-8">
+   <h2 class="text-xl font-semibold text-gray-900">Invoice Saved Successfully!</h2>
+   <button (click)="onClose.emit()" class="text-gray-400 hover:text-gray-500">
+     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+     </svg>
+   </button>
+ </div>
+
+ <!-- Progress Steps -->
+ <div class="relative">
+   <div class="absolute top-4 w-full">
+     <div class="h-0.5 bg-gray-200">
+       <div class="h-0.5 bg-indigo-600 transition-all duration-300"
+            [style.width]="((currentStep + 1) / 3 * 100) + '%'">
+       </div>
+     </div>
+   </div>
+   <div class="relative flex justify-between">
+     <div *ngFor="let step of steps; let i = index" 
+          class="flex flex-col items-center">
+       <div [class]="getStepCircleClass(i)"
+            class="w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200">
+         <svg *ngIf="i < currentStep" class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+         </svg>
+         <span *ngIf="i >= currentStep">{{i + 1}}</span>
+       </div>
+       <span class="mt-2 text-sm" [class]="getStepTextClass(i)">{{step}}</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Content -->
+<div class="p-6 mt-8">
+ <!-- Step 1: Reminders -->
+ <div *ngIf="currentStep === 0" class="space-y-6">
+   <!-- Enable/Disable Reminders -->
+   <div class="space-y-4">
+     <div class="flex items-start">
+       <div class="flex items-center h-5">
+         <input id="enable-reminders" 
+                type="radio"
+                [(ngModel)]="reminderSettings.enabled"
+                [value]="true"
+                class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+       </div>
+       <div class="ml-3">
+         <label for="enable-reminders" class="font-medium text-gray-700">Enable Reminders</label>
+         <p class="text-gray-500 text-sm">Get notified before the invoice is due</p>
+       </div>
+     </div>
+     
+     <div class="flex items-start">
+       <div class="flex items-center h-5">
+         <input id="disable-reminders" 
+                type="radio"
+                [(ngModel)]="reminderSettings.enabled"
+                [value]="false"
+                class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+       </div>
+       <div class="ml-3">
+         <label for="disable-reminders" class="font-medium text-gray-700">Disable Reminders</label>
+         <p class="text-gray-500 text-sm">Don't send any reminders</p>
+       </div>
+     </div>
+   </div>
+
+   <!-- Reminder Options (shown only if enabled) -->
+   <div *ngIf="reminderSettings.enabled" class="space-y-4">
+     <div class="relative">
+       <label class="block text-sm font-medium text-gray-700 mb-1">Remind with</label>
+       <div class="relative">
+         <select [(ngModel)]="reminderSettings.remindWith"
+                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300
+                        appearance-none bg-white
+                        focus:outline-none focus:ring-2 focus:ring-indigo-500
+                        text-base sm:text-sm
+                        cursor-pointer">
+           <option value="email">Email</option>
+         </select>
+         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+             <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+           </svg>
+         </div>
+       </div>
+     </div>
+
+     <div class="relative">
+       <label class="block text-sm font-medium text-gray-700 mb-1">Reminder Type</label>
+       <div class="relative">
+         <select [(ngModel)]="reminderSettings.reminderType"
+                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300
+                        appearance-none bg-white
+                        focus:outline-none focus:ring-2 focus:ring-indigo-500
+                        text-base sm:text-sm
+                        cursor-pointer">
+           <option value="24hours">24 hours before due date</option>
+           <option value="12hours">12 hours before due date</option>
+           <option value="2days">2 days before due date</option>
+           <option value="3days">3 days before due date</option>
+           <option value="1week">1 week before due date</option>
+         </select>
+         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+             <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+           </svg>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+
+ <!-- Step 2: Send Email -->
+ <div *ngIf="currentStep === 1" class="space-y-6">
+   <!-- Email Type Selection -->
+   <div class="space-y-4">
+     <div class="flex space-x-4">
+       <div class="flex items-center">
+         <input id="send-now" 
+                type="radio"
+                [(ngModel)]="emailSettings.scheduleType"
+                value="now"
+                class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+         <label for="send-now" class="ml-2 text-sm font-medium text-gray-700">
+           Send Now
+         </label>
+       </div>
+       <div class="flex items-center">
+         <input id="schedule" 
+                type="radio"
+                [(ngModel)]="emailSettings.scheduleType"
+                value="scheduled"
+                class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+         <label for="schedule" class="ml-2 text-sm font-medium text-gray-700">
+           Schedule
+         </label>
+       </div>
+     </div>
+
+     <!-- Schedule Date (if scheduled selected) -->
+     <div *ngIf="emailSettings.scheduleType === 'scheduled'" class="mt-4">
+       <label class="block text-sm font-medium text-gray-700">Schedule Date</label>
+       <input type="datetime-local" 
+              [(ngModel)]="emailSettings.scheduledDate"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm 
+                     focus:ring-indigo-500 focus:border-indigo-500">
+     </div>
+   </div>
+
+   <!-- Email Details -->
+   <div class="space-y-4">
+     <div>
+       <label class="block text-sm font-medium text-gray-700">To</label>
+       <input type="email" 
+              [(ngModel)]="emailSettings.to"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm 
+                     focus:ring-indigo-500 focus:border-indigo-500">
+     </div>
+
+     <div>
+       <label class="block text-sm font-medium text-gray-700">Subject</label>
+       <input type="text" 
+              [(ngModel)]="emailSettings.subject"
+              disabled
+              class="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 shadow-sm">
+     </div>
+
+     <div>
+       <label class="block text-sm font-medium text-gray-700">Message</label>
+       <textarea [(ngModel)]="emailSettings.message"
+                rows="4"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm 
+                       focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your message..."></textarea>
+     </div>
+   </div>
+ </div>
+
+ <!-- Step 3: Summary -->
+ <div *ngIf="currentStep === 2" class="space-y-6">
+   <!-- Reminder Summary -->
+   <div *ngIf="reminderSettings.enabled" class="bg-gray-50 rounded-lg p-4">
+     <h3 class="text-sm font-medium text-gray-900 mb-2">Reminder Settings</h3>
+     <dl class="grid grid-cols-2 gap-2 text-sm">
+       <dt class="text-gray-500">Status:</dt>
+       <dd class="text-gray-900">Enabled</dd>
+       <dt class="text-gray-500">Remind via:</dt>
+       <dd class="text-gray-900">Email</dd>
+       <dt class="text-gray-500">When:</dt>
+       <dd class="text-gray-900">{{getReminderTypeText(reminderSettings.reminderType)}}</dd>
+     </dl>
+   </div>
+
+   <!-- Email Summary -->
+   <div class="bg-gray-50 rounded-lg p-4">
+     <h3 class="text-sm font-medium text-gray-900 mb-2">Email Settings</h3>
+     <dl class="grid grid-cols-2 gap-2 text-sm">
+       <dt class="text-gray-500">Send Type:</dt>
+       <dd class="text-gray-900">{{emailSettings.scheduleType === 'now' ? 'Send Immediately' : 'Scheduled'}}</dd>
+       <dt class="text-gray-500">To:</dt>
+       <dd class="text-gray-900">{{emailSettings.to}}</dd>
+       <dt *ngIf="emailSettings.scheduleType === 'scheduled'" class="text-gray-500">Schedule Date:</dt>
+       <dd *ngIf="emailSettings.scheduleType === 'scheduled'" class="text-gray-900">
+         {{emailSettings.scheduledDate | date:'medium'}}
+       </dd>
+     </dl>
+   </div>
+
+   <!-- Download Button -->
+   <button (click)="downloadInvoice()"
+           class="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 
+                  text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200">
+     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+     </svg>
+     Download Invoice
+   </button>
+ </div>
+</div>
+
+<!-- Footer -->
+<div class="px-6 py-4 bg-gray-50 rounded-b-xl border-t border-gray-200 flex justify-between">
+ <button *ngIf="currentStep > 0"
+         (click)="previousStep()"
+         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 
+                rounded-lg hover:bg-gray-50 transition-colors duration-200">
+   Previous
+ </button>
+ <div class="flex-1"></div>
+ <button *ngIf="currentStep < 2"
+         (click)="nextStep()"
+         class="px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+   Skip
+ </button>
+ <button *ngIf="currentStep < 2"
+         (click)="nextStep()"
+         class="ml-3 px-4 py-2 text-sm font-medium text-white bg-indigo-600 
+                rounded-lg hover:bg-indigo-700 transition-colors duration-200">
+   Continue
+ </button>
+ <button *ngIf="currentStep === 2"
+         (click)="finish()"
+         class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 
+                rounded-lg hover:bg-indigo-700 transition-colors duration-200">
+   Finish
+ </button>
+</div>
+</div>
+</div>

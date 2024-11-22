@@ -8,4 +8,5 @@ export const routes: Routes = [
     { path: 'create-invoice/:templateId', loadComponent:  () =>import("./components/create-invoice/create-invoice.component").then(c=>c.CreateInvoiceComponent) },
     { path: 'morderntemplate', loadComponent:  () =>import("./components/invoiceTemplates/modern-template/modern-template.component").then(c=>c.ModernTemplateComponent) },
     { path: 'proffesionaltemplate', loadComponent:  () =>import("./components/invoiceTemplates/professional-template/professional-template.component").then(c=>c.ProfessionalTemplateComponent) },
+  
 ];

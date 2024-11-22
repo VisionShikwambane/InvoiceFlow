@@ -4,12 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModernTemplateComponent } from '../invoiceTemplates/modern-template/modern-template.component';
 import { ProfessionalTemplateComponent } from '../invoiceTemplates/professional-template/professional-template.component';
+import { InvoiceSuccessDialogComponent } from '../invoice-success-dialog/invoice-success-dialog.component';
+import { ReminderSettings } from '../../models/ReminderSettings';
+import { EmailSettings } from '../../models/EmailSettings';
 
 
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, ProfessionalTemplateComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, ProfessionalTemplateComponent,InvoiceSuccessDialogComponent],
   templateUrl: './create-invoice.component.html',
   styleUrl: './create-invoice.component.css'
 })
@@ -19,6 +22,21 @@ export class CreateInvoiceComponent implements OnInit {
   showPreview = false;
   isLoading = false;
   selectedTemplateId!: string;
+  showSuccessDialog = false;
+
+  reminderSettings: ReminderSettings = {
+    enabled: true,
+    remindWith: 'email',
+    reminderType: '24hours'
+  };
+
+  emailSettings: EmailSettings = {
+    to: '',
+    subject: 'Invoice from Your Company',
+    message: '',
+    scheduleType: 'now',
+    scheduledDate: new Date()
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -36,8 +54,8 @@ export class CreateInvoiceComponent implements OnInit {
 
   private createForm() {
     this.invoiceForm = this.fb.group({
-      signatureName: ['', Validators.required],
-      signatureDate: [new Date(), Validators.required],
+      // signatureName: ['', Validators.required],
+      // signatureDate: [new Date(), Validators.required],
       invoiceNumber: ['', Validators.required],
       issueDate: [new Date(), Validators.required],
       dueDate: ['', Validators.required],
@@ -45,7 +63,8 @@ export class CreateInvoiceComponent implements OnInit {
         name: ['', Validators.required],
         address: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
-        phone: ['', Validators.required]
+        phone: ['', Validators.required],
+        logo: ['']
       }),
       client: this.fb.group({
         name: ['', Validators.required],
@@ -122,9 +141,8 @@ export class CreateInvoiceComponent implements OnInit {
         this.logoPreview = reader.result;
       };
       reader.readAsDataURL(file);
-
-      // Update the form control value
-     // this.companyForm.get('company.logo')?.setValue(file);
+      console.log("form",this.invoiceForm)
+     this.invoiceForm.get('company.logo')?.setValue(file);
     }
   }
 
@@ -142,20 +160,63 @@ export class CreateInvoiceComponent implements OnInit {
     if (this.invoiceForm.valid) {
       this.isLoading = true;
       try {
-        // Add your save logic here
-        console.log('Invoice Data:', {
-          ...this.invoiceForm.value,
-          templateId: this.selectedTemplateId
-        });
+        // Your save logic here
         await this.mockSaveDelay();
-        this.router.navigate(['/invoices']);
+        
+        // Show success dialog after saving
+        this.showSuccessDialog = true;
       } catch (error) {
         console.error('Error saving invoice:', error);
+        // Handle error
       } finally {
         this.isLoading = false;
       }
     } else {
       this.markFormGroupTouched(this.invoiceForm);
+    }
+  }
+
+  closeSuccessDialog() {
+    this.router.navigate(['/invoices']);
+    this.showSuccessDialog = false;
+  }
+
+  handleSuccessFinish(data: { reminders: ReminderSettings; email: EmailSettings }) {
+    console.log('Reminder Settings:', data.reminders);
+    console.log('Email Settings:', data.email);
+  
+    // Handle reminder settings
+    if (data.reminders) {
+      this.setupReminders(data.reminders);
+    }
+  
+    // Handle email settings
+    if (data.email) {
+      this.sendInvoiceEmail(data.email);
+    }
+  
+    // Close dialog and navigate
+    this.showSuccessDialog = false;
+    this.router.navigate(['/invoices']);
+  }
+  
+  
+  private async setupReminders(reminderSettings: ReminderSettings) {
+    try {
+      // Your reminder setup logic
+      console.log('Setting up reminders...', reminderSettings);
+    } catch (error) {
+      console.error('Error setting up reminders:', error);
+    }
+  }
+  
+
+  private async sendInvoiceEmail(emailSettings: any) {
+    try {
+      // Your email sending logic
+      console.log('Sending email...', emailSettings);
+    } catch (error) {
+      console.error('Error sending email:', error);
     }
   }
 
@@ -183,138 +244,9 @@ export class CreateInvoiceComponent implements OnInit {
 
 
 
-  // @ViewChild('signatureCanvas') signatureCanvas!: ElementRef<HTMLCanvasElement>;
-  // signatureType: 'draw' | 'upload' = 'draw';
-  // isDrawing = false;
-  // context: CanvasRenderingContext2D | null = null;
-  // signatureImage: string | null = null;
-  // isDragging = false;
-  // currentDate = new Date();
-
-
-  
 
 
 
-  // ngAfterViewInit() {
-  //   this.initializeCanvas();
-  // }
-
-  //   startDrawing(event: MouseEvent) {
-  //     this.isDrawing = true;
-  //     const { x, y } = this.getCoordinates(event);
-  //     this.context?.beginPath();
-  //     this.context?.moveTo(x, y);
-  //   }
-
-  //   draw(event: MouseEvent) {
-  //     if (!this.isDrawing) return;
-  //     const { x, y } = this.getCoordinates(event);
-  //     this.context?.lineTo(x, y);
-  //     this.context?.stroke();
-  //   }
-
-
-  //   private getCoordinates(event: MouseEvent): { x: number; y: number } {
-  //     const canvas = this.signatureCanvas.nativeElement;
-  //     const rect = canvas.getBoundingClientRect();
-  //     const scaleX = canvas.width / rect.width;
-  //     const scaleY = canvas.height / rect.height;
-      
-  //     return {
-  //       x: (event.clientX - rect.left) * scaleX,
-  //       y: (event.clientY - rect.top) * scaleY
-  //     };
-  //   }
-
-  //   switchSignatureType(type: 'draw' | 'upload') {
-  //     this.signatureType = type;
-  //     if (type === 'draw') {
-  //       // Reinitialize canvas on next tick after view updates
-  //       setTimeout(() => {
-  //         this.initializeCanvas();
-  //       });
-  //     }
-  //   }
-
-  //   private initializeCanvas() {
-  //     if (this.signatureCanvas) {
-  //       const canvas = this.signatureCanvas.nativeElement;
-  //       canvas.width = canvas.offsetWidth;
-  //       canvas.height = canvas.offsetHeight;
-        
-  //       this.context = canvas.getContext('2d');
-  //       if (this.context) {
-  //         this.context.strokeStyle = '#000';
-  //         this.context.lineWidth = 2;
-  //         this.context.lineCap = 'round';
-  //         this.context.lineJoin = 'round';
-  //       }
-  //     }
-  //   }
-
-  // stopDrawing() {
-  //   this.isDrawing = false;
-  // }
-
-  // clearSignature() {
-  //   if (this.context) {
-  //     this.context.clearRect(
-  //       0, 
-  //       0, 
-  //       this.signatureCanvas.nativeElement.width, 
-  //       this.signatureCanvas.nativeElement.height
-  //     );
-  //   }
-  // }
-
-  // onDragOver(event: DragEvent) {
-  //   event.preventDefault();
-  //   this.isDragging = true;
-  // }
-
-  // onDragLeave(event: DragEvent) {
-  //   event.preventDefault();
-  //   this.isDragging = false;
-  // }
-
-  // onDrop(event: DragEvent) {
-  //   event.preventDefault();
-  //   this.isDragging = false;
-  //   const files = event.dataTransfer?.files;
-  //   if (files) {
-  //     this.handleFile(files[0]);
-  //   }
-  // }
-
-  // onFileSelected(event: Event) {
-  //   const file = (event.target as HTMLInputElement).files?.[0];
-  //   if (file) {
-  //     this.handleFile(file);
-  //   }
-  // }
-
-  // private handleFile(file: File) {
-  //   if (file.type.startsWith('image/')) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       this.signatureImage = e.target?.result as string;
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
-
-  // removeSignature() {
-  //   this.signatureImage = null;
-  // }
-
-  // // Add to your save method
-  // getSignatureData(): string {
-  //   if (this.signatureType === 'draw') {
-  //     return this.signatureCanvas.nativeElement.toDataURL();
-  //   }
-  //   return this.signatureImage || '';
-  // }
 
 }
 

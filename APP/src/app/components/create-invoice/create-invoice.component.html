@@ -111,6 +111,28 @@
                     </div>
                 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Company Logo Upload -->
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Logo</label>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-300">
+                                    <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo Preview" class="w-full h-full object-cover" />
+                                    <span *ngIf="!logoPreview" class="text-sm text-gray-400">Preview</span>
+                                </div>
+                                <input #fileInput type="file" (change)="onLogoSelected($event)" accept="image/*" 
+                                    class="block w-full text-sm text-gray-700 
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-lg file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-indigo-100 file:text-indigo-600
+                                    hover:file:bg-indigo-200" />
+                                <button *ngIf="logoPreview" (click)="onDetachLogo(fileInput)" type="button" 
+                                    class="text-sm text-red-500 bg-transparent hover:underline">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Company Name</label>
                             <input type="text" formControlName="name" class="block w-full rounded-lg border-gray-300 shadow-sm 
@@ -139,27 +161,7 @@
                                 transition-all duration-200" placeholder="Company Address"></textarea>
                         </div>
                 
-                        <!-- Company Logo Upload -->
-                        <div class="space-y-2 md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Company Logo</label>
-                            <div class="flex items-center space-x-4">
-                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-300">
-                                    <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo Preview" class="w-full h-full object-cover" />
-                                    <span *ngIf="!logoPreview" class="text-sm text-gray-400">Preview</span>
-                                </div>
-                                <input #fileInput type="file" (change)="onLogoSelected($event)" accept="image/*" 
-                                    class="block w-full text-sm text-gray-700 
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-lg file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-indigo-100 file:text-indigo-600
-                                    hover:file:bg-indigo-200" />
-                                <button *ngIf="logoPreview" (click)="onDetachLogo(fileInput)" type="button" 
-                                    class="text-sm text-red-500 bg-transparent hover:underline">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
                 
@@ -572,3 +574,12 @@
       </div>
     </div>
   </div> -->
+
+  <!-- create-invoice.component.html -->
+
+  <app-invoice-success-dialog
+  [show]="showSuccessDialog"
+  (onClose)="closeSuccessDialog()"
+  (onFinish)="handleSuccessFinish({ reminders: reminderSettings, email: emailSettings })">
+</app-invoice-success-dialog>
+
