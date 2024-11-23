@@ -13,6 +13,8 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.4",
+    "puppeteer": "^23.9.0",
+    "puppeteer-core": "^23.9.0",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2"
   }

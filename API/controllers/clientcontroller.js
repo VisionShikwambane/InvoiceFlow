@@ -1,5 +1,6 @@
 const { Client } = require('../models');
 const ClientService = require('../services/ClientService');
+const puppeteer = require('puppeteer');
 
 const getAllClients = async (req, res) => {
     const clients = await Client.findAll();
@@ -40,4 +41,60 @@ const addClient = async (req, res) => {
     }
   };
 
-module.exports = { getAllClients, addClient, deleteClient };
+
+  
+  const generateClientsPDF = async (req, res) => {
+      try {
+          // Define the URL to navigate to
+          const invoiceURL = 'http://localhost:4200/template/morderntemplate';
+  
+          // Launch Puppeteer
+          const browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          });
+          const page = await browser.newPage();
+  
+          console.log('Navigating to the URL...');
+          await page.goto(invoiceURL, {
+              waitUntil: 'networkidle2', // Wait until the page is fully loaded
+          });
+  
+          console.log('Generating PDF...');
+          const pdfBuffer = await page.pdf({
+              format: 'A4',
+              printBackground: true,
+              margin: {
+                top: '5mm',
+                bottom: '5mm',
+                left: '5mm',
+                right: '5mm',
+            },
+          });
+  
+          console.log('Saving PDF locally...');
+          require('fs').writeFileSync('debug.pdf', pdfBuffer);
+  
+          console.log('Sending PDF response...');
+          res.set({
+              'Content-Type': 'application/pdf',
+              'Content-Disposition': 'inline; filename="Invoice_Report.pdf"',
+          });
+          res.send(pdfBuffer);
+  
+          await browser.close();
+      } catch (error) {
+          console.error('Error generating PDF:', error);
+          res.status(500).send(`Failed to generate PDF: ${error.message}`);
+      }
+  };
+  
+  module.exports = { generateClientsPDF };
+  
+
+
+
+
+  
+
+module.exports = { getAllClients, addClient, deleteClient, generateClientsPDF };

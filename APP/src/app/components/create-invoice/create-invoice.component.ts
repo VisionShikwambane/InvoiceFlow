@@ -23,6 +23,8 @@ export class CreateInvoiceComponent implements OnInit {
   isLoading = false;
   selectedTemplateId!: string;
   showSuccessDialog = false;
+  activeTab: 'edit' | 'preview' = 'edit'; // Default to the edit tab
+
 
   reminderSettings: ReminderSettings = {
     enabled: true,

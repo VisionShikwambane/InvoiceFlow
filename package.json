@@ -3,6 +3,10 @@
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.1.0",
     "framer-motion": "^11.11.17",
-    "lucide-react": "^0.460.0"
+    "lucide-react": "^0.460.0",
+    "puppeteer": "^23.9.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.2"
   }
 }

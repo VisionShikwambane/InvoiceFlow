@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { InvoiceDetails } from '../../../models/create-invoice.interface';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-modern-template',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   providers: [DatePipe],
   templateUrl: './modern-template.component.html',
   styleUrl: './modern-template.component.css'
@@ -15,7 +16,7 @@ export class ModernTemplateComponent implements OnInit{
   @Input() invoice!: InvoiceDetails;
 
   ngOnInit(): void {
-    // // Hardcoded test data
+    // Hardcoded test data
     // this.invoice = {
     //   invoiceNumber: 'INV-2024-001',
     //   issueDate: new Date('2024-02-21'),

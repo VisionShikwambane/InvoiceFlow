@@ -1,149 +1,83 @@
-<div class="bg-white w-[21cm] min-h-[29.7cm] p-[2cm]">
-    <!-- Top Section -->
-    <div class="flex justify-between items-start mb-16">
-      <!-- Company Info -->
-      <div class="max-w-[50%]">
-        <div class="mb-6">
-            <img *ngIf="invoice.company.logo" 
-                 [src]="invoice.company.logo" 
-                 alt="Company Logo"
-                 class="max-h-32 w-auto object-contain">
-          </div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">{{invoice.company.name}}</h1>
-        <div class="text-gray-600 space-y-1 text-sm">
-          <p style="white-space: pre-line">{{invoice.company.address}}</p>
-          <p>{{invoice.company.email}}</p>
-          <p>{{invoice.company.phone}}</p>
-        </div>
+<div style="width: 21cm; min-height: 29.7cm; padding: 1.5cm; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 12px; color: #333;">
+  <!-- Top Section -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2cm;">
+    <!-- Company Info -->
+    <div style="max-width: 50%;">
+      <div style="margin-bottom: 0.5cm;">
+        <img *ngIf="invoice.company.logo" [src]="invoice.company.logo" alt="Company Logo"  style="max-height: 80px; width: auto; object-fit: contain;">
       </div>
+      <h1 style="font-size: 18px; font-weight: bold; margin-bottom: 0.5cm;">{{invoice.company.name}}</h1>
+      <div style="line-height: 1.4;">
+        <p style="margin: 0; white-space: pre-line;">{{invoice.company.address}}</p>
+        <p style="margin: 0;">{{invoice.company.email}}</p>
+        <p style="margin: 0;">{{invoice.company.phone}}</p>
+      </div>
+    </div>
 
-      <!-- Invoice Title & Basic Info -->
-      <div class="text-right">
-        <div class="text-5xl font-bold text-gray-900 mb-4">INVOICE</div>
-        <div class="inline-block bg-indigo-50 rounded-lg px-4 py-3">
-          <div class="text-sm text-gray-500">Invoice Number</div>
-          <div class="text-xl font-semibold text-indigo-600">#{{invoice.invoiceNumber}}</div>
+    <!-- Invoice Title & Basic Info -->
+    <div style="text-align: right;">
+      <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 0.5cm;">INVOICE</h2>
+      <div style="background-color: #f4f4f4; padding: 0.5cm; border-radius: 5px; display: inline-block;">
+        <div style="font-size: 12px; color: #555;">Invoice Number</div>
+        <div style="font-size: 16px; font-weight: bold; color: #333;">#{{invoice.invoiceNumber}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing Info -->
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2cm;">
+    <!-- Bill To -->
+    <div style="width: 48%; background-color: #f9f9f9; padding: 1cm; border-radius: 5px; box-sizing: border-box;">
+      <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 0.5cm;">BILL TO</h3>
+      <div>
+        <p style="margin: 0; font-size: 14px; font-weight: bold;">{{invoice.client.name}}</p>
+        <div style="line-height: 1.4; font-size: 12px; color: #666;">
+          <p style="margin: 0; white-space: pre-line;">{{invoice.client.address}}</p>
+          <p style="margin: 0;">{{invoice.client.email}}</p>
+          <p style="margin: 0;">{{invoice.client.phone}}</p>
         </div>
       </div>
     </div>
 
-    <!-- Billing Info Grid -->
-    <div class="grid grid-cols-2 gap-20 mb-16">
-      <!-- Bill To -->
-      <div class="bg-gray-50 rounded-2xl p-6">
-        <h2 class="text-sm font-semibold text-gray-500 mb-4">BILL TO</h2>
-        <div class="space-y-2">
-          <div class="text-xl font-bold text-gray-900">{{invoice.client.name}}</div>
-          <div class="text-gray-600 space-y-1 text-sm">
-            <p style="white-space: pre-line">{{invoice.client.address}}</p>
-            <p>{{invoice.client.email}}</p>
-            <p>{{invoice.client.phone}}</p>
-          </div>
+    <!-- Invoice Details -->
+    <div style="width: 48%; background-color: #f9f9f9; padding: 1cm; border-radius: 5px; box-sizing: border-box;">
+      <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 0.5cm;">INVOICE INFO</h3>
+      <div style="line-height: 1.6; font-size: 12px; color: #666;">
+        <div style="display: flex; justify-content: space-between;">
+          <span>Issue Date:</span>
+          <span style="font-weight: bold; color: #333;">{{invoice.issueDate | date:'mediumDate'}}</span>
         </div>
-      </div>
-
-      <!-- Invoice Details -->
-      <div class="bg-gray-50 rounded-2xl p-6">
-        <h2 class="text-sm font-semibold text-gray-500 mb-4">INVOICE INFO</h2>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Issue Date:</span>
-            <span class="font-medium text-gray-900">{{invoice.issueDate | date:'mediumDate'}}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Due Date:</span>
-            <span class="font-medium text-gray-900">{{invoice.dueDate | date:'mediumDate'}}</span>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-            <span class="text-gray-600">Amount Due:</span>
-            <span class="text-xl font-bold text-indigo-600">{{invoice.total | currency}}</span>
-          </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span>Due Date:</span>
+          <span style="font-weight: bold; color: #333;">{{invoice.dueDate | date:'mediumDate'}}</span>
         </div>
-      </div>
-    </div>
-
-    <!-- Items Table -->
-    <div class="mb-16">
-      <table class="w-full" style="border-collapse: collapse">
-        <thead>
-          <tr class="border-b-2 border-gray-200">
-            <th class="py-4 text-left text-gray-500 font-semibold">Description</th>
-            <th class="py-4 text-right text-gray-500 font-semibold" style="width: 100px">Qty</th>
-            <th class="py-4 text-right text-gray-500 font-semibold" style="width: 150px">Rate</th>
-            <th class="py-4 text-right text-gray-500 font-semibold" style="width: 150px">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of invoice.items" class="border-b border-gray-100">
-            <td class="py-4">
-              <div class="font-medium text-gray-900">{{item.description}}</div>
-            </td>
-            <td class="py-4 text-right text-gray-600">{{item.quantity}}</td>
-            <td class="py-4 text-right text-gray-600">{{item.price | currency}}</td>
-            <td class="py-4 text-right font-medium text-gray-900">{{item.amount | currency}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-
-
-    <!-- Totals Section -->
-    <div class="flex justify-end mb-16">
-      <div class="w-96 bg-gray-50 rounded-2xl p-6 space-y-3">
-        <div class="flex justify-between text-gray-600">
-          <span>Subtotal</span>
-          <span>{{invoice.subtotal | currency}}</span>
-        </div>
-        
-        <!-- Simplified Tax Section -->
-        <div class="flex justify-between text-gray-600">
-          <span>Tax Rate</span>
-          <span>{{invoice.taxRate}}%</span>
-        </div>
-        <div class="flex justify-between text-gray-600">
-          <span>Total Tax</span>
-          <span>{{invoice.tax | currency}}</span>
-        </div>
-        
-        <div class="flex justify-between pt-3 border-t border-gray-200">
-          <span class="text-lg font-bold text-gray-900">Total</span>
-          <span class="text-lg font-bold text-indigo-600">{{invoice.total | currency}}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Notes & Terms -->
-    <div class="grid grid-cols-2 gap-8 mb-16">
-      <div *ngIf="invoice.notes" class="bg-yellow-50 rounded-2xl p-6">
-        <h3 class="text-sm font-semibold text-yellow-800 mb-2">Notes</h3>
-        <p class="text-sm text-yellow-800" style="white-space: pre-line">{{invoice.notes}}</p>
-      </div>
-      <div *ngIf="invoice.terms" class="bg-blue-50 rounded-2xl p-6">
-        <h3 class="text-sm font-semibold text-blue-800 mb-2">Terms & Conditions</h3>
-        <p class="text-sm text-blue-800" style="white-space: pre-line">{{invoice.terms}}</p>
-      </div>
-    </div>
-
-    <div class="border-t-2 border-gray-100 pt-8">
-      <div class="flex justify-between">
-        <div class="w-64">
-          <div *ngIf="invoice.signature?.image" class="mb-4">
-            <!-- <img [src]="invoice.signature.image" 
-                 alt="Signature" 
-                 class="max-h-16 w-auto"> -->
-          </div>
-          <div class="border-b-2 border-gray-900 pb-1">
-            <!-- {{invoice.signature?.name}} -->
-          </div>
-          <div class="text-sm text-gray-600 mt-1">Authorized Signature</div>
-        </div>
-        <div class="w-64 text-right">
-          <div class="border-b-2 border-gray-900 pb-1">
-            <!-- {{invoice.signature?.date | date:'mediumDate'}} -->
-          </div>
-          <div class="text-sm text-gray-600 mt-1">Date</div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid #ddd; padding-top: 0.5cm; margin-top: 0.5cm;">
+          <span>Amount Due:</span>
+          <span style="font-size: 16px; font-weight: bold; color: #333;">{{invoice.total | currency}}</span>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Items Table -->
+  <div style="margin-bottom: 2cm;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+      <thead>
+        <tr style="background-color: #f4f4f4; border-bottom: 2px solid #ddd;">
+          <th style="text-align: left; padding: 0.5cm 0; font-weight: bold;">Description</th>
+          <th style="text-align: right; padding: 0.5cm 0; font-weight: bold;">Qty</th>
+          <th style="text-align: right; padding: 0.5cm 0; font-weight: bold;">Rate</th>
+          <th style="text-align: right; padding: 0.5cm 0; font-weight: bold;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of invoice.items" style="border-bottom: 1px solid #eee;">
+          <td style="padding: 0.4cm 0;">{{item.description}}</td>
+          <td style="text-align: right; padding: 0.4cm 0;">{{item.quantity}}</td>
+          <td style="text-align: right; padding: 0.4cm 0;">{{item.price | currency}}</td>
+          <td style="text-align: right; padding: 0.4cm 0; font-weight: bold;">{{item.amount | currency}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
