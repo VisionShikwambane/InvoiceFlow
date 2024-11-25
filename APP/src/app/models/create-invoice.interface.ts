@@ -25,7 +25,8 @@ export interface InvoiceDetails {
     terms: string;
     templateId: string;
     subtotal: number;
-    taxRate: number;  // as a percentage, e.g., 18 for 18%
+    taxRate: number; 
+    currency: string;  // as a percentage, e.g., 18 for 18%
     tax: number;
     total: number;
 

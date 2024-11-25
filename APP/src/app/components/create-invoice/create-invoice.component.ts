@@ -56,8 +56,13 @@ export class CreateInvoiceComponent implements OnInit {
 
   private createForm() {
     this.invoiceForm = this.fb.group({
-      // signatureName: ['', Validators.required],
-      // signatureDate: [new Date(), Validators.required],
+
+      signature: this.fb.group({
+        image: [''],
+        name: [''],
+        date: [new Date()],
+      }),
+      
       invoiceNumber: ['', Validators.required],
       issueDate: [new Date(), Validators.required],
       dueDate: ['', Validators.required],
@@ -72,9 +77,11 @@ export class CreateInvoiceComponent implements OnInit {
         name: ['', Validators.required],
         address: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
-        phone: ['', Validators.required]
+        phone: ['']
       }),
       items: this.fb.array([]),
+      taxRate: [10, [Validators.required, Validators.min(0), Validators.max(100)]], // Default 10% tax rate
+      currency: ['USD', Validators.required], // Default currency
       notes: [''],
       terms: [''],
       subtotal: [0],
@@ -84,6 +91,8 @@ export class CreateInvoiceComponent implements OnInit {
 
     // Add first item by default
     this.addItem();
+    this.invoiceForm.get('taxRate')?.valueChanges.subscribe(() => this.calculateTotals());
+    this.invoiceForm.get('currency')?.valueChanges.subscribe(() => this.calculateTotals());
   }
 
   get items() {
@@ -103,27 +112,40 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   removeItem(index: number) {
-    this.items.removeAt(index);
-    this.calculateTotals();
+    if (this.items.length > 1) {
+      this.items.removeAt(index);
+      this.calculateTotals();
+    } else {
+      //alert('At least one item is required.');
+    }
   }
+  
+
+  
 
   calculateTotals() {
     const items = this.items.getRawValue();
+    const taxRate = this.invoiceForm.get('taxRate')?.value || 0; // Get custom tax rate
     const subtotal = items.reduce((sum, item) => {
       const amount = item.quantity * item.price;
       this.items.at(items.indexOf(item)).patchValue({ amount }, { emitEvent: false });
       return sum + amount;
     }, 0);
-
-    const tax = subtotal * 0.1; // 10% tax example
+  
+    const tax = (subtotal * taxRate) / 100; // Use custom tax rate
     const total = subtotal + tax;
-
+  
     this.invoiceForm.patchValue({
       subtotal,
       tax,
       total
     }, { emitEvent: false });
+
+
+    console.log(this.invoiceForm)
   }
+
+  
 
   togglePreview() {
     this.showPreview = !this.showPreview;
@@ -131,22 +153,23 @@ export class CreateInvoiceComponent implements OnInit {
 
   logoPreview: string | ArrayBuffer | null = null;
 
- onLogoSelected(event: Event): void {
+  onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-
+  
     if (input.files && input.files[0]) {
       const file = input.files[0];
-
+  
       // FileReader to generate preview
       const reader = new FileReader();
       reader.onload = () => {
-        this.logoPreview = reader.result;
+        this.logoPreview = reader.result; // Set the preview data
+        this.invoiceForm.get('company.logo')?.setValue(this.logoPreview); 
+        console.log("Updated form:", this.logoPreview); 
       };
       reader.readAsDataURL(file);
-      console.log("form",this.invoiceForm)
-     this.invoiceForm.get('company.logo')?.setValue(file);
     }
   }
+  
 
   onDetachLogo(fileInput: HTMLInputElement): void {
     // Clear the preview and reset the form control
@@ -242,6 +265,29 @@ export class CreateInvoiceComponent implements OnInit {
   goBack() {
     this.router.navigate(['/templates']);
   }
+
+
+
+  signaturePreview: string | null = null;
+
+onSignatureSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+            this.signaturePreview = fileReader.result as string;
+            this.invoiceForm.get('signature.image')?.setValue(this.signaturePreview); 
+           
+        };
+        fileReader.readAsDataURL(input.files[0]);
+    }
+}
+
+onRemoveSignature(input: HTMLInputElement) {
+    this.signaturePreview = null;
+    input.value = ''; // Clear the file input
+}
+
 
 
 

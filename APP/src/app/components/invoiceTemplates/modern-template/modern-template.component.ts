@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { InvoiceDetails } from '../../../models/create-invoice.interface';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-modern-template',
@@ -15,8 +16,11 @@ export class ModernTemplateComponent implements OnInit{
 
   @Input() invoice!: InvoiceDetails;
 
+  constructor(private http: HttpClient) {}
+
+
   ngOnInit(): void {
-    // Hardcoded test data
+  
     // this.invoice = {
     //   invoiceNumber: 'INV-2024-001',
     //   issueDate: new Date('2024-02-21'),
@@ -36,6 +40,30 @@ export class ModernTemplateComponent implements OnInit{
     //     phone: '+1 (555) 987-6543'
     //   },
     //   items: [
+    //     {
+    //       description: 'Website Development',
+    //       quantity: 1,
+    //       price: 5000.00,
+    //       amount: 5000.00
+    //     },
+    //     {
+    //       description: 'Website Development',
+    //       quantity: 1,
+    //       price: 5000.00,
+    //       amount: 5000.00
+    //     },
+    //     {
+    //       description: 'Website Development',
+    //       quantity: 1,
+    //       price: 5000.00,
+    //       amount: 5000.00
+    //     },
+    //     {
+    //       description: 'Website Development',
+    //       quantity: 1,
+    //       price: 5000.00,
+    //       amount: 5000.00
+    //     },
     //     {
     //       description: 'Website Development',
     //       quantity: 1,
