@@ -4,13 +4,13 @@
     <!-- Company Info -->
     <div style="max-width: 50%;">
       <div style="margin-bottom: 0.3cm;">
-        <img *ngIf="invoice.company.logo" [src]="invoice.company.logo" alt="Company Logo" style="max-height: 120px; width: auto; object-fit: contain;">
+        <img *ngIf="invoice.companylogo" [src]="invoice.companylogo" alt="Company Logo" style="max-height: 120px; width: auto; object-fit: contain;">
       </div>
-      <h1 style="font-size: 16px; font-weight: bold; margin-bottom: 0.3cm;">{{invoice.company.name}}</h1>
+      <h1 style="font-size: 16px; font-weight: bold; margin-bottom: 0.3cm;">{{invoice.companyname}}</h1>
       <div style="line-height: 1.2;">
-        <p style="margin: 0; white-space: pre-line;">{{invoice.company.address}}</p>
-        <p style="margin: 0;">{{invoice.company.email}}</p>
-        <p style="margin: 0;">{{invoice.company.phone}}</p>
+        <p style="margin: 0; white-space: pre-line;">{{invoice.companyaddress}}</p>
+        <p style="margin: 0;">{{invoice.companyemail}}</p>
+        <p style="margin: 0;">{{invoice.companyphone}}</p>
       </div>
     </div>
 
@@ -107,15 +107,15 @@
 
 
   <!-- Signature Section -->
-<div *ngIf="invoice.signature?.image" style="display: flex; justify-content: space-between; margin-top: 2cm;">
+<div *ngIf="invoice.signatureimage" style="display: flex; justify-content: space-between; margin-top: 2cm;">
   <!-- Authorized Signature -->
   <div style="text-align: center;">
     <img 
-      [src]="invoice.signature?.image" 
+      [src]="invoice.signatureimage" 
       alt="Authorized Signature" 
       style="max-width: 180px; max-height: 60px; margin-bottom: 0.3cm;" />
       <p style="font-size: 11px; color: #666; margin: 0;">
-        Signed on: {{ invoice.signature?.date | date: 'mediumDate' }}
+        Signed on: {{ invoice.signaturedate | date: 'mediumDate' }}
       </p>
   </div>
 </div>

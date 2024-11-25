@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "Camelsa@123",
-    "database": "clientflowdb",
+    "database": "invoicydb",
     "dialect": "mysql"
   },
   "test": {

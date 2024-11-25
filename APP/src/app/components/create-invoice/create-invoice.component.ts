@@ -3,7 +3,6 @@ import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModernTemplateComponent } from '../invoiceTemplates/modern-template/modern-template.component';
-import { ProfessionalTemplateComponent } from '../invoiceTemplates/professional-template/professional-template.component';
 import { InvoiceSuccessDialogComponent } from '../invoice-success-dialog/invoice-success-dialog.component';
 import { ReminderSettings } from '../../models/ReminderSettings';
 import { EmailSettings } from '../../models/EmailSettings';
@@ -12,7 +11,7 @@ import { EmailSettings } from '../../models/EmailSettings';
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, ProfessionalTemplateComponent,InvoiceSuccessDialogComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent,InvoiceSuccessDialogComponent],
   templateUrl: './create-invoice.component.html',
   styleUrl: './create-invoice.component.css'
 })
@@ -57,22 +56,17 @@ export class CreateInvoiceComponent implements OnInit {
   private createForm() {
     this.invoiceForm = this.fb.group({
 
-      signature: this.fb.group({
-        image: [''],
-        name: [''],
-        date: [new Date()],
-      }),
-      
+      signatureimage: [''],
+      signaturename: [''],
+      signaturedate: [new Date()],
       invoiceNumber: ['', Validators.required],
       issueDate: [new Date(), Validators.required],
       dueDate: ['', Validators.required],
-      company: this.fb.group({
-        name: ['', Validators.required],
-        address: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        phone: ['', Validators.required],
-        logo: ['']
-      }),
+      companyname: ['', Validators.required],
+      companyaddress: ['', Validators.required],
+      companyemail: ['', [Validators.required, Validators.email]],
+      companyphone: ['', Validators.required],
+      companylogo: [''],
       client: this.fb.group({
         name: ['', Validators.required],
         address: ['', Validators.required],
@@ -163,7 +157,7 @@ export class CreateInvoiceComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.logoPreview = reader.result; // Set the preview data
-        this.invoiceForm.get('company.logo')?.setValue(this.logoPreview); 
+        this.invoiceForm.get('companylogo')?.setValue(this.logoPreview); 
         console.log("Updated form:", this.logoPreview); 
       };
       reader.readAsDataURL(file);
@@ -276,7 +270,7 @@ onSignatureSelected(event: Event) {
         const fileReader = new FileReader();
         fileReader.onload = () => {
             this.signaturePreview = fileReader.result as string;
-            this.invoiceForm.get('signature.image')?.setValue(this.signaturePreview); 
+            this.invoiceForm.get('signatureimage')?.setValue(this.signaturePreview); 
            
         };
         fileReader.readAsDataURL(input.files[0]);

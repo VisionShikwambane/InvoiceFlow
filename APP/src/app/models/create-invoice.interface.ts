@@ -1,19 +1,14 @@
 export interface InvoiceDetails {
-    signature?: {
-        image?: string;
-        name: string;
-        date: Date;
-    };
+    signatureimage?: string;
+    signaturedate: Date;
     invoiceNumber: string;
     issueDate: Date;
     dueDate: Date;
-    company: {
-        name: string;
-        address: string;
-        email: string;
-        phone: string;
-        logo?: string;
-    };
+    companyname: string;
+    companyaddress: string;
+    companyemail: string;
+    companyphone: string;
+    companylogo?: string;
     client: {
         name: string;
         address: string;

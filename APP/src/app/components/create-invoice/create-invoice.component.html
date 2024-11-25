@@ -35,23 +35,7 @@
                         </svg>
                         {{ showPreview ? 'Edit Invoice' : 'Preview' }}
                     </button>
-                    <!-- <button (click)="saveInvoice()" [disabled]="invoiceForm.invalid || isLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white 
-                           bg-gradient-to-r from-indigo-600 to-indigo-700 
-                           rounded-lg shadow-sm hover:from-indigo-700 hover:to-indigo-800 
-                           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
-                           transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
-                           hover:shadow-md">
-                        <svg *ngIf="!isLoading" class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        <span>{{ isLoading ? 'Saving...' : 'Save Invoice' }}</span>
-                    </button> -->
+                  
                 </div>
             </div>
 
@@ -60,6 +44,7 @@
             <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" class="space-y-6">
                 <!-- Basic Info Section -->
                 <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6">
+                    
                     <div class="flex items-center mb-6">
                         <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +53,14 @@
                             </svg>
                         </div>
                         <h2 class="text-xl font-semibold text-gray-900">Basic Information</h2>
+                        <div class="flex-grow"></div>
+                        <a (click)="togglePreview()" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors duration-200 cursor-pointer" >
+                            Preview
+                        </a>
+                        
                     </div>
+               
+                    
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
@@ -103,7 +95,8 @@
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6"
-                    formGroupName="company">
+                   >
+                    
                     <div class="flex items-center mb-6">
                         <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,6 +105,10 @@
                             </svg>
                         </div>
                         <h2 class="text-xl font-semibold text-gray-900">Company Information</h2>
+                        <div class="flex-grow"></div>
+                        <a (click)="togglePreview()" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors duration-200 cursor-pointer" >
+                            Preview
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -140,28 +137,28 @@
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Company Name</label>
-                            <input type="text" formControlName="name" class="block w-full rounded-lg border-gray-300 shadow-sm 
+                            <input type="text" formControlName="companyname" class="block w-full rounded-lg border-gray-300 shadow-sm 
                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                                 transition-all duration-200" placeholder="Your Company Name" />
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email" formControlName="email" class="block w-full rounded-lg border-gray-300 shadow-sm 
+                            <input type="email" formControlName="companyemail" class="block w-full rounded-lg border-gray-300 shadow-sm 
                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                                 transition-all duration-200" placeholder="company@example.com" />
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Phone</label>
-                            <input type="tel" formControlName="phone" class="block w-full rounded-lg border-gray-300 shadow-sm 
+                            <input type="tel" formControlName="companyphone" class="block w-full rounded-lg border-gray-300 shadow-sm 
                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                                 transition-all duration-200" placeholder="+1 (555) 000-0000" />
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Address</label>
-                            <textarea formControlName="address" rows="2" class="block w-full rounded-lg border-gray-300 shadow-sm 
+                            <textarea formControlName="companyaddress" rows="2" class="block w-full rounded-lg border-gray-300 shadow-sm 
                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                                 transition-all duration-200" placeholder="Company Address"></textarea>
                         </div>
@@ -182,6 +179,10 @@
                             </svg>
                         </div>
                         <h2 class="text-xl font-semibold text-gray-900">Client Information</h2>
+                        <div class="flex-grow"></div>
+                        <a (click)="togglePreview()" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors duration-200 cursor-pointer" >
+                            Preview
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -260,7 +261,12 @@
                                 </svg>
                             </div>
                             <h2 class="text-xl font-semibold text-gray-900">Invoice Items</h2>
+                           
                         </div>
+                        <div class="flex-grow"></div>
+                        <a (click)="togglePreview()" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors duration-200 cursor-pointer" >
+                            Preview
+                        </a>
                     </div>
 
                     <!-- Tax Rate and Currency Chooser -->
@@ -360,6 +366,10 @@
                             </svg>
                         </div>
                         <h2 class="text-xl font-semibold text-gray-900">Additional Information</h2>
+                        <div class="flex-grow"></div>
+                        <a (click)="togglePreview()" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors duration-200 cursor-pointer" >
+                            Preview
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 gap-6">
@@ -390,6 +400,10 @@
                             </svg>
                         </div>
                         <h2 class="text-xl font-semibold text-gray-900">Signature(Optional)</h2>
+                        <div class="flex-grow"></div>
+                        <a (click)="togglePreview()" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors duration-200 cursor-pointer" >
+                            Preview
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 gap-6">
@@ -455,21 +469,11 @@
                                         </svg>
                                     </div>
                                     <h2 class="text-xl font-semibold text-gray-900">Invoice Preview</h2>
+                                    
                                 </div>
 
                                 <div class="flex items-center space-x-4">
-                                    <!-- Print Button -->
-                                    <button type="button" (click)="printInvoice()" class="inline-flex items-center px-4 py-2 text-sm font-medium 
-                      rounded-lg border border-gray-300 bg-white text-gray-700
-                      hover:bg-gray-50 focus:outline-none focus:ring-2
-                      focus:ring-offset-2 focus:ring-indigo-500
-                      transition-all duration-200">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                        </svg>
-                                        Print
-                                    </button>
+                        
 
                                     <!-- Close Button -->
                                     <button (click)="togglePreview()"
@@ -487,10 +491,6 @@
                                 <app-modern-template *ngIf="selectedTemplateId === '2'"
                                     [invoice]="invoiceForm.getRawValue()">
                                 </app-modern-template>
-
-                                <app-professional-template *ngIf="selectedTemplateId === '1'"
-                                    [invoice]="invoiceForm.getRawValue()">
-                                </app-professional-template>
                             </div>
 
                             <!-- Modal Footer -->
