@@ -1,57 +1,72 @@
 const { Client, InvoiceDetails, InvoiceItems } = require('../models');
+const sequelize = require('../config/db'); 
 
 class InvoiceDetailsService {
+
+
   static async addInvoice(invoiceData) {
+
+    const transaction = await sequelize.transaction();
+
     try {
-      // Check if the client exists by email
       let client = await Client.findOne({
-        where: { email: invoiceData.client.email }
+        where: { email: invoiceData.client.email },
+        transaction,
       });
 
-    
-      // If the client doesn't exist, create a new one
       if (!client) {
-        client = await Client.create({
-          name: invoiceData.client.name,
-          email: invoiceData.client.email,
-          phone: invoiceData.client.phone,
-        });
+        client = await Client.create(
+          {
+            name: invoiceData.client.name,
+            email: invoiceData.client.email,
+            phone: invoiceData.client.phone,
+            userId: 12
+          },
+          { transaction }
+        );
       }
 
-      let item = await InvoiceItems.findOne({
-        where: { description: invoiceData.item.description }
-      });
+      const item = await InvoiceItems.create(
+        {
+          description: invoiceData.item.description,
+          price: invoiceData.item.price,
+          invoiceId: invoiceData.id
+        },
+        { transaction }
+      );
 
-      if (!item) {
-        item = await InvoiceItems.create({
-         description: invoiceData.item.description,
-         price: invoiceData.item.price,
-         price: invoiceData.item.price,
-         
-        });
-      }
+      const invoice = await InvoiceDetails.create(
+        {
+          invoiceNo: invoiceData.InvoiceNo,
+          issueDate: invoiceData.IssueDate,
+          dueDate: invoiceData.DueDate,
+          notes: invoiceData.Notes,
+          termsAndConditions: invoiceData.TermsAndConditions,
+          userId: 121,
+          companyName: "Yes",
+          companyEmail: "visionvee201@gmail.com",
+          companyPhone: "0781961812",
+          companyAddress: "7786 Bokang St",
+          templateId: 12,
+          status: "Draft",
+          clientId: client.id,
+          subtotal: invoiceData.subtotal,
+          taxRate: invoiceData.taxRate,
+          currency: invoiceData.currency,
+          tax: invoiceData.tax,
+          total: invoiceData.total,
+        },
+        { transaction }
+      );
 
-      const invoice = await InvoiceDetails.create({
-        InvoiceNo: invoiceData.InvoiceNo,
-        IssueDate: invoiceData.IssueDate,
-        DueDate: invoiceData.DueDate,
-        Notes: invoiceData.Notes,
-        TermsAndConditions: invoiceData.TermsAndConditions,
-        UserId: invoiceData.UserId,
-        ClientID: client.id, // Use the existing or new client's ID
-        ItemID: invoiceData.ItemID,
-        subtotal: invoiceData.subtotal,
-        taxRate: invoiceData.taxRate,
-        currency: invoiceData.currency,
-        tax: invoiceData.tax,
-        total: invoiceData.total,
-      });
-
+      await transaction.commit();
       return invoice;
     } catch (error) {
-        
+      if (transaction) await transaction.rollback();
       throw new Error(`Error saving invoice: ${error.message}`);
     }
+
+
   }
 }
 

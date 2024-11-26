@@ -16,10 +16,13 @@ module.exports = (sequelize, DataTypes) => {
   Client.init({
     name: DataTypes.STRING,
     email: DataTypes.STRING,
-    status: DataTypes.STRING
+    phone: DataTypes.STRING,
+    address: DataTypes.STRING,
+    userId: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Client',
+    tableName: 'userclients',
   });
   return Client;
 };

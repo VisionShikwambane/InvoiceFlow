@@ -20,10 +20,6 @@ module.exports = {
       invoiceId: {
         type: Sequelize.INTEGER
       },
-      userid: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

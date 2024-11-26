@@ -9,56 +9,56 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      InvoiceNo: {
+      invoiceNo: {
         allowNull: false,
         type: Sequelize.STRING
       },
   
-      Logo: {
+      logo: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      companyName: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      CompanyName: {
+      companyEmail: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      CompanyEmail: {
+      companyPhone: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      CompanyPhone: {
+      companyAddress: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      CompanyAddress: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      IssueDate: {
+      issueDate: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      DueDate: {
+      dueDate: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      Notes: {
+      notes: {
         allowNull: true,
         type: Sequelize.TEXT
       },
-      TermsAndConditions: {
+      termsAndConditions: {
         allowNull: true,
         type: Sequelize.TEXT
       },
-      UserId: {
+      userId: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      ClientId: {
+      clientId: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      TemplateId: {
+      templateId: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
@@ -71,10 +71,6 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       currency: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      status: {
         allowNull: false,
         type: Sequelize.STRING
       },
