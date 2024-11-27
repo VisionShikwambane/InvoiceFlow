@@ -9,43 +9,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      name: {
+        type: Sequelize.STRING
+      },
       email: {
-        allowNull: false,
         type: Sequelize.STRING
       },
       password: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      name: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
-      logo: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
-      phone: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
-      address: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
-      signature: {
-        allowNull: true,
         type: Sequelize.STRING
       },
       createdAt: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.DATE
       }
-      
     });
   },
   async down(queryInterface, Sequelize) {
