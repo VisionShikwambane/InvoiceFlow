@@ -4,7 +4,7 @@ import invoiceController from '../controllers/invoice.controller';
 const router = Router();
 
 
-router.post("/", invoiceController.addInvoice);
+router.post("/invoice", invoiceController.addInvoice);
 
 
 export default router;
