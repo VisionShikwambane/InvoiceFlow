@@ -1,5 +1,6 @@
-import { UserInput } from '../Interfaces/user.interface';
+import { userDto } from '../dtos/user.dto';
 import db from '../models';
+
 
 
 class UserService {
@@ -12,12 +13,12 @@ class UserService {
     return await db.User.findByPk(id);
   }
 
-  async createUser(data: UserInput) {
+  async createUser(data: userDto) {
     return await db.User.create(data);
   }
 
 
-  async updateUser(id: number, data: UserInput) {
+  async updateUser(id: number, data: userDto) {
     const user = await db.User.findByPk(id);
     if (!user) return null;
     return await user.update(data);

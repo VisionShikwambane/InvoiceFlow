@@ -9,8 +9,8 @@ module.exports = (sequelize: any) => {
   }
   InvoiceItems.init({
     description: DataTypes.STRING,
-    price: DataTypes.DECIMAL,
-    invoiceId: DataTypes.NUMBER
+    price: DataTypes.FLOAT,
+    invoiceId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'InvoiceItems',
