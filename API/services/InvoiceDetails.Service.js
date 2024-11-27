@@ -20,21 +20,13 @@ class InvoiceDetailsService {
             name: invoiceData.client.name,
             email: invoiceData.client.email,
             phone: invoiceData.client.phone,
-            userId: 12
+            userId: 1
           },
           { transaction }
         );
       }
 
-      const item = await InvoiceItems.create(
-        {
-          description: invoiceData.item.description,
-          price: invoiceData.item.price,
-          invoiceId: invoiceData.id
-        },
-        { transaction }
-      );
-
+    
       const invoice = await InvoiceDetails.create(
         {
           invoiceNo: invoiceData.InvoiceNo,
@@ -42,7 +34,7 @@ class InvoiceDetailsService {
           dueDate: invoiceData.DueDate,
           notes: invoiceData.Notes,
           termsAndConditions: invoiceData.TermsAndConditions,
-          userId: 121,
+          userId: 1,
           companyName: "Yes",
           companyEmail: "visionvee201@gmail.com",
           companyPhone: "0781961812",
@@ -59,8 +51,19 @@ class InvoiceDetailsService {
         { transaction }
       );
 
+      const item = await InvoiceItems.create(
+        {
+          description: invoiceData.item.description,
+          price: invoiceData.item.price,
+          invoiceId: invoiceData.id
+        },
+        { transaction }
+      );
+
       await transaction.commit();
       return invoice;
+
+      
     } catch (error) {
       if (transaction) await transaction.rollback();
       throw new Error(`Error saving invoice: ${error.message}`);
