@@ -9,7 +9,10 @@ export interface createInvoiceDto {
     companyName: string
     companyEmail: string,
     companyPhone: string,
+    companyLogo: string,
     companyAddress: string,
+    signatureImage: string,
+    signatureDate: string,
     templateId: number,
     status: string,
     clientId: number,
@@ -26,6 +29,7 @@ export interface createInvoiceDto {
     id: string,
     description: string,
     price: string,
+    quantity: number
     invoiceId: number
 
   }

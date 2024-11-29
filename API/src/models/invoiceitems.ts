@@ -10,6 +10,7 @@ module.exports = (sequelize: any) => {
   InvoiceItems.init({
     description: DataTypes.STRING,
     price: DataTypes.FLOAT,
+    quantity: DataTypes.INTEGER,
     invoiceId: DataTypes.INTEGER
   }, {
     sequelize,

@@ -4,13 +4,13 @@
     <!-- Company Info -->
     <div style="max-width: 50%;">
       <div style="margin-bottom: 0.3cm;">
-        <img *ngIf="invoice.companylogo" [src]="invoice.companylogo" alt="Company Logo" style="max-height: 120px; width: auto; object-fit: contain;">
+        <img *ngIf="invoice.companyLogo" [src]="invoice.companyLogo" alt="Company Logo" style="max-height: 120px; width: auto; object-fit: contain;">
       </div>
-      <h1 style="font-size: 16px; font-weight: bold; margin-bottom: 0.3cm;">{{invoice.companyname}}</h1>
+      <h1 style="font-size: 16px; font-weight: bold; margin-bottom: 0.3cm;">{{invoice.companyName}}</h1>
       <div style="line-height: 1.2;">
-        <p style="margin: 0; white-space: pre-line;">{{invoice.companyaddress}}</p>
-        <p style="margin: 0;">{{invoice.companyemail}}</p>
-        <p style="margin: 0;">{{invoice.companyphone}}</p>
+        <p style="margin: 0; white-space: pre-line;">{{invoice.companyAddress}}</p>
+        <p style="margin: 0;">{{invoice.companyEmail}}</p>
+        <p style="margin: 0;">{{invoice.companyPhone}}</p>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 0.3cm;">INVOICE</h2>
       <div style="background-color: #f4f4f4; padding: 0.3cm; border-radius: 3px; display: inline-block;">
         <div style="font-size: 12px; color: #555;">Invoice Number</div>
-        <div style="font-size: 14px; font-weight: bold; color: #333;">#{{invoice.invoiceNumber}}</div>
+        <div style="font-size: 14px; font-weight: bold; color: #333;">#{{invoice.invoiceNo}}</div>
       </div>
     </div>
   </div>
@@ -75,7 +75,7 @@
           <td style="padding: 0.3cm 0;">{{item.description}}</td>
           <td style="text-align: right; padding: 0.3cm 0;">{{item.quantity}}</td>
           <td style="text-align: right; padding: 0.3cm 0;">{{item.price | currency:invoice.currency}}</td>
-          <td style="text-align: right; padding: 0.3cm 0; font-weight: bold;">{{item.amount | currency:invoice.currency}}</td>
+          <td style="text-align: right; padding: 0.3cm 0; font-weight: bold;">{{item.quantity * item.price | currency:invoice.currency}}</td>
         </tr>
       </tbody>
     </table>
@@ -102,20 +102,20 @@
     <h3 style="font-size: 12px; font-weight: bold;">Notes</h3>
     <p style="font-size: 11px; color: #666; line-height: 1.4;">{{invoice.notes}}</p>
     <h3 style="font-size: 12px; font-weight: bold;">Terms & Conditions</h3>
-    <p style="font-size: 11px; color: #666; line-height: 1.4;">{{invoice.terms}}</p>
+    <p style="font-size: 11px; color: #666; line-height: 1.4;">{{invoice.termsAndConditions}}</p>
   </div>
 
 
   <!-- Signature Section -->
-<div *ngIf="invoice.signatureimage" style="display: flex; justify-content: space-between; margin-top: 2cm;">
+<div *ngIf="invoice.signatureImage" style="display: flex; justify-content: space-between; margin-top: 2cm;">
   <!-- Authorized Signature -->
   <div style="text-align: center;">
     <img 
-      [src]="invoice.signatureimage" 
+      [src]="invoice.signatureImage" 
       alt="Authorized Signature" 
       style="max-width: 180px; max-height: 60px; margin-bottom: 0.3cm;" />
       <p style="font-size: 11px; color: #666; margin: 0;">
-        Signed on: {{ invoice.signaturedate | date: 'mediumDate' }}
+        Signed on: {{ invoice.signatureDate | date: 'mediumDate' }}
       </p>
   </div>
 </div>

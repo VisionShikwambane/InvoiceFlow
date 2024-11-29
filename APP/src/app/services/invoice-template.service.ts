@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ModernTemplateComponent } from '../components/invoiceTemplates/modern-template/modern-template.component';
+import { ModernTemplateComponent } from '../invoice-templates/modern-template/modern-template.component';
 
 @Injectable({
   providedIn: 'root'

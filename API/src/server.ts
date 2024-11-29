@@ -1,18 +1,20 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import db from './models';
 import userRoutes from './routes/user.routes';
 import invoiceRoutes from './routes/invoice.routes';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const app: Application = express();
 const PORT = 3000;
 
-app.use(express.json());
+// Configure body-parser with a higher limit
+app.use(bodyParser.json({ limit: '1000mb' }));
+app.use(bodyParser.urlencoded({ limit: '1000mb', extended: true }));
+
 app.use(cors());
 app.use('/api', userRoutes);
 app.use('/api', invoiceRoutes);
-
-
 
 app.listen(PORT, async () => {
   try {

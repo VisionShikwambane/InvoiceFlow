@@ -10,11 +10,13 @@ module.exports = (sequelize: any) => {
     Invoices.init(
         {
             invoiceNo: DataTypes.STRING,
-            logo: DataTypes.STRING,
+            companyLogo: DataTypes.BLOB('medium'),
             companyName: DataTypes.STRING,
             companyEmail: DataTypes.STRING,
             companyPhone: DataTypes.STRING,
             companyAddress: DataTypes.STRING,
+            signatureImage: DataTypes.BLOB('medium'),
+            signatureDate: DataTypes.DATE,
             issueDate: DataTypes.DATE,
             dueDate: DataTypes.DATE,
             notes: DataTypes.TEXT,

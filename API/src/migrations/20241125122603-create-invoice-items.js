@@ -16,6 +16,9 @@ module.exports = {
       price: {
         type: Sequelize.DECIMAL
       },
+      quantity: {
+        type: Sequelize.INTEGER
+      },
   
       invoiceId: {
         type: Sequelize.INTEGER

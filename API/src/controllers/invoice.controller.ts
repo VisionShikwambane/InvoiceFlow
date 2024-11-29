@@ -10,6 +10,7 @@ class InvoiceController {
           const invoice = await InvoiceService.addInvoice(invoiceData);
     
           res.status(201).json({
+            isSuccess: true,
             message: "Invoice created successfully",
             data: invoice,
           });

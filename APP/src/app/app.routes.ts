@@ -19,7 +19,7 @@ export const routes: Routes = [
     component: TemplatesSectionComponent,
     children: [
     { path: '', redirectTo: 'invoices', pathMatch: 'full' },
-    { path: 'morderntemplate', loadComponent:  () =>import("./components/invoiceTemplates/modern-template/modern-template.component").then(c=>c.ModernTemplateComponent) },
+    { path: 'morderntemplate', loadComponent:  () =>import("../app/invoice-templates/modern-template/modern-template.component").then(c=>c.ModernTemplateComponent) },
    // { path: 'proffesionaltemplate', loadComponent:  () =>import("./components/invoiceTemplates/professional-template/professional-template.component").then(c=>c.ProfessionalTemplateComponent) },
     ]
   },

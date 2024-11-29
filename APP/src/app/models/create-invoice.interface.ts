@@ -1,27 +1,26 @@
 export interface InvoiceDetails {
-    signatureimage?: string;
-    signaturedate: Date;
-    invoiceNumber: string;
-    issueDate: Date;
-    dueDate: Date;
-    companyname: string;
-    companyaddress: string;
-    companyemail: string;
-    companyphone: string;
-    companylogo?: string;
-    client: {
-        name: string;
-        address: string;
-        email: string;
-        phone: string;
-    };
+    id: string,
+    invoiceNo: string;
+    issueDate: string;
+    dueDate: string;
+    notes?: string;
+    termsAndConditions?: string;
+    userId: number;
+    companyName: string;
+    companyEmail: string;
+    companyPhone: string;
+    companyAddress: string;
+    signatureImage: string; //This too
+    signatureDate: Date //This
+    companyLogo: string;   //This to be changes to capital L
+    templateId: number;
+    clientId: number;
+    status: string;
+    client: Client;
     items: InvoiceItem[];
-    notes: string;
-    terms: string;
-    templateId: string;
     subtotal: number;
-    taxRate: number; 
-    currency: string;  // as a percentage, e.g., 18 for 18%
+    taxRate: number;
+    currency: string;
     tax: number;
     total: number;
 
@@ -30,7 +29,14 @@ export interface InvoiceDetails {
 
 export interface InvoiceItem {
     description: string;
-    quantity: number;
     price: number;
-    amount: number;
-}
+    quantity: number;  //This need to be added on db
+  }
+  
+  export interface Client {
+    name: string;
+    email: string;
+    phone?: string;
+    address?: string;
+    userId: number;
+  }

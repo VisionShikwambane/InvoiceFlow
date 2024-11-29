@@ -14,9 +14,9 @@ module.exports = {
         type: Sequelize.STRING
       },
   
-      logo: {
+      companyLogo: {
         allowNull: true,
-        type: Sequelize.STRING
+        type: Sequelize.BLOB('medium')
       },
       companyName: {
         allowNull: false,
@@ -33,6 +33,14 @@ module.exports = {
       companyAddress: {
         allowNull: false,
         type: Sequelize.STRING
+      },
+      signatureImage: {
+        allowNull: false,
+        type: Sequelize.BLOB('medium')
+      },
+      signatureDate: {
+        allowNull: false,
+        type: Sequelize.DATE
       },
       issueDate: {
         allowNull: false,

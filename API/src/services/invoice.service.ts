@@ -5,6 +5,9 @@ import { createInvoiceDto } from "../dtos/create-invoice.dto"; // Adjust based o
 class InvoiceService {
 
     static async addInvoice(invoiceData: createInvoiceDto) {
+
+
+        console.log(invoiceData)
         const transaction = await db.sequelize.transaction();
       
         try {
@@ -34,7 +37,7 @@ class InvoiceService {
                 email: clientData.email,
                 phone: clientData.phone,
                 address: clientData.address,
-                userId: clientData.userId,
+                userId: 1,
               },
               { transaction }
             );
@@ -47,13 +50,16 @@ class InvoiceService {
               issueDate: invoiceData.issueDate,
               dueDate: invoiceData.dueDate,
               notes: invoiceData.notes,
+              signatureImage: invoiceData.signatureImage,
+              signatureDate: invoiceData.signatureDate,
               termsAndConditions: invoiceData.termsAndConditions,
-              userId: invoiceData.userId,
+              userId: 1,
               companyName: invoiceData.companyName,
               companyEmail: invoiceData.companyEmail,
               companyPhone: invoiceData.companyPhone,
               companyAddress: invoiceData.companyAddress,
-              templateId: invoiceData.templateId,
+              companyLogo: invoiceData.companyLogo,
+              templateId: 1,
               status: invoiceData.status,
               clientId: client.id,
               subtotal: invoiceData.subtotal,
@@ -72,6 +78,7 @@ class InvoiceService {
                 {
                   description: item.description,
                   price: item.price,
+                  quantity: item.quantity,
                   invoiceId: invoice.id,
                 },
                 { transaction }

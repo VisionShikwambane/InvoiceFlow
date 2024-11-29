@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { InvoiceDetails } from '../models/create-invoice.interface';
+import { Observable } from 'rxjs';
+import { ResponseResponse } from '../models/ResponseObject';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InvoiceService {
     
-  private baseUrl = environment.apiUrl;
+  private baseUrl = `${environment.apiUrl}/invoice`;
 
   constructor(private http: HttpClient) {}
 
-  getUsers() {
-    return this.http.get(`${this.baseUrl}/users`);
-  }
+  createInvoice(invoiceData: InvoiceDetails): Observable<ResponseResponse<InvoiceDetails>> {
 
-  addUser(user: any) {
-    return this.http.post(`${this.baseUrl}/users`, user);
+    return this.http.post<ResponseResponse<InvoiceDetails>>(this.baseUrl, invoiceData);
+
   }
 }

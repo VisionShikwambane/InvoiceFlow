@@ -2,16 +2,21 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ModernTemplateComponent } from '../invoiceTemplates/modern-template/modern-template.component';
+import { ModernTemplateComponent } from '../../invoice-templates/modern-template/modern-template.component';
 import { InvoiceSuccessDialogComponent } from '../invoice-success-dialog/invoice-success-dialog.component';
 import { ReminderSettings } from '../../models/ReminderSettings';
 import { EmailSettings } from '../../models/EmailSettings';
+import { InvoiceService } from '../../services/invoice.service';
+import { InvoiceDetails } from '../../models/create-invoice.interface';
+import { ToastService } from '../../services/toast.service';
+import { ToastComponent } from '../toast/toast';
+
 
 
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent,InvoiceSuccessDialogComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent,InvoiceSuccessDialogComponent, ToastComponent],
   templateUrl: './create-invoice.component.html',
   styleUrl: './create-invoice.component.css'
 })
@@ -42,7 +47,9 @@ export class CreateInvoiceComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toast: ToastService,
+    private invoiceService: InvoiceService
   ) {
     this.createForm();
   }
@@ -53,20 +60,31 @@ export class CreateInvoiceComponent implements OnInit {
     });
   }
 
+   getCurrentDate(): Date {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  }
+  
+  getFormattedDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   private createForm() {
     this.invoiceForm = this.fb.group({
-
-      signatureimage: [''],
-      signaturename: [''],
-      signaturedate: [new Date()],
-      invoiceNumber: ['', Validators.required],
-      issueDate: [new Date(), Validators.required],
+      signatureImage: [''],
+      signatureDate: [new Date()],
+      invoiceNo: ['', Validators.required],
+      issueDate: [this.getFormattedDate(new Date()), Validators.required],
       dueDate: ['', Validators.required],
-      companyname: ['', Validators.required],
-      companyaddress: ['', Validators.required],
-      companyemail: ['', [Validators.required, Validators.email]],
-      companyphone: ['', Validators.required],
-      companylogo: [''],
+      templateId: [0],
+      companyName: ['', Validators.required],
+      companyAddress: ['', Validators.required],
+      companyEmail: ['', [Validators.required, Validators.email]],
+      companyPhone: ['', Validators.required],
+      companyLogo: [''],
       client: this.fb.group({
         name: ['', Validators.required],
         address: ['', Validators.required],
@@ -77,7 +95,7 @@ export class CreateInvoiceComponent implements OnInit {
       taxRate: [10, [Validators.required, Validators.min(0), Validators.max(100)]], // Default 10% tax rate
       currency: ['USD', Validators.required], // Default currency
       notes: [''],
-      terms: [''],
+      termsAndConditions: [''],
       subtotal: [0],
       tax: [0],
       total: [0]
@@ -157,7 +175,7 @@ export class CreateInvoiceComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.logoPreview = reader.result; // Set the preview data
-        this.invoiceForm.get('companylogo')?.setValue(this.logoPreview); 
+        this.invoiceForm.get('companyLogo')?.setValue(this.logoPreview); 
         console.log("Updated form:", this.logoPreview); 
       };
       reader.readAsDataURL(file);
@@ -175,25 +193,87 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
 
+
+  data =  {
+    "invoiceNo": "INV-001",
+    "issueDate": "2024-11-01",
+    "dueDate": "2024-11-15",
+    "notes": "Thank you for your business!",
+    "termsAndConditions": "Payment is due within 15 days.",
+    "userId": 1,
+    "companyName": "Tech Innovators Ltd.",
+    "companyEmail": "contact@techinnovators.com",
+    "companyPhone": "+1234567890",
+    "companyAddress": "123 Innovation Street, Tech City",
+    "templateId": 1,
+    "status": "Draft",
+    "client": {
+      "name": "Acme Corp.",
+      "email": "info@acmecorp.com",
+      "phone": "1234567890",
+      "address": "456 Business Lane",
+      "userId": 1
+    },
+    "subtotal": 1000.0,
+    "taxRate": 15,
+    "currency": "USD",
+    "tax": 150.0,
+    "total": 1150.0,
+    "items": [
+      {
+        "description": "Web Development Services",
+        "price": "1000.00"
+      },
+       {
+        "description": "Web Development Services",
+        "price": "1000.00"
+      },
+       {
+        "description": "Web Development Services",
+        "price": "1000.00"
+      }
+    ]
+  }
+  
+
   async saveInvoice() {
     if (this.invoiceForm.valid) {
       this.isLoading = true;
       try {
-        // Your save logic here
-        await this.mockSaveDelay();
-        
-        // Show success dialog after saving
-        this.showSuccessDialog = true;
-      } catch (error) {
-        console.error('Error saving invoice:', error);
-        // Handle error
+        // Prepare data to save
+        const invoiceData: InvoiceDetails = this.invoiceForm.value;
+        invoiceData.userId = 2;
+        invoiceData.status = "Draft"
+       // console.log("iNVOICEDATA", invoiceData)
+        const response = await this.invoiceService.createInvoice(invoiceData).toPromise();
+        if (response?.isSuccess) {
+          console.log('Invoice draft successfully:', response.data);
+          this.toast.showSuccess('Invoice saved successfully');
+          this.showSuccessDialog = true;
+
+        } else {
+
+          console.error('Failed to save invoice:', response?.message);
+
+        }
+      } catch (error: any) {
+
+        console.error('Error saving invoice:', error.message);
+
       } finally {
+
         this.isLoading = false;
       }
     } else {
+      // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.invoiceForm);
     }
   }
+  
+
+
+
+  
 
   closeSuccessDialog() {
     this.router.navigate(['/invoices']);
@@ -270,7 +350,7 @@ onSignatureSelected(event: Event) {
         const fileReader = new FileReader();
         fileReader.onload = () => {
             this.signaturePreview = fileReader.result as string;
-            this.invoiceForm.get('signatureimage')?.setValue(this.signaturePreview); 
+            this.invoiceForm.get('signatureImage')?.setValue(this.signaturePreview); 
            
         };
         fileReader.readAsDataURL(input.files[0]);
