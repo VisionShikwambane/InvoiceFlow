@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { InvoiceDetails } from '../models/create-invoice.interface';
+
 import { Observable } from 'rxjs';
 import { ResponseResponse } from '../models/ResponseObject';
 
@@ -15,8 +16,10 @@ export class InvoiceService {
   constructor(private http: HttpClient) {}
 
   createInvoice(invoiceData: InvoiceDetails): Observable<ResponseResponse<InvoiceDetails>> {
-
     return this.http.post<ResponseResponse<InvoiceDetails>>(this.baseUrl, invoiceData);
+  }
 
+  getUserInvoices(userId: number): Observable<ResponseResponse<InvoiceDetails[]>> {
+    return this.http.get<ResponseResponse<InvoiceDetails[]>>(`${this.baseUrl}/user/${userId}`);
   }
 }

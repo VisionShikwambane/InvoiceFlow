@@ -19,6 +19,30 @@ class InvoiceController {
         }
       }
 
+    static async getUserInvoices(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = parseInt(req.params.userId);
+            
+            if (isNaN(userId)) {
+                res.status(400).json({
+                    isSuccess: false,
+                    message: "Invalid user ID provided"
+                });
+                return;
+            }
+
+            const invoices = await InvoiceService.getUserInvoices(userId);
+            
+            res.status(200).json({
+                isSuccess: true,
+                message: "Invoices retrieved successfully",
+                data: invoices
+            });
+        } catch (error: any) {
+            next(error);
+        }
+    }
+
 }
 
 export default InvoiceController;

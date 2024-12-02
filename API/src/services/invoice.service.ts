@@ -44,7 +44,7 @@ class InvoiceService {
           }
       
           // Create the invoice
-          const invoice = await db.Invoices.create(
+          const invoice = await db.Invoice.create(
             {
               invoiceNo: invoiceData.invoiceNo,
               issueDate: invoiceData.issueDate,
@@ -74,7 +74,7 @@ class InvoiceService {
           // Add invoice items
           await Promise.all(
             invoiceData.items.map((item) =>
-              db.InvoiceItems.create(
+              db.InvoiceItem.create(
                 {
                   description: item.description,
                   price: item.price,
@@ -96,9 +96,58 @@ class InvoiceService {
     
 
       }
-      
 
+    static async getUserInvoices(userId: number) {
+        try {
+            const invoices = await db.Invoice.findAll({
+                where: { userId: userId },
+                attributes: [
+                    'id',
+                    'invoiceNo',
+                    'companyName',
+                    'companyEmail',
+                    'companyPhone',
+                    'companyAddress',
+                    'issueDate',
+                    'dueDate',
+                    'notes',
+                    'termsAndConditions',
+                    'userId',
+                    'clientId',
+                    'templateId',
+                    'subtotal',
+                    'taxRate',
+                    'currency',
+                    'status',
+                    'tax',
+                    'total',
+                    'createdAt',
+                    'updatedAt'
+                ],
+                include: [
+                    {
+                        model: db.Client,
+                        as: 'client',
+                        attributes: ['name', 'email', 'phone', 'address']
+                    },
+                    {
+                        model: db.InvoiceItem,
+                        as: 'invoiceItems',
+                        attributes: ['description', 'quantity', 'price']
+                    }
+                ],
+                order: [['createdAt', 'DESC']]
+            });
 
+            if (!invoices) {
+                throw new Error('No invoices found for this user');
+            }
+
+            return invoices;
+        } catch (error: any) {
+            throw new Error(`Error fetching user invoices: ${error.message}`);
+        }
+    }
 
  
 }

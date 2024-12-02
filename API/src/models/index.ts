@@ -7,6 +7,7 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const db: any = {};
 
+console.log('Initializing Sequelize...');
 const sequelize = new Sequelize(
   config[env].database,
   config[env].username,
@@ -14,25 +15,52 @@ const sequelize = new Sequelize(
   config[env]
 );
 
-fs.readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      (file.slice(-3) === '.ts' || file.slice(-3) === '.js') &&
-      file.indexOf('.test.ts') === -1
-    );
-  })
-  .forEach(async file => {
-    // Changed to use dynamic import
-    const module = await import(path.join(__dirname, file));
-    const model = module.default(sequelize, DataTypes);
-    db[model.name] = model;
-  });
+// First, load all models
+console.log('Reading model files from directory:', __dirname);
+const modelFiles = fs.readdirSync(__dirname).filter(file => {
+  const keepFile = file.indexOf('.') !== 0 &&
+    file !== basename &&
+    file.endsWith('.ts') &&
+    !file.includes('.test.') &&
+    !file.includes('.d.ts');
+  if (keepFile) {
+    console.log('Including model file:', file);
+  }
+  return keepFile;
+});
 
+console.log('Loading models...');
+for (const file of modelFiles) {
+  try {
+    const modelPath = path.join(__dirname, file);
+    console.log(`Loading model from path: ${modelPath}`);
+    const model = require(modelPath.replace('.ts', '')).default(sequelize, DataTypes);
+    if (model?.name) {
+      console.log(`Successfully loaded model: ${model.name}`);
+      db[model.name] = model;
+    } else {
+      console.log(`Warning: Model in ${file} has no name property:`, model);
+    }
+  } catch (error) {
+    console.error(`Error loading model ${file}:`, error);
+  }
+}
+
+console.log('Available models:', Object.keys(db));
+
+// Then, run all associations after all models are loaded
+console.log('Setting up model associations...');
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
-    db[modelName].associate(db);
+    try {
+      console.log(`Setting up associations for model: ${modelName}`);
+      db[modelName].associate(db);
+      console.log(`Successfully associated model: ${modelName}`);
+    } catch (error) {
+      console.error(`Error associating model ${modelName}:`, error);
+    }
+  } else {
+    console.log(`No associations defined for model: ${modelName}`);
   }
 });
 
