@@ -517,8 +517,8 @@
 
 
 
-            <app-invoice-success-dialog [show]="showSuccessDialog" (onClose)="closeSuccessDialog()"
-                (onFinish)="handleSuccessFinish({ reminders: reminderSettings, email: emailSettings })">
+            <app-invoice-success-dialog [show]="showSuccessDialog" (onClose)="closeSuccessDialog()" 
+                (onFinish)="handleSuccessFinish({ email: emailSettings })" [sendInvoiceToEmail]="sendInvoiceToEmail">
             </app-invoice-success-dialog>
 
             <app-toast></app-toast>

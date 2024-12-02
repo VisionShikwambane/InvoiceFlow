@@ -28,6 +28,7 @@ export class CreateInvoiceComponent implements OnInit {
   selectedTemplateId!: string;
   showSuccessDialog = false;
   activeTab: 'edit' | 'preview' = 'edit'; // Default to the edit tab
+  sendInvoiceToEmail: string = '';
 
 
   reminderSettings: ReminderSettings = {
@@ -103,6 +104,8 @@ export class CreateInvoiceComponent implements OnInit {
 
     // Add first item by default
     this.addItem();
+   
+    console.log(this.sendInvoiceToEmail)
     this.invoiceForm.get('taxRate')?.valueChanges.subscribe(() => this.calculateTotals());
     this.invoiceForm.get('currency')?.valueChanges.subscribe(() => this.calculateTotals());
   }
@@ -237,6 +240,7 @@ export class CreateInvoiceComponent implements OnInit {
   
 
   async saveInvoice() {
+    this.sendInvoiceToEmail =  this.invoiceForm.get('client.email')?.value;
     if (this.invoiceForm.valid) {
       this.isLoading = true;
       try {
@@ -280,15 +284,11 @@ export class CreateInvoiceComponent implements OnInit {
     this.showSuccessDialog = false;
   }
 
-  handleSuccessFinish(data: { reminders: ReminderSettings; email: EmailSettings }) {
-    console.log('Reminder Settings:', data.reminders);
+  handleSuccessFinish(data: { email: EmailSettings }) {
+   
     console.log('Email Settings:', data.email);
   
-    // Handle reminder settings
-    if (data.reminders) {
-      this.setupReminders(data.reminders);
-    }
-  
+    
     // Handle email settings
     if (data.email) {
       this.sendInvoiceEmail(data.email);
@@ -308,11 +308,12 @@ export class CreateInvoiceComponent implements OnInit {
       console.error('Error setting up reminders:', error);
     }
   }
-  
+
 
   private async sendInvoiceEmail(emailSettings: any) {
     try {
       // Your email sending logic
+      emailSettings.to = this.invoiceForm.get('client.email')?.value;
       console.log('Sending email...', emailSettings);
     } catch (error) {
       console.error('Error sending email:', error);
