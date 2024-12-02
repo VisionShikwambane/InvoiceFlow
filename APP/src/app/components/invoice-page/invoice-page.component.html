@@ -51,7 +51,7 @@
   
         <!-- Status Filter -->
         <div class="flex items-center space-x-2">
-          <button *ngFor="let status of ['All', 'Paid', 'Pending', 'Overdue']"
+          <button *ngFor="let status of ['All','Draft', 'Pending', 'Paid', 'Overdue']"
                   [class.bg-indigo-100]="selectedStatus === status"
                   [class.text-indigo-700]="selectedStatus === status"
                   [class.bg-white]="selectedStatus !== status"
@@ -81,11 +81,11 @@
               <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0">
                   <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                    <span class="text-indigo-700 font-medium">{{ invoice.client.charAt(0) }}</span>
+                    <span class="text-indigo-700 font-medium">{{ invoice.client.name.charAt(0) }}</span>
                   </div>
                 </div>
                 <div>
-                  <h3 class="text-sm font-medium text-gray-900">{{ invoice.client }}</h3>
+                  <h3 class="text-sm font-medium text-gray-900">{{ invoice.client.name }}</h3>
                   <p class="text-xs text-gray-500">Invoice #{{ invoice.id }}</p>
                 </div>
               </div>
@@ -94,13 +94,13 @@
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
                   {{ invoice.status }}
                 </span>
-              </div>
+    </div>
             </div>
   
             <!-- Amount -->
             <div class="mt-4">
               <div class="text-2xl font-bold text-gray-900">
-                {{ invoice.amount | currency }}
+                ${{ amount }}
               </div>
               <div class="mt-1 text-xs text-gray-500">
                 Due {{ invoice.dueDate | date:'mediumDate' }}

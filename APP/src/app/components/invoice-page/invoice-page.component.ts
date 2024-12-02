@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { InvoiceService } from '../../services/invoice.service';
+import { InvoiceDetails } from '../../models/create-invoice.interface';
 
 interface Invoice {
   id: string;
@@ -21,211 +23,62 @@ interface Invoice {
   templateUrl: './invoice-page.component.html',
   styleUrls: ['./invoice-page.component.css'],
 })
-export class InvoicePageComponent {
+export class InvoicePageComponent implements OnInit {
   selectedStatus: string = 'All';
   searchTerm: string = '';
+  invoices: InvoiceDetails[] = []
 
   constructor(
     private router: Router, 
+    private invoiceService: InvoiceService
   ) {
    
   }
+  ngOnInit(): void {
+    this.getUserInvoices();
+  }
 
-  invoices: Invoice[] = [
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'pending',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'pending',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'pending',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'pending',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'pending',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-    {
-      id: 'INV-001',
-      client: 'Acme Corp',
-      amount: 2500.0,
-      date: new Date('2024-03-15'),
-      dueDate: new Date('2024-04-15'),
-      status: 'pending',
-    },
-    {
-      id: 'INV-002',
-      client: 'Globex Inc',
-      amount: 1750.5,
-      date: new Date('2024-03-10'),
-      dueDate: new Date('2024-04-10'),
-      status: 'paid',
-    },
-    {
-      id: 'INV-003',
-      client: 'Wayne Enterprises',
-      amount: 4999.99,
-      date: new Date('2024-02-28'),
-      dueDate: new Date('2024-03-28'),
-      status: 'overdue',
-    },
-  ];
 
+ 
+  amount: number = 2323;
+
+  getUserInvoices() {
+    const userId = 1; // Replace with actual user ID from your auth system
+    
+    this.invoiceService.getUserInvoices(userId).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+
+          this.invoices = response.data
+          this.invoices = response.data.map((invoice: any) => {
+            // Compute the total and store it in the `amount` variable
+            this.amount = invoice.items.reduce((total: number, item: any) => {
+              return total + item.quantity * item.price;
+            }, 0);
+  
+            // Optionally, attach the computed amount to the invoice object
+            invoice.amount = this.amount;
+  
+            return invoice;
+          });
+
+        } else {
+
+
+        }
+      
+      },
+      error: (error: any) => {
+        console.error('Error loading invoices:', error);
+       
+      }
+    });
+  }
+
+  
+
+
+  
   getStatusClass(status: string): string {
     const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
     switch (status) {
@@ -235,10 +88,17 @@ export class InvoicePageComponent {
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
       case 'overdue':
         return `${baseClasses} bg-red-100 text-red-800`;
+      case 'viewed':
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      case 'downloaded':
+        return `${baseClasses} bg-indigo-100 text-indigo-800`;
+      case 'draft':
+        return `${baseClasses} bg-gray-100 text-gray-800`;
       default:
-        return baseClasses;
+        return `${baseClasses} bg-neutral-100 text-neutral-800`;
     }
   }
+  
 
   filterByStatus(status: string) {
     this.selectedStatus = status;
@@ -253,7 +113,7 @@ export class InvoicePageComponent {
   currentPage = 1;
   itemsPerPage = 6; // Show 9 items per page
 
-  get filteredInvoices(): Invoice[] {
+  get filteredInvoices(): InvoiceDetails[] {
     return this.invoices.filter(invoice => {
       if (this.selectedStatus !== 'All' && invoice.status.toLowerCase() !== this.selectedStatus.toLowerCase()) {
         return false;
@@ -263,14 +123,14 @@ export class InvoicePageComponent {
       
       const searchLower = this.searchTerm.toLowerCase();
       return (
-        invoice.client.toLowerCase().includes(searchLower) ||
-        invoice.id.toLowerCase().includes(searchLower) ||
-        invoice.amount.toString().includes(searchLower)
+        invoice.client.name.toLowerCase().includes(searchLower) ||
+        invoice.id.toLowerCase().includes(searchLower) 
+       // invoice.amount.toString().toString().includes(searchLower)
       );
     });
   }
 
-  get paginatedInvoices(): Invoice[] {
+  get paginatedInvoices(): InvoiceDetails[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.filteredInvoices.slice(startIndex, endIndex);

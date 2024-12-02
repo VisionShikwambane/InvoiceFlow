@@ -21,6 +21,7 @@ export interface InvoiceDetails {
     subtotal: number;
     taxRate: number;
     currency: string;
+    lastAction: string;
     tax: number;
     total: number;
 
