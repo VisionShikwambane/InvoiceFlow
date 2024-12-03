@@ -1,9 +1,12 @@
-import { Component, OnInit, HostListener, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService } from '../../services/invoice.service';
 import { InvoiceDetails } from '../../models/create-invoice.interface';
+import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
+import { PortalModule } from '@angular/cdk/portal';
+import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 
 interface Invoice {
   id: string;
@@ -17,7 +20,7 @@ interface Invoice {
 @Component({
   selector: 'app-invoice-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OverlayModule, PortalModule],
   templateUrl: './invoice-page.component.html',
   styleUrls: ['./invoice-page.component.css'],
 })
@@ -26,6 +29,7 @@ export class InvoicePageComponent implements OnInit {
   searchTerm: string = '';
   invoices: InvoiceDetails[] = []
   openDropdownId: string | null = null;
+  @ViewChild(CdkOverlayOrigin) overlayOrigin!: CdkOverlayOrigin;
 
   constructor(
     private router: Router, 
@@ -171,12 +175,12 @@ export class InvoicePageComponent implements OnInit {
     }
   }
 
-  toggleDropdown(invoiceId: string, event?: MouseEvent) {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.openDropdownId = this.openDropdownId === invoiceId ? null : invoiceId;
-  }
+  // toggleDropdown(invoiceId: string, event?: MouseEvent) {
+  //   if (event) {
+  //     event.stopPropagation();
+  //   }
+  //   this.openDropdownId = this.openDropdownId === invoiceId ? null : invoiceId;
+  // }
 
   editInvoice(invoice: InvoiceDetails) {
     this.openDropdownId = null;
@@ -212,8 +216,32 @@ export class InvoicePageComponent implements OnInit {
     }
   }
 
-  @HostListener('document:click')
+
+
+  overlayPositions: ConnectedPosition[] = [
+    {
+      originX: 'end',
+      originY: 'bottom',
+      overlayX: 'end',
+      overlayY: 'top',
+      offsetY: 8
+    }
+  ];
+  
+
+  toggleDropdown(invoiceId: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === invoiceId ? null : invoiceId;
+  }
+
   closeDropdown() {
     this.openDropdownId = null;
   }
+
+
+
+  
+
+
+  
 }
