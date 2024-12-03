@@ -22,4 +22,12 @@ export class InvoiceService {
   getUserInvoices(userId: number): Observable<ResponseResponse<InvoiceDetails[]>> {
     return this.http.get<ResponseResponse<InvoiceDetails[]>>(`${this.baseUrl}/user/${userId}`);
   }
+
+  updateInvoiceStatus(invoiceId: string, status: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/${invoiceId}`, { status });
+  }
+
+  deleteInvoice(invoiceId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${invoiceId}`);
+  }
 }

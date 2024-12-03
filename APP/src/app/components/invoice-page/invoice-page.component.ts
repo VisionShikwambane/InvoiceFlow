@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,12 +14,10 @@ interface Invoice {
   status: 'paid' | 'pending' | 'overdue';
 }
 
-
-
 @Component({
   selector: 'app-invoice-page',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Ensure CommonModule is imported here
+  imports: [CommonModule, FormsModule],
   templateUrl: './invoice-page.component.html',
   styleUrls: ['./invoice-page.component.css'],
 })
@@ -27,6 +25,7 @@ export class InvoicePageComponent implements OnInit {
   selectedStatus: string = 'All';
   searchTerm: string = '';
   invoices: InvoiceDetails[] = []
+  openDropdownId: string | null = null;
 
   constructor(
     private router: Router, 
@@ -40,40 +39,55 @@ export class InvoicePageComponent implements OnInit {
 
 
  
-  amount: number = 2323;
+  amount!: number;
+
 
   getUserInvoices() {
     const userId = 1; // Replace with actual user ID from your auth system
-    
     this.invoiceService.getUserInvoices(userId).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-
-          this.invoices = response.data
-          this.invoices = response.data.map((invoice: any) => {
-            // Compute the total and store it in the `amount` variable
-            this.amount = invoice.items.reduce((total: number, item: any) => {
-              return total + item.quantity * item.price;
-            }, 0);
+          // Process invoices
+          this.invoices = response.data;
   
-            // Optionally, attach the computed amount to the invoice object
-            invoice.amount = this.amount;
-  
-            return invoice;
+          // Calculate the total amount for each invoice and sum them up
+          this.invoices.forEach((invoice: any) => {
+            // Safely calculate total for this invoice
+            invoice.total = Array.isArray(invoice.
+              invoiceItems
+              )
+              ? invoice.
+              invoiceItems
+              .reduce(
+                  (acc: number, item: any) => acc + (item.price || 0) * (item.quantity || 0),
+                  0
+                )
+              : 0; // Default to 0 if items is not an array
           });
-
+  
+          // Sum all invoices' totals
+          const totalAmount = this.invoices.reduce(
+            (acc: number, invoice: any) => acc + (invoice.total || 0),
+            0
+          );
+  
+          // Assign the total amount to the `amount` variable
+          this.amount = totalAmount;
+  
+          console.log('Invoices:', this.invoices);
+          console.log('Total Amount:', this.amount);
         } else {
-
-
+          console.error('Failed to load invoices.');
         }
-      
       },
       error: (error: any) => {
         console.error('Error loading invoices:', error);
-       
-      }
+      },
     });
   }
+  
+
+  
 
   
 
@@ -155,5 +169,51 @@ export class InvoicePageComponent implements OnInit {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+
+  toggleDropdown(invoiceId: string, event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.openDropdownId = this.openDropdownId === invoiceId ? null : invoiceId;
+  }
+
+  editInvoice(invoice: InvoiceDetails) {
+    this.openDropdownId = null;
+    this.router.navigate(['/edit-invoice', invoice.id]);
+  }
+
+  markAsPaid(invoice: InvoiceDetails) {
+    this.openDropdownId = null;
+    // Update the invoice status
+    this.invoiceService.updateInvoiceStatus(invoice.id, 'paid').subscribe({
+      next: () => {
+        // Refresh the invoices list
+        this.getUserInvoices();
+      },
+      error: (error) => {
+        console.error('Error marking invoice as paid:', error);
+      }
+    });
+  }
+
+  deleteInvoice(invoice: InvoiceDetails) {
+    this.openDropdownId = null;
+    if (confirm('Are you sure you want to delete this invoice?')) {
+      this.invoiceService.deleteInvoice(invoice.id).subscribe({
+        next: () => {
+          // Refresh the invoices list
+          this.getUserInvoices();
+        },
+        error: (error) => {
+          console.error('Error deleting invoice:', error);
+        }
+      });
+    }
+  }
+
+  @HostListener('document:click')
+  closeDropdown() {
+    this.openDropdownId = null;
   }
 }
