@@ -289,8 +289,30 @@ export class InvoicePageComponent implements OnInit {
         timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), // 1 hour ago
         details: 'Email opened by client'
       },
-      
-      
+      {
+        id: '2',
+        type: 'invoice_viewed' as const,
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
+        details: 'Invoice viewed online'
+      },
+      {
+        id: '3',
+        type: 'invoice_downloaded' as const,
+        timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 mins ago
+        details: 'Invoice PDF downloaded'
+      },
+      {
+        id: '4',
+        type: 'reminder_sent' as const,
+        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 mins ago
+        details: 'Payment reminder email sent'
+      },
+      {
+        id: '5',
+        type: 'status_changed' as const,
+        timestamp: new Date().toISOString(), // now
+        details: 'Invoice status changed to Pending'
+      }
     ];
 
     this.selectedInvoice = {
