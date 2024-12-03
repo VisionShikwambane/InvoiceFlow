@@ -26,6 +26,8 @@ export interface InvoiceDetails {
     tax: number;
     total: number;
     activities?: InvoiceActivity[];
+    archived: boolean;
+    createdAt: string;
 }
 
 export interface InvoiceItem {
