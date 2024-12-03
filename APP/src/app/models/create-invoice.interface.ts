@@ -28,6 +28,7 @@ export interface InvoiceDetails {
     activities?: InvoiceActivity[];
     archived: boolean;
     createdAt: string;
+    isArchived: boolean;
 }
 
 export interface InvoiceItem {

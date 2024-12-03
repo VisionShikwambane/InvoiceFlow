@@ -63,6 +63,12 @@ export class InvoicePageComponent implements OnInit {
     }).format(date);
   }
 
+
+  archiveInvoice(e: any){
+
+  }
+  unarchiveInvoice(e: any){}
+
   formatActivityTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
     const now = new Date();
@@ -133,17 +139,17 @@ export class InvoicePageComponent implements OnInit {
   getStatusClass(status: string): string {
     const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
     switch (status) {
-      case 'paid':
+      case 'Paid':
         return `${baseClasses} bg-green-100 text-green-800`;
-      case 'pending':
+      case 'Sent':
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case 'overdue':
+      case 'Overdue':
         return `${baseClasses} bg-red-100 text-red-800`;
-      case 'viewed':
+      case 'Viewed':
         return `${baseClasses} bg-blue-100 text-blue-800`;
-      case 'downloaded':
+      case 'Downloaded':
         return `${baseClasses} bg-indigo-100 text-indigo-800`;
-      case 'draft':
+      case 'Draft':
         return `${baseClasses} bg-gray-100 text-gray-800`;
       default:
         return `${baseClasses} bg-neutral-100 text-neutral-800`;
@@ -154,6 +160,17 @@ export class InvoicePageComponent implements OnInit {
   filterByStatus(status: string) {
     this.selectedStatus = status;
     // Implement filtering logic if necessary
+  }
+
+  downloadInvoicePDF(e: any){
+
+  }
+
+  showArchived(){
+
+  }
+  filterArchived(){
+
   }
 
   createInvoice() {

@@ -37,7 +37,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
           <!-- Logo -->
           <div class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text 
                       hover:from-purple-600 hover:to-indigo-600 transition-all duration-300">
-            MyInvoice
+            InvoiceFlow
           </div>
           
           <!-- Desktop Menu -->
@@ -95,7 +95,7 @@ export class NavigationComponent {
   links = [
     { text: 'Dashboard', href: '#' },
     { text: 'Invoices', href: '/invoices' },
-    { text: 'Clients', href: '#' },
+   // { text: 'Clients', href: '#' },
     { text: 'Settings', href: '#' }
   ];
 
