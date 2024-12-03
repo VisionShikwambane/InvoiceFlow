@@ -8,13 +8,12 @@ import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 
-interface Invoice {
+
+interface InvoiceActivity {
   id: string;
-  client: string;
-  amount: number;
-  date: Date;
-  dueDate: Date;
-  status: 'paid' | 'pending' | 'overdue';
+  type: 'email_opened' | 'invoice_viewed' | 'invoice_downloaded' | 'reminder_sent' | 'status_changed';
+  timestamp: string;
+  details?: string;
 }
 
 @Component({
@@ -30,6 +29,8 @@ export class InvoicePageComponent implements OnInit {
   invoices: InvoiceDetails[] = []
   openDropdownId: string | null = null;
   @ViewChild(CdkOverlayOrigin) overlayOrigin!: CdkOverlayOrigin;
+  selectedInvoice: InvoiceDetails | null = null;
+  isModalOpen = false;
 
   constructor(
     private router: Router, 
@@ -45,6 +46,50 @@ export class InvoicePageComponent implements OnInit {
  
   amount!: number;
 
+  formatAmount(amount: number, currency: string = 'USD'): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency
+    }).format(amount);
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
+  }
+
+  formatActivityTimestamp(timestamp: string): string {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+      return 'Just now';
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes}m ago`;
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours}h ago`;
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays}d ago`;
+    }
+
+    // For older dates, use the standard date format
+    return this.formatDate(timestamp);
+  }
 
   getUserInvoices() {
     const userId = 1; // Replace with actual user ID from your auth system
@@ -52,34 +97,19 @@ export class InvoicePageComponent implements OnInit {
       next: (response) => {
         if (response.isSuccess) {
           // Process invoices
-          this.invoices = response.data;
-  
-          // Calculate the total amount for each invoice and sum them up
-          this.invoices.forEach((invoice: any) => {
-            // Safely calculate total for this invoice
-            invoice.total = Array.isArray(invoice.
-              invoiceItems
-              )
-              ? invoice.
-              invoiceItems
-              .reduce(
-                  (acc: number, item: any) => acc + (item.price || 0) * (item.quantity || 0),
+          this.invoices = response.data.map((invoice: any) => {
+            // Calculate the total for each invoice and assign it to a new `amount` property
+            const amount = Array.isArray(invoice.invoiceItems)
+              ? invoice.invoiceItems.reduce(
+                  (acc: number, item: any) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
                   0
                 )
-              : 0; // Default to 0 if items is not an array
+              : 0;
+  
+            return { ...invoice, amount }; // Add the `amount` property to the invoice
           });
   
-          // Sum all invoices' totals
-          const totalAmount = this.invoices.reduce(
-            (acc: number, invoice: any) => acc + (invoice.total || 0),
-            0
-          );
-  
-          // Assign the total amount to the `amount` variable
-          this.amount = totalAmount;
-  
-          console.log('Invoices:', this.invoices);
-          console.log('Total Amount:', this.amount);
+          console.log('Invoices with Amounts:', this.invoices);
         } else {
           console.error('Failed to load invoices.');
         }
@@ -89,6 +119,9 @@ export class InvoicePageComponent implements OnInit {
       },
     });
   }
+  
+
+ 
   
 
   
@@ -175,12 +208,31 @@ export class InvoicePageComponent implements OnInit {
     }
   }
 
-  // toggleDropdown(invoiceId: string, event?: MouseEvent) {
-  //   if (event) {
-  //     event.stopPropagation();
-  //   }
-  //   this.openDropdownId = this.openDropdownId === invoiceId ? null : invoiceId;
-  // }
+  overlayPositions: ConnectedPosition[] = [
+    {
+      originX: 'end',
+      originY: 'bottom',
+      overlayX: 'end',
+      overlayY: 'top',
+      offsetY: 8
+    }
+  ];
+
+  toggleDropdown(id: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === id ? null : id;
+  }
+
+  closeDropdown() {
+    this.openDropdownId = null;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    if (this.openDropdownId) {
+      this.closeDropdown();
+    }
+  }
 
   editInvoice(invoice: InvoiceDetails) {
     this.openDropdownId = null;
@@ -216,32 +268,95 @@ export class InvoicePageComponent implements OnInit {
     }
   }
 
+  sendReminder(invoice: InvoiceDetails) {
+    this.invoiceService.sendReminder(invoice.id).subscribe({
+      next: () => {
+        // You might want to show a success message here
+        console.log('Reminder sent successfully');
+      },
+      error: (error) => {
+        console.error('Error sending reminder:', error);
+      }
+    });
+  }
 
+  viewInvoiceDetails(invoice: InvoiceDetails) {
+    // Add hardcoded activities for demonstration
+    const mockActivities: InvoiceActivity[] = [
+      {
+        id: '1',
+        type: 'email_opened' as const,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), // 1 hour ago
+        details: 'Email opened by client'
+      },
+      
+      
+    ];
 
-  overlayPositions: ConnectedPosition[] = [
-    {
-      originX: 'end',
-      originY: 'bottom',
-      overlayX: 'end',
-      overlayY: 'top',
-      offsetY: 8
+    this.selectedInvoice = {
+      ...invoice,
+      activities: mockActivities
+    };
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedInvoice = null;
+  }
+
+  // Get payment status with proper styling
+  getPaymentStatusStyle(status: string): { color: string; backgroundColor: string } {
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return { color: 'rgb(34 197 94)', backgroundColor: 'rgb(220 252 231)' };
+      case 'pending':
+        return { color: 'rgb(234 179 8)', backgroundColor: 'rgb(254 249 195)' };
+      case 'overdue':
+        return { color: 'rgb(239 68 68)', backgroundColor: 'rgb(254 226 226)' };
+      default:
+        return { color: 'rgb(107 114 128)', backgroundColor: 'rgb(243 244 246)' };
     }
-  ];
-  
-
-  toggleDropdown(invoiceId: string, event: MouseEvent) {
-    event.stopPropagation();
-    this.openDropdownId = this.openDropdownId === invoiceId ? null : invoiceId;
   }
 
-  closeDropdown() {
-    this.openDropdownId = null;
+  getActivityIconClass(type: string): string {
+    const baseClass = 'bg-blue-500';
+    switch (type) {
+      case 'email_opened':
+        return 'bg-green-500';
+      case 'invoice_viewed':
+        return 'bg-blue-500';
+      case 'invoice_downloaded':
+        return 'bg-purple-500';
+      case 'reminder_sent':
+        return 'bg-yellow-500';
+      case 'status_changed':
+        return 'bg-indigo-500';
+      default:
+        return baseClass;
+    }
   }
 
+  getActivityDescription(activity: InvoiceActivity): string {
+    // If details are provided, use them
+    if (activity.details) {
+      return activity.details;
+    }
 
-
-  
-
-
-  
+    // Otherwise, use default descriptions
+    switch (activity.type) {
+      case 'email_opened':
+        return 'Invoice email was opened';
+      case 'invoice_viewed':
+        return 'Invoice was viewed online';
+      case 'invoice_downloaded':
+        return 'Invoice was downloaded';
+      case 'reminder_sent':
+        return 'Payment reminder was sent';
+      case 'status_changed':
+        return 'Invoice status was updated';
+      default:
+        return 'Activity recorded';
+    }
+  }
 }

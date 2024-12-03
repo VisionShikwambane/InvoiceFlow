@@ -30,4 +30,8 @@ export class InvoiceService {
   deleteInvoice(invoiceId: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${invoiceId}`);
   }
+
+  sendReminder(invoiceId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${invoiceId}/reminder`, {});
+  }
 }

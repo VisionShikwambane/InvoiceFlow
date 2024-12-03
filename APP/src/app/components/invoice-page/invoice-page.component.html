@@ -90,7 +90,7 @@
           <!-- Amount -->
           <div class="mt-4">
             <div class="text-2xl font-bold text-gray-900">
-              {{ amount | currency:invoice.currency }}
+              {{ invoice.amount | currency:invoice.currency }}
             </div>
             <div class="mt-1 text-xs text-gray-500">
               Due {{ invoice.dueDate | date:'mediumDate' }}
@@ -99,7 +99,8 @@
 
           <!-- Actions -->
           <div class="mt-4 flex justify-between items-center">
-            <button class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+            <button (click)="viewInvoiceDetails(invoice)" 
+                    class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
               View Details
             </button>
             <div class="flex space-x-2">
@@ -122,41 +123,53 @@
                 </svg>
               </button>
               <!-- Dropdown with proper CDK overlay origin -->
-<div class="relative inline-block">
-  <button #dropdownButton
-          cdkOverlayOrigin
-          (click)="toggleDropdown(invoice.id, $event)" 
-          class="p-2 text-gray-400 hover:text-gray-500 transition-colors duration-200">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-    </svg>
-  </button>
+              <div class="relative inline-block">
+                <button #dropdownButton
+                        cdkOverlayOrigin
+                        (click)="toggleDropdown(invoice.id, $event)" 
+                        class="p-2 text-gray-400 hover:text-gray-500 transition-colors duration-200">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </button>
 
-  <ng-template
-    cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="dropdownButton"
-    [cdkConnectedOverlayOpen]="openDropdownId === invoice.id"
-    [cdkConnectedOverlayPositions]="overlayPositions"
-    (overlayOutsideClick)="closeDropdown()">
-    <div class="py-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-      <button (click)="editInvoice(invoice)" 
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-        Edit Invoice
-      </button>
-      <button (click)="markAsPaid(invoice)"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-        Mark as Paid
-      </button>
-      <button (click)="deleteInvoice(invoice)"
-              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-        Delete Invoice
-      </button>
-    </div>
-  </ng-template>
-</div>
-              
-              
+                <ng-template
+                  cdkConnectedOverlay
+                  [cdkConnectedOverlayOrigin]="dropdownButton"
+                  [cdkConnectedOverlayOpen]="openDropdownId === invoice.id"
+                  [cdkConnectedOverlayPositions]="overlayPositions"
+                  (overlayOutsideClick)="closeDropdown()">
+                  <div class="py-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    <!-- Edit Invoice - Always visible -->
+                    <button (click)="editInvoice(invoice)" 
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Edit Invoice
+                    </button>
+
+                    <!-- Mark as Paid - Only for non-paid invoices -->
+                    <button (click)="markAsPaid(invoice)" 
+                            *ngIf="invoice.status.toLowerCase() !== 'paid'"
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Mark as Paid
+                    </button>
+
+                    <!-- Send Reminder - For non-draft, non-paid invoices -->
+                    <button (click)="sendReminder(invoice)"
+                            *ngIf="invoice.status.toLowerCase() !== 'draft' && invoice.status.toLowerCase() !== 'paid'"
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Send Reminder
+                    </button>
+
+                    <!-- Delete Invoice - Only for draft invoices -->
+                    <button (click)="deleteInvoice(invoice)"
+                            *ngIf="invoice.status.toLowerCase() === 'draft'"
+                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                      Delete Invoice
+                    </button>
+                  </div>
+                </ng-template>
+              </div>
             </div>
           </div>
         </div>
@@ -199,6 +212,210 @@
                        rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
         Next
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Details Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto" 
+     aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <!-- Background overlay -->
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+
+  <!-- Modal panel -->
+  <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+    <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
+      <!-- Modal content -->
+      <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+        <!-- Header -->
+        <div class="flex items-start justify-between border-b border-gray-200 pb-4">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900" id="modal-title">Invoice Details</h3>
+            <p class="mt-1 text-sm text-gray-500">Invoice #{{ selectedInvoice?.id }}</p>
+          </div>
+          <button (click)="closeModal()" class="rounded-md bg-white text-gray-400 hover:text-gray-500">
+            <span class="sr-only">Close</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="mt-4 space-y-6">
+          <!-- Client Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="text-lg font-medium text-gray-900 mb-3">Client Information</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Client Name</p>
+                <p class="text-sm text-gray-900">{{ selectedInvoice?.client?.name }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Email</p>
+                <p class="text-sm text-gray-900">{{ selectedInvoice?.client?.email }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Phone</p>
+                <p class="text-sm text-gray-900">{{ selectedInvoice?.client?.phone }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Address</p>
+                <p class="text-sm text-gray-900">{{ selectedInvoice?.client?.address }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Invoice Details -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="text-lg font-medium text-gray-900 mb-3">Invoice Details</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Amount</p>
+                <p class="text-xl font-bold text-gray-900">
+                  {{ formatAmount(selectedInvoice?.total || 0, selectedInvoice?.currency || 'USD') }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Status</p>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1"
+                      [style.color]="getPaymentStatusStyle(selectedInvoice?.status || '').color"
+                      [style.backgroundColor]="getPaymentStatusStyle(selectedInvoice?.status || '').backgroundColor">
+                  {{ selectedInvoice?.status }}
+                </span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Issue Date</p>
+                <p class="text-sm text-gray-900">{{ formatDate(selectedInvoice?.issueDate || '') }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Due Date</p>
+                <p class="text-sm text-gray-900">{{ formatDate(selectedInvoice?.dueDate || '') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Invoice Activities Timeline -->
+          <div class="bg-gray-50 rounded-lg p-4 mt-4">
+            <h4 class="text-lg font-medium text-gray-900 mb-3">Invoice Activity</h4>
+            <div class="flow-root">
+              <ul role="list" class="-mb-8">
+                <li *ngFor="let activity of selectedInvoice?.activities; let last = last">
+                  <div class="relative pb-8">
+                    <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" 
+                          *ngIf="!last" aria-hidden="true"></span>
+                    <div class="relative flex space-x-3">
+                      <!-- Activity Icon -->
+                      <div [ngClass]="getActivityIconClass(activity.type)"
+                           class="flex h-8 w-8 items-center justify-center rounded-full">
+                        <svg *ngIf="activity.type === 'email_opened'" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        <svg *ngIf="activity.type === 'invoice_viewed'" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="activity.type === 'invoice_downloaded'" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="activity.type === 'reminder_sent'" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                        <svg *ngIf="activity.type === 'status_changed'" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <!-- Activity Content -->
+                      <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                        <div>
+                          <p class="text-sm text-gray-500">{{ getActivityDescription(activity) }}</p>
+                        </div>
+                        <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                          <time [dateTime]="activity.timestamp">{{ formatActivityTimestamp(activity.timestamp) }}</time>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                
+                <!-- Empty State -->
+                <li *ngIf="!selectedInvoice?.activities?.length">
+                  <div class="text-center py-4">
+                    <p class="text-sm text-gray-500">No activity recorded yet</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Items -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="text-lg font-medium text-gray-900 mb-3">Items</h4>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Unit Price</th>
+                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <tr *ngFor="let item of selectedInvoice?.invoiceItems">
+                    <td class="px-3 py-2 text-sm text-gray-900">{{ item.description }}</td>
+                    <td class="px-3 py-2 text-sm text-gray-900 text-right">{{ item.quantity }}</td>
+                    <td class="px-3 py-2 text-sm text-gray-900 text-right">
+                      {{ formatAmount(item.price, selectedInvoice?.currency || 'USD') }}
+                    </td>
+                    <td class="px-3 py-2 text-sm text-gray-900 text-right">
+                      {{ formatAmount(item.quantity * item.price, selectedInvoice?.currency || 'USD') }}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3" class="px-3 py-2 text-sm font-medium text-gray-900 text-right">Subtotal</td>
+                    <td class="px-3 py-2 text-sm text-gray-900 text-right">
+                      {{ formatAmount(selectedInvoice?.subtotal || 0, selectedInvoice?.currency || 'USD') }}
+                    </td>
+                  </tr>
+                  <tr *ngIf="selectedInvoice?.taxRate">
+                    <td colspan="3" class="px-3 py-2 text-sm font-medium text-gray-900 text-right">
+                      Tax ({{ selectedInvoice?.taxRate }}%)
+                    </td>
+                    <td class="px-3 py-2 text-sm text-gray-900 text-right">
+                      {{ formatAmount(selectedInvoice?.tax || 0, selectedInvoice?.currency || 'USD') }}
+                    </td>
+                  </tr>
+                  <tr class="border-t-2">
+                    <td colspan="3" class="px-3 py-2 text-sm font-bold text-gray-900 text-right">Total</td>
+                    <td class="px-3 py-2 text-sm font-bold text-gray-900 text-right">
+                      {{ formatAmount(selectedInvoice?.total || 0, selectedInvoice?.currency || 'USD') }}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div *ngIf="selectedInvoice?.notes" class="bg-gray-50 rounded-lg p-4">
+            <h4 class="text-lg font-medium text-gray-900 mb-3">Notes</h4>
+            <p class="text-sm text-gray-700">{{ selectedInvoice?.notes }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+        <button (click)="closeModal()" type="button" 
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 
+                       shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+          Close
+        </button>
+      </div>
     </div>
   </div>
 </div>

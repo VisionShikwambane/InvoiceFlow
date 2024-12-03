@@ -10,28 +10,28 @@ export interface InvoiceDetails {
     companyEmail: string;
     companyPhone: string;
     companyAddress: string;
-    signatureImage: string; //This too
-    signatureDate: Date //This
-    companyLogo: string;   //This to be changes to capital L
+    signatureImage: string;
+    signatureDate: Date;
+    companyLogo: string;
     templateId: number;
     clientId: number;
     status: string;
     client: Client;
-    items: InvoiceItem[];
+    invoiceItems: InvoiceItem[];  
     subtotal: number;
     taxRate: number;
     currency: string;
+    amount: string;
     lastAction: string;
     tax: number;
     total: number;
-
-
+    activities?: InvoiceActivity[];
 }
 
 export interface InvoiceItem {
     description: string;
     price: number;
-    quantity: number;  //This need to be added on db
+    quantity: number;  
   }
   
   export interface Client {
@@ -41,3 +41,10 @@ export interface InvoiceItem {
     address?: string;
     userId: number;
   }
+
+export interface InvoiceActivity {
+    id: string;
+    type: 'email_opened' | 'invoice_viewed' | 'invoice_downloaded' | 'reminder_sent' | 'status_changed';
+    timestamp: string;
+    details?: string;
+}
