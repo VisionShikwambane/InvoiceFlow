@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import EmailController from '../controllers/email.controller';
+import InvoiceEmailController from '../controllers/invoice_email.controller';
 
 const router = Router();
 
-router.post('/send-invoice', EmailController.sendInvoice);
-router.post('/send-reminder', EmailController.sendReminder);
-router.post('/test', EmailController.testEmail);
+// Send invoice email
+router.post('/invoice/:invoiceId', InvoiceEmailController.sendInvoice);
+
+// Send payment reminder
+router.post('/reminder/:invoiceId', InvoiceEmailController.sendReminder);
 
 export default router;
