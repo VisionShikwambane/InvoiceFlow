@@ -11,19 +11,36 @@
             Back to Templates
         </button>
 
+        <div class="flex space-x-4 mb-4 border-b">
+            <button
+              (click)="activeTab = 'edit'"
+              class="px-4 py-2 font-medium text-sm"
+              [class.text-indigo-600]="activeTab === 'edit'"
+              [class.border-b-2]="activeTab === 'edit'"
+              [class.border-indigo-600]="activeTab === 'edit'"
+            >
+              Edit
+            </button>
+            <button
+              (click)="activeTab = 'preview'"
+              class="px-4 py-2 font-medium text-sm"
+              [class.text-indigo-600]="activeTab === 'preview'"
+              [class.border-b-2]="activeTab === 'preview'"
+              [class.border-indigo-600]="activeTab === 'preview'"
+            >
+              Preview
+            </button>
+          </div>
 
-
-
-
-        <!-- Header with improved visual hierarchy -->
-        <div class="mb-8">
+        <div *ngIf="activeTab === 'edit'">
+            <!-- Existing Edit Form Content -->
             <div class="flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Create New Invoice</h1>
+                    <!-- <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Create New Invoice</h1> -->
                     <p class="mt-2 text-sm text-gray-600">Fill in the details for your new invoice using template.</p>
                 </div>
                 <div class="flex gap-3">
-                    <button (click)="togglePreview()" class="inline-flex items-center px-4 py-2 text-sm font-medium 
+                    <!-- <button (click)="togglePreview()" class="inline-flex items-center px-4 py-2 text-sm font-medium 
                            rounded-lg transition-all duration-200
                            border-2 border-indigo-200 text-indigo-700
                            hover:border-indigo-300 hover:bg-indigo-50">
@@ -34,14 +51,13 @@
                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                         {{ showPreview ? 'Edit Invoice' : 'Preview' }}
-                    </button>
+                    </button> -->
                   
                 </div>
             </div>
 
-
-            <!-- Form sections with improved styling -->
-            <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" class="space-y-6">
+             <!-- Form sections with improved styling -->
+             <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" class="space-y-6">
                 <!-- Basic Info Section -->
                 <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6">
                     
@@ -135,12 +151,32 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2">
+                        <div class="space-y-2 relative">
                             <label class="block text-sm font-medium text-gray-700">Company Name</label>
-                            <input type="text" formControlName="companyName" class="block w-full rounded-lg border-gray-300 shadow-sm 
-                                focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                                transition-all duration-200" placeholder="Your Company Name" />
+                            <input 
+                                type="text" 
+                                formControlName="companyName" 
+                                class="block w-full rounded-lg border-gray-300 shadow-sm 
+                                       focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                                       transition-all duration-200" 
+                                placeholder="Your Company Name" 
+                                (input)="filterDropdown()" 
+                                (focus)="showDropdown = true" 
+                                (blur)="hideDropdownWithDelay()" 
+                            />
+                            <ul 
+                                *ngIf="showDropdown" 
+                                class="absolute z-10 bg-white border border-gray-300 rounded-lg shadow-lg w-full max-h-40 overflow-auto">
+                                <li 
+                                    *ngFor="let option of filteredOptions" 
+                                    (mousedown)="selectOption(option)" 
+                                    class="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white">
+                                    {{ option }}
+                                </li>
+                            </ul>
                         </div>
+                        
+                        
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Email</label>
@@ -437,6 +473,57 @@
 
 
             </form>
+          </div>
+
+          <div *ngIf="activeTab === 'preview'" class="p-4 sm:p-6 bg-white rounded-lg shadow">
+            <h2 class="text-2xl font-bold mb-4 text-center">Invoice Preview</h2>
+          
+            <!-- Centered Template Container -->
+            <div class="flex justify-center items-center overflow-hidden">
+              <div
+                class="w-full max-w-screen-sm sm:max-w-4xl bg-gray-50 p-4 sm:p-6 rounded-lg shadow-md overflow-auto"
+                style="max-height: 80vh;"
+              >
+                <!-- Template Content -->
+                <app-modern-template
+                  [invoice]="invoiceForm.getRawValue()"
+                  *ngIf="selectedTemplateId === '2'"
+                ></app-modern-template>
+              </div>
+            </div>
+          
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mt-6">
+              <button
+                (click)="activeTab = 'edit'"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
+              >
+                Back to Edit
+              </button>
+              <button
+                (click)="saveInvoice()"
+                [disabled]="invoiceForm.invalid || isLoading"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none 
+                focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200"
+              >
+                {{ isLoading ? 'Saving...' : 'Save Invoice' }}
+              </button>
+            </div>
+          </div>
+          
+          
+
+
+
+
+
+        <!-- Header with improved visual hierarchy -->
+        <div class="mb-8">
+           
+
+
+           
 
 
 
@@ -445,73 +532,10 @@
 
             <!-- Preview Modal Overlay -->
             <div *ngIf="showPreview" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 
-       transition-opacity duration-300">
+          transition-opacity duration-300">
 
                 <!-- Modal Container -->
-                <div class="fixed inset-0 overflow-y-auto">
-                    <div class="flex min-h-full items-center justify-center p-4">
-
-                        <!-- Modal Content -->
-                        <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl transform 
-             transition-all duration-300">
-
-                            <!-- Modal Header -->
-                            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between 
-               sticky top-0 bg-white/95 backdrop-blur-sm z-10">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                    </div>
-                                    <h2 class="text-xl font-semibold text-gray-900">Invoice Preview</h2>
-                                    
-                                </div>
-
-                                <div class="flex items-center space-x-4">
-                        
-
-                                    <!-- Close Button -->
-                                    <button (click)="togglePreview()"
-                                        class="text-gray-400 hover:text-gray-500 focus:outline-none">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Invoice Preview Content -->
-                            <div class="p-8 overflow-y-auto max-h-[calc(100vh-12rem)]">
-                                <app-modern-template *ngIf="selectedTemplateId === '2'"
-                                    [invoice]="invoiceForm.getRawValue()">
-                                </app-modern-template>
-                            </div>
-
-                            <!-- Modal Footer -->
-                            <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-4 
-                                sticky bottom-0 bg-white/95 backdrop-blur-sm">
-                                <button (click)="togglePreview()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white 
-                                   border border-gray-300 rounded-lg hover:bg-gray-50 
-                                       focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                            focus:ring-indigo-500 transition-all duration-200">
-                                    Close Preview
-                                </button>
-                                <button (click)="saveInvoice()" [disabled]="invoiceForm.invalid || isLoading" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 
-                                            rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 
-                                             focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 
-                                             transition-all duration-200">
-                                    {{ isLoading ? 'Saving...' : 'Save Invoice' }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               
             </div>
 
 

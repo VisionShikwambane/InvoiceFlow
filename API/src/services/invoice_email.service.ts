@@ -97,14 +97,20 @@ export class InvoiceEmailService {
                 ];
             }
 
-            await this.transporter.sendMail(mailOptions);
+            // Send email and wait for result
+            const info = await this.transporter.sendMail(mailOptions);
+            
+            if (info && info.accepted && info.accepted.length > 0) {
+                // Only update if email was actually sent
+                await db.Invoice.update(
+                    { status: 'Sent' },
+                    { where: { id: invoiceId } }
+                );
+                return true;
+            }
 
-            await db.Invoice.update(
-                { emailSent: true, lastEmailSentDate: new Date() },
-                { where: { id: invoiceId } },
-            );
-
-            return true;
+            console.error('Email not accepted by recipient server');
+            return false;
         } catch (error) {
             console.error('Error sending invoice email:', error);
             return false;

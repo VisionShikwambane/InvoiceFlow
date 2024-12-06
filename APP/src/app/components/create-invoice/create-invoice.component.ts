@@ -65,6 +65,27 @@ export class CreateInvoiceComponent implements OnInit {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   }
+
+  options = ['Company A', 'Company B', 'Company C'];
+  filteredOptions: string[] = [...this.options];
+  showDropdown = false;
+
+  filterDropdown(event?: Event): void {
+    const input = (event?.target as HTMLInputElement)?.value || '';
+    this.filteredOptions = this.options.filter(option =>
+      option.toLowerCase().includes(input.toLowerCase())
+    );
+  }
+
+  selectOption(option: string): void {
+    const inputElement = document.querySelector('input[formControlName="companyName"]') as HTMLInputElement;
+    inputElement.value = option;
+    this.showDropdown = false;
+  }
+
+  hideDropdownWithDelay(): void {
+    setTimeout(() => (this.showDropdown = false), 200);
+  }
   
   getFormattedDate(date: Date): string {
     const year = date.getFullYear();
@@ -163,7 +184,7 @@ export class CreateInvoiceComponent implements OnInit {
   
 
   togglePreview() {
-    this.showPreview = !this.showPreview;
+    this.activeTab = 'preview';
   }
 
   logoPreview: string | ArrayBuffer | null = null;
