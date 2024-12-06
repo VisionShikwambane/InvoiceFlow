@@ -107,6 +107,7 @@ export class CreateInvoiceComponent implements OnInit {
       companyEmail: ['', [Validators.required, Validators.email]],
       companyPhone: ['', Validators.required],
       companyLogo: [''],
+      invoiceForm: [false],
       client: this.fb.group({
         name: ['', Validators.required],
         address: ['', Validators.required],

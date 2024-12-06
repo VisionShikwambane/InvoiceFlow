@@ -8,7 +8,6 @@ import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 
-
 interface InvoiceActivity {
   id: string;
   type: 'email_opened' | 'invoice_viewed' | 'invoice_downloaded' | 'reminder_sent' | 'status_changed';
@@ -251,9 +250,8 @@ export class InvoicePageComponent implements OnInit {
     }
   }
 
-  editInvoice(invoice: InvoiceDetails) {
-    this.openDropdownId = null;
-    this.router.navigate(['/edit-invoice', invoice.id]);
+  editInvoice(invoiceId: string) {
+    this.router.navigate(['/create-invoice', invoiceId]);
   }
 
   markAsPaid(invoice: InvoiceDetails) {
