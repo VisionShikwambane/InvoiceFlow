@@ -1,5 +1,6 @@
 ﻿using DotNet_API.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DotNet_API.Repositories
 {
@@ -10,6 +11,8 @@ namespace DotNet_API.Repositories
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
+
+        Task<T> GetByConditionAsync(Expression<Func<T, bool>> condition);
     }
 
 
@@ -53,6 +56,13 @@ namespace DotNet_API.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<T> GetByConditionAsync(Expression<Func<T, bool>> condition)
+        {
+            return await _context.Set<T>().FirstOrDefaultAsync(condition);
+        }
+
+
     }
 
 }

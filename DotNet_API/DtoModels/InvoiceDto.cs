@@ -1,13 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using DotNet_API.DataModels;
 using System.ComponentModel.DataAnnotations;
 
-namespace DotNet_API.DataModels
+namespace DotNet_API.DtoModels
 {
-    [Table("invoices")]
-    public class Invoice
+    public class InvoiceDto
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -44,8 +41,10 @@ namespace DotNet_API.DataModels
         [Required]
         public DateTime DueDate { get; set; }
 
+        [MaxLength(2000)]
         public string? Notes { get; set; }
 
+        [MaxLength(2000)]
         public string? TermsAndConditions { get; set; }
 
         [Required]
@@ -57,11 +56,11 @@ namespace DotNet_API.DataModels
         public int? TemplateId { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, double.MaxValue)]
         public decimal Subtotal { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, 100)]
         public decimal TaxRate { get; set; }
 
         [Required]
@@ -73,16 +72,15 @@ namespace DotNet_API.DataModels
         public string Status { get; set; } = string.Empty;
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, double.MaxValue)]
         public decimal Tax { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, double.MaxValue)]
         public decimal Total { get; set; }
 
+        public ClientDto? Client { get; set; }
 
-        // Navigation properties
-        public Client? Client { get; set; }
-        public ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
+        public List<InvoiceItemDto>? InvoiceItems { get; set; } = new List<InvoiceItemDto>();
     }
 }

@@ -29,5 +29,8 @@ namespace DotNet_API.DataModels
         public string Address { get; set; }
 
         public int? UserId { get; set; }
+
+        public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
     }
 }

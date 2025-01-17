@@ -103,3 +103,4 @@ C:\Users\VisionShikwambane\project\DotNet_API\obj\Debug\net8.0\refint\DotNet_API
 C:\Users\VisionShikwambane\project\DotNet_API\obj\Debug\net8.0\DotNet_API.pdb
 C:\Users\VisionShikwambane\project\DotNet_API\obj\Debug\net8.0\DotNet_API.genruntimeconfig.cache
 C:\Users\VisionShikwambane\project\DotNet_API\obj\Debug\net8.0\ref\DotNet_API.dll
+C:\Users\VisionShikwambane\project\DotNet_API\bin\Debug\net8.0\AutoMapper.dll

@@ -23,5 +23,8 @@ namespace DotNet_API.DataModels
 
         [Required]
         public int InvoiceId { get; set; }
+
+
+        public Invoice Invoice { get; set; }
     }
 }
