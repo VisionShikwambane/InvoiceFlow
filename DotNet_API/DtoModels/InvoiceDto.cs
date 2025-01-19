@@ -81,6 +81,6 @@ namespace DotNet_API.DtoModels
 
         public ClientDto? Client { get; set; }
 
-        public List<InvoiceItemDto>? InvoiceItems { get; set; } = new List<InvoiceItemDto>();
+        public List<InvoiceItemDto>? Items { get; set; } = new List<InvoiceItemDto>();
     }
 }

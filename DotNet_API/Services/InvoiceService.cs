@@ -70,9 +70,9 @@ namespace DotNet_API.Services
                 }
             }
 
-            if (invoiceDto.InvoiceItems != null && invoiceDto.InvoiceItems.Any())
+            if (invoiceDto.Items != null && invoiceDto.Items.Any())
             {
-                invoiceEntity.InvoiceItems = this.mapper.Map<List<InvoiceItem>>(invoiceDto.InvoiceItems);
+                invoiceEntity.InvoiceItems = this.mapper.Map<List<InvoiceItem>>(invoiceDto.Items);
 
                 // Ensure all items are linked to the Invoice
                 foreach (var item in invoiceEntity.InvoiceItems)

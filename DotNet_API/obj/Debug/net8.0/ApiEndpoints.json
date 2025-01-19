@@ -13,19 +13,35 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "DotNet_API.Utilities.ResponseObject\u00601[[DotNet_API.DtoModels.InvoiceDto, DotNet_API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "DotNet_API.Controllers.InvoiceController",
     "Method": "GetAll",
-    "RelativePath": "api/Invoice/GetAll",
+    "RelativePath": "api/Invoice/GetUserInvoices",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[DotNet_API.DtoModels.InvoiceDto, DotNet_API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "DotNet_API.Utilities.ResponseObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[DotNet_API.DtoModels.InvoiceDto, DotNet_API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

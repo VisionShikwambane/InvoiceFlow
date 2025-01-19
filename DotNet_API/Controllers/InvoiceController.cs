@@ -2,6 +2,7 @@
 using DotNet_API.DtoModels;
 using DotNet_API.Repositories;
 using DotNet_API.Services;
+using DotNet_API.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,45 +23,55 @@ namespace DotNet_API.Controllers
             this.invoiceRepository = invoiceRepository;
         }
 
-        [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<InvoiceDto>>> GetAll()
+        [HttpGet("GetUserInvoices")]
+        public async Task<ActionResult<ResponseObject<IEnumerable<InvoiceDto>>>> GetAll(int userId)
         {
-            var invoices = await this.invoiceService.GetInvoicesWithDetailsAsync(0);
-            return Ok(invoices);
+            // Fetch all invoices with details using the service
+            var invoices = await this.invoiceService.GetInvoicesWithDetailsAsync(userId);
+
+            // Wrap the invoices in a ResponseObject
+            var response = new ResponseObject<IEnumerable<InvoiceDto>>(true, "Invoices retrieved successfully", invoices);
+
+            // Return the response
+            return Ok(response);
         }
 
 
-        // POST: api/Invoice
+
         [HttpPost]
-        public async Task<IActionResult> AddInvoice([FromBody] InvoiceDto invoiceDto)
+        public async Task<ActionResult<ResponseObject<InvoiceDto>>> AddInvoice([FromBody] InvoiceDto invoiceDto)
         {
             if (invoiceDto == null)
             {
-                return BadRequest(new { Message = "Invoice data cannot be null." });
+                return BadRequest(new ResponseObject<InvoiceDto>(false, "Invoice data cannot be null", null));
             }
 
             try
             {
                 var response = await this.invoiceService.AddInvoiceAsync(invoiceDto);
 
-                if (response.Success)
+                if (response.isSuccess)
                 {
                     return Ok(response); // Return 200 OK with response object
                 }
                 else
                 {
-                    return BadRequest(new { Message = response.Message });
+                    return BadRequest(new ResponseObject<InvoiceDto>(false, response.Message, null));
                 }
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(new { Message = ex.Message });
+                return BadRequest(new ResponseObject<InvoiceDto>(false, ex.Message, null));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = "An unexpected error occurred.", Details = ex.Message });
+                // Include exception details in the message instead
+                var errorMessage = $"An unexpected error occurred: {ex.Message}";
+                return StatusCode(500, new ResponseObject<InvoiceDto>(false, errorMessage, null));
             }
         }
+
+
 
     }
 }
