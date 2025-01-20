@@ -11,7 +11,7 @@ import { ResponseResponse } from '../models/ResponseObject';
 })
 export class InvoiceService {
     
-  private baseUrl = `${environment.apiUrl}/invoice`;
+  private baseUrl = `${environment.apiUrl}/Invoice`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +20,7 @@ export class InvoiceService {
   }
 
   getUserInvoices(userId: number): Observable<ResponseResponse<InvoiceDetails[]>> {
-    return this.http.get<ResponseResponse<InvoiceDetails[]>>(`${this.baseUrl}/user/${userId}`);
+    return this.http.get<ResponseResponse<InvoiceDetails[]>>(`${this.baseUrl}/GetUserInvoices?userId=${userId}`);
   }
 
   updateInvoiceStatus(invoiceId: string, status: string): Observable<any> {

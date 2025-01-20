@@ -97,24 +97,24 @@ export class InvoicePageComponent implements OnInit {
   }
 
   getUserInvoices() {
-    const userId = 1; // Replace with actual user ID from your auth system
+    const userId = 2; // Replace with actual user ID from your auth system
     this.invoiceService.getUserInvoices(userId).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           // Process invoices
           this.invoices = response.data.map((invoice: any) => {
             // Calculate the total for each invoice and assign it to a new `amount` property
-            const amount = Array.isArray(invoice.invoiceItems)
-              ? invoice.invoiceItems.reduce(
+            const amount = Array.isArray(invoice.items)
+              ? invoice.items.reduce(
                   (acc: number, item: any) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
                   0
                 )
               : 0;
   
-            return { ...invoice, amount }; // Add the `amount` property to the invoice
+            return { ...invoice, amount };
           });
   
-          console.log('Invoices with Amounts:', this.invoices);
+          console.log('Invoices with Amounts:', response);
         } else {
           console.error('Failed to load invoices.');
         }

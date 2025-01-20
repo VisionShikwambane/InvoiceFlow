@@ -83,6 +83,6 @@ namespace DotNet_API.DataModels
 
         // Navigation properties
         public Client? Client { get; set; }
-        public ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
+        public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
     }
 }

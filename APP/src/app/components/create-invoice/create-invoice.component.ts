@@ -16,7 +16,7 @@ import { ToastComponent } from '../toast/toast';
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent,InvoiceSuccessDialogComponent, ToastComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, InvoiceSuccessDialogComponent, ToastComponent],
   templateUrl: './create-invoice.component.html',
   styleUrl: './create-invoice.component.css'
 })
@@ -61,7 +61,7 @@ export class CreateInvoiceComponent implements OnInit {
     });
   }
 
-   getCurrentDate(): Date {
+  getCurrentDate(): Date {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   }
@@ -86,7 +86,7 @@ export class CreateInvoiceComponent implements OnInit {
   hideDropdownWithDelay(): void {
     setTimeout(() => (this.showDropdown = false), 200);
   }
-  
+
   getFormattedDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
@@ -126,7 +126,7 @@ export class CreateInvoiceComponent implements OnInit {
 
     // Add first item by default
     this.addItem();
-   
+
     console.log(this.sendInvoiceToEmail)
     this.invoiceForm.get('taxRate')?.valueChanges.subscribe(() => this.calculateTotals());
     this.invoiceForm.get('currency')?.valueChanges.subscribe(() => this.calculateTotals());
@@ -156,9 +156,9 @@ export class CreateInvoiceComponent implements OnInit {
       //alert('At least one item is required.');
     }
   }
-  
 
-  
+
+
 
   calculateTotals() {
     const items = this.items.getRawValue();
@@ -168,10 +168,10 @@ export class CreateInvoiceComponent implements OnInit {
       this.items.at(items.indexOf(item)).patchValue({ amount }, { emitEvent: false });
       return sum + amount;
     }, 0);
-  
+
     const tax = (subtotal * taxRate) / 100; // Use custom tax rate
     const total = subtotal + tax;
-  
+
     this.invoiceForm.patchValue({
       subtotal,
       tax,
@@ -182,7 +182,7 @@ export class CreateInvoiceComponent implements OnInit {
     console.log(this.invoiceForm)
   }
 
-  
+
 
   togglePreview() {
     this.activeTab = 'preview';
@@ -192,21 +192,21 @@ export class CreateInvoiceComponent implements OnInit {
 
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-  
+
     if (input.files && input.files[0]) {
       const file = input.files[0];
-  
+
       // FileReader to generate preview
       const reader = new FileReader();
       reader.onload = () => {
         this.logoPreview = reader.result; // Set the preview data
-        this.invoiceForm.get('companyLogo')?.setValue(this.logoPreview); 
-        console.log("Updated form:", this.logoPreview); 
+        this.invoiceForm.get('companyLogo')?.setValue(this.logoPreview);
+        console.log("Updated form:", this.logoPreview);
       };
       reader.readAsDataURL(file);
     }
   }
-  
+
 
   onDetachLogo(fileInput: HTMLInputElement): void {
     // Clear the preview and reset the form control
@@ -219,7 +219,7 @@ export class CreateInvoiceComponent implements OnInit {
 
 
 
-  data =  {
+  data = {
     "invoiceNo": "INV-001",
     "issueDate": "2024-11-01",
     "dueDate": "2024-11-15",
@@ -249,20 +249,20 @@ export class CreateInvoiceComponent implements OnInit {
         "description": "Web Development Services",
         "price": "1000.00"
       },
-       {
+      {
         "description": "Web Development Services",
         "price": "1000.00"
       },
-       {
+      {
         "description": "Web Development Services",
         "price": "1000.00"
       }
     ]
   }
-  
+
 
   async saveInvoice() {
-    this.sendInvoiceToEmail =  this.invoiceForm.get('client.email')?.value;
+    this.sendInvoiceToEmail = this.invoiceForm.get('client.email')?.value;
     if (this.invoiceForm.valid) {
       this.isLoading = true;
       try {
@@ -270,7 +270,10 @@ export class CreateInvoiceComponent implements OnInit {
         const invoiceData: InvoiceDetails = this.invoiceForm.value;
         invoiceData.userId = 2;
         invoiceData.status = "Draft"
-       // console.log("iNVOICEDATA", invoiceData)
+        const companyLogo = invoiceData.companyLogo.split(',')[1];
+        const signatureImage = invoiceData.signatureImage.split(',')[1];
+        invoiceData.companyLogo = companyLogo;
+        invoiceData.signatureImage = signatureImage;
         const response = await this.invoiceService.createInvoice(invoiceData).toPromise();
         if (response?.isSuccess) {
           console.log('Invoice draft successfully:', response.data);
@@ -295,11 +298,11 @@ export class CreateInvoiceComponent implements OnInit {
       this.markFormGroupTouched(this.invoiceForm);
     }
   }
-  
 
 
 
-  
+
+
 
   closeSuccessDialog() {
     this.router.navigate(['/invoices']);
@@ -307,21 +310,21 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   handleSuccessFinish(data: { email: EmailSettings }) {
-   
+
     console.log('Email Settings:', data.email);
-  
-    
+
+
     // Handle email settings
     if (data.email) {
       this.sendInvoiceEmail(data.email);
     }
-  
+
     // Close dialog and navigate
     this.showSuccessDialog = false;
     this.router.navigate(['/invoices']);
   }
-  
-  
+
+
   private async setupReminders(reminderSettings: ReminderSettings) {
     try {
       // Your reminder setup logic
@@ -342,7 +345,7 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  printInvoice(){
+  printInvoice() {
 
   }
   private markFormGroupTouched(formGroup: FormGroup) {
@@ -367,23 +370,23 @@ export class CreateInvoiceComponent implements OnInit {
 
   signaturePreview: string | null = null;
 
-onSignatureSelected(event: Event) {
+  onSignatureSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
-            this.signaturePreview = fileReader.result as string;
-            this.invoiceForm.get('signatureImage')?.setValue(this.signaturePreview); 
-           
-        };
-        fileReader.readAsDataURL(input.files[0]);
-    }
-}
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        this.signaturePreview = fileReader.result as string;
+        this.invoiceForm.get('signatureImage')?.setValue(this.signaturePreview);
 
-onRemoveSignature(input: HTMLInputElement) {
+      };
+      fileReader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  onRemoveSignature(input: HTMLInputElement) {
     this.signaturePreview = null;
     input.value = ''; // Clear the file input
-}
+  }
 
 
 

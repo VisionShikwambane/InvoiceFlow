@@ -6,18 +6,18 @@ export interface InvoiceDetails {
     notes?: string;
     termsAndConditions?: string;
     userId: number;
-    companyName: string;
+    companyName: string
     companyEmail: string;
     companyPhone: string;
     companyAddress: string;
     signatureImage: string;
     signatureDate: Date;
-    companyLogo: string;
+    companyLogo: string
     templateId: number;
     clientId: number;
     status: string;
     client: Client;
-    invoiceItems: InvoiceItem[];  
+    items: InvoiceItem[];  
     subtotal: number;
     taxRate: number;
     currency: string;
@@ -28,13 +28,14 @@ export interface InvoiceDetails {
     activities?: InvoiceActivity[];
     archived: boolean;
     createdAt: string;
-    isArchived: boolean;
+   // isArchived: boolean;
 }
 
 export interface InvoiceItem {
     description: string;
     price: number;
-    quantity: number;  
+    quantity: number;
+    invoiceId: number;  
   }
   
   export interface Client {

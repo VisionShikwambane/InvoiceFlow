@@ -349,7 +349,7 @@
           </div>
 
           <!-- Invoice Activities Timeline -->
-          <div class="bg-gray-50 rounded-lg p-4 mt-4">
+          <!-- <div class="bg-gray-50 rounded-lg p-4 mt-4">
             <h4 class="text-lg font-medium text-gray-900 mb-3">Invoice Activity</h4>
             <div class="flow-root">
               <ul role="list" class="-mb-8">
@@ -358,7 +358,7 @@
                     <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" *ngIf="!last"
                       aria-hidden="true"></span>
                     <div class="relative flex space-x-3">
-                      <!-- Activity Icon -->
+                   
                       <div [ngClass]="getActivityIconClass(activity.type)"
                         class="flex h-8 w-8 items-center justify-center rounded-full">
                         <svg *ngIf="activity.type === 'email_opened'" class="h-5 w-5 text-white" viewBox="0 0 20 20"
@@ -392,7 +392,7 @@
                             clip-rule="evenodd" />
                         </svg>
                       </div>
-                      <!-- Activity Content -->
+                     
                       <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                         <div>
                           <p class="text-sm text-gray-500">{{ getActivityDescription(activity) }}</p>
@@ -405,7 +405,7 @@
                   </div>
                 </li>
 
-                <!-- Empty State -->
+              
                 <li *ngIf="!selectedInvoice?.activities?.length">
                   <div class="text-center py-4">
                     <p class="text-sm text-gray-500">No activity recorded yet</p>
@@ -413,7 +413,7 @@
                 </li>
               </ul>
             </div>
-          </div>
+          </div> -->
 
           <!-- Items -->
           <div class="bg-gray-50 rounded-lg p-4">
@@ -429,7 +429,7 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                  <tr *ngFor="let item of selectedInvoice?.invoiceItems">
+                  <tr *ngFor="let item of selectedInvoice?.items">
                     <td class="px-3 py-2 text-sm text-gray-900">{{ item.description }}</td>
                     <td class="px-3 py-2 text-sm text-gray-900 text-right">{{ item.quantity }}</td>
                     <td class="px-3 py-2 text-sm text-gray-900 text-right">

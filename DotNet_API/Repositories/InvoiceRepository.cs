@@ -16,7 +16,7 @@ namespace DotNet_API.Repositories
         {
             return await _context.Invoices
                 .Include(i => i.Client)
-                .Include(i => i.InvoiceItems)
+                .Include(i => i.Items)
                 .Where(i => i.UserId == userId)
                 .ToListAsync();
         }
