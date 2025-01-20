@@ -71,6 +71,27 @@ namespace DotNet_API.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResponseObject<bool>>> DeleteInvoice(int id)
+        {
+            try
+            {
+                var invoice = await this.invoiceRepository.GetByIdAsync(id);
+                if (invoice == null)
+                {
+                    return NotFound(new ResponseObject<bool>(false, "Invoice not found", false));
+                }
+
+                await this.invoiceRepository.DeleteAsync(id);
+                return Ok(new ResponseObject<bool>(true, "Invoice deleted successfully", true));
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"An unexpected error occurred while deleting invoice: {ex.Message}";
+                return StatusCode(500, new ResponseObject<bool>(false, errorMessage, false));
+            }
+        }
+
 
 
     }
