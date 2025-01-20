@@ -10,6 +10,7 @@ import { InvoiceService } from '../../services/invoice.service';
 import { InvoiceDetails } from '../../models/create-invoice.interface';
 import { ToastService } from '../../services/toast.service';
 import { ToastComponent } from '../toast/toast';
+import { DataService } from '../../services/DataService';
 
 
 
@@ -25,6 +26,7 @@ export class CreateInvoiceComponent implements OnInit {
   invoiceForm!: FormGroup;
   showPreview = false;
   isLoading = false;
+  invoiceToEdit: InvoiceDetails | null = null;
   selectedTemplateId!: string;
   showSuccessDialog = false;
   activeTab: 'edit' | 'preview' = 'edit'; // Default to the edit tab
@@ -50,16 +52,31 @@ export class CreateInvoiceComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toast: ToastService,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    private dataService: DataService
   ) {
     this.createForm();
   }
 
   ngOnInit() {
+    this.getInvoiceData();
     this.route.params.subscribe(params => {
       this.selectedTemplateId = params['templateId'];
     });
+  
   }
+
+  getInvoiceData(){
+    this.dataService.currentData.subscribe(data => {
+      this.invoiceToEdit = data;
+      if(this.invoiceToEdit){
+        this.invoiceForm.patchValue(this.invoiceToEdit);
+        console.log(  this.invoiceForm.value)
+        this.invoiceForm.get('dueDate')?.setValue(new Date(this.invoiceToEdit.dueDate));
+      }
+    }); 
+  }
+  
 
   getCurrentDate(): Date {
     const today = new Date();
@@ -267,6 +284,7 @@ export class CreateInvoiceComponent implements OnInit {
       this.isLoading = true;
       try {
         // Prepare data to save
+        console.log('Invoice Data:', this.invoiceForm.value);
         const invoiceData: InvoiceDetails = this.invoiceForm.value;
         invoiceData.userId = 2;
         invoiceData.status = "Draft"

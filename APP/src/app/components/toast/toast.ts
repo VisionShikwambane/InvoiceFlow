@@ -8,9 +8,8 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-  <!-- Changed to position at top -->
-<div *ngIf="show" 
-     class="fixed top-0 left-0 right-0 z-50 p-4 md:top-8 md:right-8 md:left-auto md:max-w-md pointer-events-none">
+  <div *ngIf="show" 
+     class="fixed bottom-0 left-0 right-0 z-50 p-4 md:bottom-8 md:right-8 md:left-auto md:max-w-md pointer-events-none">
   <div [class]="containerClasses">
     <div class="flex items-center space-x-3">
       <svg *ngIf="type === 'success'" class="w-6 h-6 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -33,6 +32,7 @@ import { CommonModule } from '@angular/common';
     </button>
   </div>
 </div>
+
   `
 })
 export class ToastComponent implements OnInit, OnDestroy {

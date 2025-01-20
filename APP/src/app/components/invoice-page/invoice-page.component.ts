@@ -7,6 +7,11 @@ import { InvoiceDetails } from '../../models/create-invoice.interface';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
+import { SpinnerComponent } from '../spinner/spinner.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ToastService } from '../../services/toast.service';
+import { ToastComponent } from '../toast/toast';
+import { DataService } from '../../services/DataService';
 
 interface InvoiceActivity {
   id: string;
@@ -18,7 +23,7 @@ interface InvoiceActivity {
 @Component({
   selector: 'app-invoice-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, OverlayModule, PortalModule],
+  imports: [CommonModule, FormsModule, OverlayModule, PortalModule, ConfirmDialogComponent, SpinnerComponent, ToastComponent],
   templateUrl: './invoice-page.component.html',
   styleUrls: ['./invoice-page.component.css'],
 })
@@ -30,20 +35,26 @@ export class InvoicePageComponent implements OnInit {
   @ViewChild(CdkOverlayOrigin) overlayOrigin!: CdkOverlayOrigin;
   selectedInvoice: InvoiceDetails | null = null;
   isModalOpen = false;
+  loading = false;
+  amount!: number;
+  @ViewChild('confirmDialog') confirmDialog!: ConfirmDialogComponent;
 
   constructor(
-    private router: Router, 
-    private invoiceService: InvoiceService
+    private router: Router,
+    private invoiceService: InvoiceService,
+    private toastService: ToastService,
+    private dataService: DataService
   ) {
-   
+
   }
   ngOnInit(): void {
     this.getUserInvoices();
+    this.toastService.showError('Invoice saved successfully');
   }
 
 
- 
-  amount!: number;
+
+
 
   formatAmount(amount: number, currency: string = 'USD'): string {
     return new Intl.NumberFormat('en-US', {
@@ -62,11 +73,16 @@ export class InvoicePageComponent implements OnInit {
     }).format(date);
   }
 
+  onCancelDelete() {
+    console.log('Cancelled delete');
+  }
 
-  archiveInvoice(e: any){
+  archiveInvoice(e: any) {
 
   }
-  unarchiveInvoice(e: any){}
+
+
+  unarchiveInvoice(e: any) { }
 
   formatActivityTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
@@ -91,50 +107,48 @@ export class InvoicePageComponent implements OnInit {
     if (diffInDays < 7) {
       return `${diffInDays}d ago`;
     }
-
-    // For older dates, use the standard date format
     return this.formatDate(timestamp);
   }
 
   getUserInvoices() {
-    const userId = 2; // Replace with actual user ID from your auth system
+    const userId = 2;
+    this.loading = true;
     this.invoiceService.getUserInvoices(userId).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          // Process invoices
+          console.log(response.data);
+          this.loading = false;
           this.invoices = response.data.map((invoice: any) => {
-            // Calculate the total for each invoice and assign it to a new `amount` property
             const amount = Array.isArray(invoice.items)
               ? invoice.items.reduce(
-                  (acc: number, item: any) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
-                  0
-                )
+                (acc: number, item: any) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
+                0
+              )
               : 0;
-  
+
             return { ...invoice, amount };
           });
-  
-          console.log('Invoices with Amounts:', response);
+
         } else {
-          console.error('Failed to load invoices.');
+          this.loading = false;
         }
       },
       error: (error: any) => {
-        console.error('Error loading invoices:', error);
+        this.loading = false;
       },
     });
   }
-  
-
- 
-  
-
-  
-
-  
 
 
-  
+
+
+
+
+
+
+
+
+
   getStatusClass(status: string): string {
     const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
     switch (status) {
@@ -154,21 +168,21 @@ export class InvoicePageComponent implements OnInit {
         return `${baseClasses} bg-neutral-100 text-neutral-800`;
     }
   }
-  
+
 
   filterByStatus(status: string) {
     this.selectedStatus = status;
     // Implement filtering logic if necessary
   }
 
-  downloadInvoicePDF(e: any){
+  downloadInvoicePDF(e: any) {
 
   }
 
-  showArchived(){
+  showArchived() {
 
   }
-  filterArchived(){
+  filterArchived() {
 
   }
 
@@ -185,14 +199,14 @@ export class InvoicePageComponent implements OnInit {
       if (this.selectedStatus !== 'All' && invoice.status.toLowerCase() !== this.selectedStatus.toLowerCase()) {
         return false;
       }
-      
+
       if (!this.searchTerm) return true;
-      
+
       const searchLower = this.searchTerm.toLowerCase();
       return (
         invoice.client.name.toLowerCase().includes(searchLower) ||
-        invoice.id.toLowerCase().includes(searchLower) 
-       // invoice.amount.toString().toString().includes(searchLower)
+        invoice.id.toLowerCase().includes(searchLower)
+        // invoice.amount.toString().toString().includes(searchLower)
       );
     });
   }
@@ -250,8 +264,9 @@ export class InvoicePageComponent implements OnInit {
     }
   }
 
-  editInvoice(invoiceId: string) {
-    this.router.navigate(['/create-invoice', invoiceId]);
+  editInvoice(InvoiceDetails: InvoiceDetails) {
+    this.dataService.changeData(InvoiceDetails);
+    this.router.navigate([`/create-invoice/${InvoiceDetails.templateId}`]);
   }
 
   markAsPaid(invoice: InvoiceDetails) {
@@ -268,20 +283,35 @@ export class InvoicePageComponent implements OnInit {
     });
   }
 
+  showDialog = false;
+
   deleteInvoice(invoice: InvoiceDetails) {
-    this.openDropdownId = null;
-    if (confirm('Are you sure you want to delete this invoice?')) {
-      this.invoiceService.deleteInvoice(invoice.id).subscribe({
-        next: () => {
-          // Refresh the invoices list
-          this.getUserInvoices();
-        },
-        error: (error) => {
-          console.error('Error deleting invoice:', error);
-        }
-      });
-    }
+    this.showDialog = false;
+    // this.openDropdownId = null;
+    // if (confirm('Are you sure you want to delete this invoice?')) {
+    //   this.invoiceService.deleteInvoice(invoice.id).subscribe({
+    //     next: () => {
+    //       // Refresh the invoices list
+    //       this.getUserInvoices();
+    //     },
+    //     error: (error) => {
+    //       console.error('Error deleting invoice:', error);
+    //     }
+    //   });
+    // }
   }
+
+  openConfirmationDialog() {
+    this.confirmDialog.show(
+      'Confirm Delete',
+      'Are you sure you want to clear all the Grid Lines?',
+      () => this.clear(),
+      () => this.cancelClear()
+    );
+  }
+  clear() { }
+  cancelClear() { }
+
 
   sendReminder(invoice: InvoiceDetails) {
     this.invoiceService.sendReminder(invoice.id).subscribe({
