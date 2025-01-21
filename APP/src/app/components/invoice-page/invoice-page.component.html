@@ -105,7 +105,7 @@
           <!-- Amount -->
           <div class="mt-4">
             <div class="text-2xl font-bold text-gray-900">
-              {{ invoice.amount | currency:invoice.currency }}
+              {{ invoice.total | currency:invoice.currency }}
             </div>
             <div class="mt-1 text-xs text-gray-500">
               Due {{ invoice.dueDate | date:'mediumDate' }}

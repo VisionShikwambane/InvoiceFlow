@@ -69,12 +69,13 @@ namespace DotNet_API.Services
                     invoiceEntity.ClientId = existingClient.Id;
                 }
             }
-
             if (invoiceDto.Items != null && invoiceDto.Items.Any())
             {
+                if (invoiceEntity.Id > 0)
+                {
+                    await this.invoiceitemRepository.DeleteByInvoiceIdAsync(invoiceEntity.Id);
+                }
                 invoiceEntity.Items = this.mapper.Map<List<InvoiceItem>>(invoiceDto.Items);
-
-                // Ensure all items are linked to the Invoice
                 foreach (var item in invoiceEntity.Items)
                 {
                     item.InvoiceId = invoiceEntity.Id;

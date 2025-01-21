@@ -70,7 +70,7 @@ export class CreateInvoiceComponent implements OnInit {
   getInvoiceData() {
     this.dataService.currentData.subscribe(data => {
       this.invoiceToEdit = data;
-
+    console.log("Invoice to edit:", this.invoiceToEdit)
       if (this.invoiceToEdit) {
 
         while (this.items.length) {
@@ -289,46 +289,7 @@ export class CreateInvoiceComponent implements OnInit {
 
 
 
-  data = {
-    "invoiceNo": "INV-001",
-    "issueDate": "2024-11-01",
-    "dueDate": "2024-11-15",
-    "notes": "Thank you for your business!",
-    "termsAndConditions": "Payment is due within 15 days.",
-    "userId": 1,
-    "companyName": "Tech Innovators Ltd.",
-    "companyEmail": "contact@techinnovators.com",
-    "companyPhone": "+1234567890",
-    "companyAddress": "123 Innovation Street, Tech City",
-    "templateId": 1,
-    "status": "Draft",
-    "client": {
-      "name": "Acme Corp.",
-      "email": "info@acmecorp.com",
-      "phone": "1234567890",
-      "address": "456 Business Lane",
-      "userId": 1
-    },
-    "subtotal": 1000.0,
-    "taxRate": 15,
-    "currency": "USD",
-    "tax": 150.0,
-    "total": 1150.0,
-    "items": [
-      {
-        "description": "Web Development Services",
-        "price": "1000.00"
-      },
-      {
-        "description": "Web Development Services",
-        "price": "1000.00"
-      },
-      {
-        "description": "Web Development Services",
-        "price": "1000.00"
-      }
-    ]
-  }
+
 
 
   async saveInvoice() {
@@ -353,7 +314,7 @@ export class CreateInvoiceComponent implements OnInit {
 
         if (response?.isSuccess) {
           this.toast.showSuccess(response.message);
-          // this.showSuccessDialog = true;
+          this.showSuccessDialog = true;
 
         } else {
 
