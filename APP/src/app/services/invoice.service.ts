@@ -34,4 +34,8 @@ export class InvoiceService {
   sendReminder(invoiceId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/${invoiceId}/reminder`, {});
   }
+
+  updateInvoice(invoiceData: InvoiceDetails): Observable<ResponseResponse<InvoiceDetails>> {
+    return this.http.put<ResponseResponse<InvoiceDetails>>(`${this.baseUrl}`, invoiceData);
+  }
 }

@@ -32,6 +32,7 @@ export interface InvoiceDetails {
 }
 
 export interface InvoiceItem {
+    id: number;
     description: string;
     price: number;
     quantity: number;
@@ -39,6 +40,7 @@ export interface InvoiceItem {
   }
   
   export interface Client {
+    id: number;
     name: string;
     email: string;
     phone?: string;

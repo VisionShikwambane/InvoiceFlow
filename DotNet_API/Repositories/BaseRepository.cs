@@ -25,29 +25,34 @@ namespace DotNet_API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task AddAsync(T entity)
+        public virtual async Task AddAsync(T entity)
         {
-            await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(T entity)
-        {
+            //await _context.Set<T>().AddAsync(entity);
+            //await _context.SaveChangesAsync();
             _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
+            _context.Entry(entity).State = EntityState.Detached;
         }
 
-        public async Task DeleteAsync(int id)
+        public virtual async Task UpdateAsync(T entity)
+        {
+
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+            _context.Entry(entity).State = EntityState.Detached;
+        }
+
+        public virtual async Task DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)
@@ -57,7 +62,7 @@ namespace DotNet_API.Repositories
             }
         }
 
-        public async Task<T> GetByConditionAsync(Expression<Func<T, bool>> condition)
+        public virtual async Task<T> GetByConditionAsync(Expression<Func<T, bool>> condition)
         {
             return await _context.Set<T>().FirstOrDefaultAsync(condition);
         }

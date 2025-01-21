@@ -63,20 +63,73 @@ export class CreateInvoiceComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.selectedTemplateId = params['templateId'];
     });
-  
+
   }
 
-  getInvoiceData(){
+
+  getInvoiceData() {
     this.dataService.currentData.subscribe(data => {
       this.invoiceToEdit = data;
-      if(this.invoiceToEdit){
-        this.invoiceForm.patchValue(this.invoiceToEdit);
-        console.log(  this.invoiceForm.value)
-        this.invoiceForm.get('dueDate')?.setValue(new Date(this.invoiceToEdit.dueDate));
+
+      if (this.invoiceToEdit) {
+
+        while (this.items.length) {
+          this.items.removeAt(0);
+        }
+
+        const { items, ...mainFormData } = this.invoiceToEdit;
+        this.invoiceForm.patchValue(mainFormData);
+        // Add form groups for each item
+        if (this.invoiceToEdit.items && Array.isArray(this.invoiceToEdit.items)) {
+          this.invoiceToEdit.items.forEach(item => {
+            const itemGroup = this.fb.group({
+              description: [item.description],
+              quantity: [item.quantity],
+              price: [item.price]
+            });
+
+            // Add the valueChanges subscription
+            itemGroup.valueChanges.subscribe(() => this.calculateTotals());
+
+            this.items.push(itemGroup);
+          });
+        }
+
+
+
+        this.invoiceForm.patchValue({
+          subtotal: this.invoiceToEdit.subtotal,
+          tax: this.invoiceToEdit.tax,
+          total: this.invoiceToEdit.total
+        });
+
+        this.invoiceForm.get('dueDate')?.setValue(
+          this.getFormattedDate(new Date(this.invoiceToEdit.dueDate))
+        );
+        this.invoiceForm.get('issueDate')?.setValue(
+          this.getFormattedDate(new Date(this.invoiceToEdit.issueDate))
+        );
+
+        if (this.invoiceToEdit.companyLogo) {
+          const logoUrl = `data:image/png;base64,${this.invoiceToEdit.companyLogo}`;
+          this.invoiceForm.get('companyLogo')?.setValue(logoUrl);
+          this.logoPreview = logoUrl;
+        }
+
+        if (this.invoiceToEdit.signatureImage) {
+          const signatureUrl = `data:image/png;base64,${this.invoiceToEdit.signatureImage}`;
+          this.invoiceForm.get('signatureImage')?.setValue(signatureUrl);
+          this.signaturePreview = signatureUrl;
+        }
       }
-    }); 
+    });
+
   }
-  
+
+
+
+
+
 
   getCurrentDate(): Date {
     const today = new Date();
@@ -113,6 +166,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   private createForm() {
     this.invoiceForm = this.fb.group({
+      id: [0],
       signatureImage: [''],
       signatureDate: [new Date()],
       invoiceNo: ['', Validators.required],
@@ -124,8 +178,8 @@ export class CreateInvoiceComponent implements OnInit {
       companyEmail: ['', [Validators.required, Validators.email]],
       companyPhone: ['', Validators.required],
       companyLogo: [''],
-      invoiceForm: [false],
       client: this.fb.group({
+        id: [0],
         name: ['', Validators.required],
         address: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
@@ -141,10 +195,7 @@ export class CreateInvoiceComponent implements OnInit {
       total: [0]
     });
 
-    // Add first item by default
     this.addItem();
-
-    console.log(this.sendInvoiceToEmail)
     this.invoiceForm.get('taxRate')?.valueChanges.subscribe(() => this.calculateTotals());
     this.invoiceForm.get('currency')?.valueChanges.subscribe(() => this.calculateTotals());
   }
@@ -155,6 +206,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   addItem() {
     const itemGroup = this.fb.group({
+      id: [0],
       description: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]],
       price: [0, [Validators.required, Validators.min(0)]],
@@ -169,6 +221,7 @@ export class CreateInvoiceComponent implements OnInit {
     if (this.items.length > 1) {
       this.items.removeAt(index);
       this.calculateTotals();
+      console.log(this.invoiceForm.value)
     } else {
       //alert('At least one item is required.');
     }
@@ -292,11 +345,15 @@ export class CreateInvoiceComponent implements OnInit {
         const signatureImage = invoiceData.signatureImage.split(',')[1];
         invoiceData.companyLogo = companyLogo;
         invoiceData.signatureImage = signatureImage;
+
+        if (this.invoiceToEdit) {
+          invoiceData.id = this.invoiceToEdit.id;
+        }
         const response = await this.invoiceService.createInvoice(invoiceData).toPromise();
+
         if (response?.isSuccess) {
-          console.log('Invoice draft successfully:', response.data);
-          this.toast.showSuccess('Invoice saved successfully');
-          this.showSuccessDialog = true;
+          this.toast.showSuccess(response.message);
+          // this.showSuccessDialog = true;
 
         } else {
 
@@ -381,7 +438,13 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/templates']);
+    if (this.invoiceToEdit) {
+      this.router.navigate(['/invoices']);
+    }
+    else {
+      this.router.navigate(['/templates']);
+    }
+
   }
 
 

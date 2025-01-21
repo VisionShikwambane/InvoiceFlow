@@ -265,6 +265,7 @@ export class InvoicePageComponent implements OnInit {
   }
 
   editInvoice(InvoiceDetails: InvoiceDetails) {
+    //console.log("Invoice Details",InvoiceDetails);
     this.dataService.changeData(InvoiceDetails);
     this.router.navigate([`/create-invoice/${InvoiceDetails.templateId}`]);
   }
