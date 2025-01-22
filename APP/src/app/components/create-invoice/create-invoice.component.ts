@@ -15,11 +15,11 @@ import { DataService } from '../../services/DataService';
 
 
 @Component({
-  selector: 'app-create-invoice',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, InvoiceSuccessDialogComponent, ToastComponent],
-  templateUrl: './create-invoice.component.html',
-  styleUrl: './create-invoice.component.css'
+    selector: 'app-create-invoice',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, InvoiceSuccessDialogComponent, ToastComponent],
+    templateUrl: './create-invoice.component.html',
+    styleUrl: './create-invoice.component.css'
 })
 export class CreateInvoiceComponent implements OnInit {
 
@@ -63,6 +63,7 @@ export class CreateInvoiceComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.selectedTemplateId = params['templateId'];
     });
+    
 
   }
 
@@ -297,8 +298,7 @@ export class CreateInvoiceComponent implements OnInit {
     if (this.invoiceForm.valid) {
       this.isLoading = true;
       try {
-        // Prepare data to save
-        console.log('Invoice Data:', this.invoiceForm.value);
+    
         const invoiceData: InvoiceDetails = this.invoiceForm.value;
         invoiceData.userId = 2;
         invoiceData.status = "Draft"
@@ -313,8 +313,17 @@ export class CreateInvoiceComponent implements OnInit {
         const response = await this.invoiceService.createInvoice(invoiceData).toPromise();
 
         if (response?.isSuccess) {
-          this.toast.showSuccess(response.message);
-          this.showSuccessDialog = true;
+         // this.toast.showSuccess(response.message);
+
+          if(this.invoiceToEdit){
+            this.showSuccessDialog = false;
+            this.toast.showSuccess("Invoice Draft Updated Successfully");
+          }
+          else{
+            this.toast.showSuccess("Invoice Saved Updated Successfully");
+            this.showSuccessDialog = true;
+          }
+        
 
         } else {
 
@@ -341,33 +350,27 @@ export class CreateInvoiceComponent implements OnInit {
 
 
   closeSuccessDialog() {
-    this.router.navigate(['/invoices']);
+   // this.router.navigate(['/invoices']);
+    this.formReset();
+    this.activeTab = 'edit';
     this.showSuccessDialog = false;
+  }
+
+  private formReset() {
+    this.invoiceForm.reset();
+    this.createForm();
+    this.logoPreview = null;
+    this.signaturePreview = null;
+    this.dataService.changeData(null);
   }
 
   handleSuccessFinish(data: { email: EmailSettings }) {
 
-    console.log('Email Settings:', data.email);
-
-
-    // Handle email settings
     if (data.email) {
       this.sendInvoiceEmail(data.email);
     }
-
-    // Close dialog and navigate
     this.showSuccessDialog = false;
     this.router.navigate(['/invoices']);
-  }
-
-
-  private async setupReminders(reminderSettings: ReminderSettings) {
-    try {
-      // Your reminder setup logic
-      console.log('Setting up reminders...', reminderSettings);
-    } catch (error) {
-      console.error('Error setting up reminders:', error);
-    }
   }
 
 
@@ -400,10 +403,15 @@ export class CreateInvoiceComponent implements OnInit {
 
   goBack() {
     if (this.invoiceToEdit) {
+      this.formReset()
       this.router.navigate(['/invoices']);
+     
+
     }
     else {
+      this.formReset()
       this.router.navigate(['/templates']);
+     
     }
 
   }

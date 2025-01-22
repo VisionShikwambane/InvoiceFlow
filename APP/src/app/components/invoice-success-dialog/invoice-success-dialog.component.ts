@@ -1,55 +1,46 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { trigger, state, style, animate, transition } from '@angular/animations';
-import { ReminderSettings } from '../../models/ReminderSettings';
-import { EmailSettings } from '../../models/EmailSettings';
-
 
 @Component({
-  selector: 'app-invoice-success-dialog',
-  standalone: true,
-  imports: [FormsModule,CommonModule ],
-  templateUrl: './invoice-success-dialog.component.html',
-  styleUrl: './invoice-success-dialog.component.css'
+    selector: 'app-invoice-success-dialog',
+    standalone: true,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './invoice-success-dialog.component.html',
+    styleUrl: './invoice-success-dialog.component.css'
 })
 export class InvoiceSuccessDialogComponent {
-
-
-
   @Input() show = false;
-  @Input() sendInvoiceToEmail = 'example@gmail.com';
-  @Output() onClose = new EventEmitter<void>();
-  @Output() onFinish = new EventEmitter<{
-    emailSettings: EmailSettings;
-  }>();
-
-  currentStep = 0;
-  steps = ['Send Invoice', 'Review & Download'];
-
-
-
-  emailSettings: EmailSettings = {
-    to: '',
-    subject: 'Invoice from Your Company',
-    message: '',
-    scheduleType: 'now',
-    scheduledDate: new Date()
+  @Input() invoiceDetails: { number: string; client: string; amount: number; dueDate: Date } = {
+    number: 'INV-001',
+    client: 'Client Name',
+    amount: 1000.00,
+    dueDate: new Date()
   };
+  @Input() sendInvoiceToEmail = '';
+  
+  @Output() onClose = new EventEmitter<void>();
+  @Output() onAction = new EventEmitter<{ action: string, email?: string }>();
 
- 
+  showEmailInput = false;
 
-  downloadInvoice(): void {
-    // Implementation would depend on your invoice generation service
-    console.log('Downloading invoice...');
+  onActionClick(action: string) {
+    if (action === 'send') {
+      this.showEmailInput = true;
+    } else if (action === 'saveDraft' || action === 'download') {
+      this.onAction.emit({ action });
+      this.showEmailInput = false; // Reset the email input if it was shown
+    }
   }
 
-  finish(): void {
-    this.onFinish.emit({
-      emailSettings: this.emailSettings
-    });
-    this.onClose.emit();
+  confirmSend() {
+    if (this.isValidEmail(this.sendInvoiceToEmail)) {
+      this.onAction.emit({ action: 'send', email: this.sendInvoiceToEmail });
+    }
   }
 
-
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 }
