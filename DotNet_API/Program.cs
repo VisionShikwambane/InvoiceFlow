@@ -1,14 +1,17 @@
+using DinkToPdf.Contracts;
+using DinkToPdf;
 using DotNet_API.DatabaseContext;
 using DotNet_API.Services;
 using DotNet_API.Utilities;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRepositories();
 builder.Services.AddServices();
-
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>

@@ -1,44 +1,81 @@
 using Microsoft.AspNetCore.Mvc;
-using PuppeteerSharp;
-using PuppeteerSharp.Media;
-using System.Threading.Tasks;
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using System.Drawing;
 
-namespace DotNet_API.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class InvoicePdfTesting : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class InvoicePdfController : ControllerBase
+    private readonly IConverter _converter;
+
+    public InvoicePdfTesting(IConverter converter)
     {
-        [HttpGet("generate-pdf")]
-        public async Task<IActionResult> GeneratePdf()
+        _converter = converter;
+    }
+
+    [HttpGet("generate-pdf")]
+    public IActionResult GeneratePdf()
+    {
+        var html = @"
+        <html>
+            <head>
+                <style>
+                    body { font-family: Arial; }
+                    .invoice-box { max-width: 800px; margin: auto; padding: 30px; }
+                    .header { text-align: center; font-size: 24px; margin-bottom: 30px; }
+                    .info { margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { padding: 12px; text-align: left; border: 1px solid #ddd; }
+                    th { background-color: #f8f9fa; }
+                    .total { margin-top: 20px; font-weight: bold; text-align: right; }
+                </style>
+            </head>
+            <body>
+                <div class='invoice-box'>
+                    <div class='header'>INVOICE</div>
+                    <div class='info'>
+                        <p><strong>Invoice #:</strong> INV-001</p>
+                        <p><strong>Date:</strong> " + DateTime.Now.ToString("dd/MM/yyyy") + @"</p>
+                        <p><strong>Customer:</strong> John Doe</p>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <td>Product A</td>
+                            <td>2</td>
+                            <td>$50.00</td>
+                            <td>$100.00</td>
+                        </tr>
+                    </table>
+                    <div class='total'>Total Amount: $100.00</div>
+                </div>
+            </body>
+        </html>";
+
+        var doc = new HtmlToPdfDocument()
         {
-            // Download the Chromium browser if not already available
-            var browserFetcher = new BrowserFetcher();
-            await browserFetcher.DownloadAsync();
+            GlobalSettings = {
+                ColorMode = ColorMode.Color,
+                Orientation = Orientation.Portrait,
+                PaperSize = PaperKind.A4,
+                Margins = new MarginSettings { Top = 10, Bottom = 10 }
+            },
+            Objects = {
+                new ObjectSettings() {
+                    PagesCount = true,
+                    HtmlContent = html,
+                    WebSettings = { DefaultEncoding = "utf-8" }
+                }
+            }
+        };
 
-            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
-            using var page = await browser.NewPageAsync();
-
-            // Navigate to the Angular app route
-            await page.GoToAsync("http://localhost:4200/template/morderntemplate", WaitUntilNavigation.Networkidle0);
-
-            // Wait for Angular to render the `.invoice-content` element
-            await page.WaitForSelectorAsync(".invoice-content");
-
-            // Optional: Add an extra delay to ensure rendering is complete
-            await Task.Delay(2000);
-
-            // Take a screenshot for debugging (optional)
-            await page.ScreenshotAsync("debug-screenshot.png");
-
-            // Generate the PDF
-            var pdfStream = await page.PdfStreamAsync(new PdfOptions
-            {
-                Format = PaperFormat.A4,
-                PrintBackground = true
-            });
-
-            return File(pdfStream, "application/pdf", "Invoice.pdf");
-        }
+        byte[] pdf = _converter.Convert(doc);
+        return File(pdf, "application/pdf", "invoice.pdf");
     }
 }
