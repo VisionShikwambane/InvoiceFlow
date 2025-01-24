@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRepositories();
+builder.Services
+    .AddControllersWithViews();
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+builder.Services.AddRazorPages();
 builder.Services.AddServices();
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
