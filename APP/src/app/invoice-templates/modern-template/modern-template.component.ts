@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { InvoiceDetails } from '../../models/create-invoice.interface';
+import { InvoiceDetails } from '../../models/InvoiceDetails';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';

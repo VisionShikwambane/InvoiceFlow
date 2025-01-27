@@ -53,7 +53,7 @@ namespace DotNet_API.DtoModels
         [Required]
         public int ClientId { get; set; }
 
-        public int? TemplateId { get; set; }
+        public string? templateName { get; set; }
 
         [Required]
         [Range(0, double.MaxValue)]
@@ -78,6 +78,8 @@ namespace DotNet_API.DtoModels
         [Required]
         [Range(0, double.MaxValue)]
         public decimal Total { get; set; }
+
+        public bool isArchived { get; set; }
 
         public ClientDto? Client { get; set; }
 

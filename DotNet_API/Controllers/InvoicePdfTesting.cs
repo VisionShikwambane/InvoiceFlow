@@ -16,7 +16,6 @@ public class InvoicePdfTesting : ControllerBase
         _converter = converter;
         _viewRenderer = viewRenderer;
     }
-
     [HttpPost("generate-invoice-pdf")]
     public async Task<FileResult> GenerateInvoicePdf([FromBody] InvoiceDto invoice)
     {
@@ -25,21 +24,26 @@ public class InvoicePdfTesting : ControllerBase
         var doc = new HtmlToPdfDocument()
         {
             GlobalSettings = {
-                ColorMode = ColorMode.Color,
-                PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10 }
-            },
+            ColorMode = ColorMode.Color,
+            PaperSize = PaperKind.A4,
+            Margins = new MarginSettings { Top = 10, Bottom = 10, Left = 10, Right = 10 }
+        },
             Objects = {
-                new ObjectSettings {
-                    HtmlContent = html,
-                    WebSettings = { DefaultEncoding = "utf-8" }
+            new ObjectSettings {
+                HtmlContent = html,
+                WebSettings = {
+                    DefaultEncoding = "utf-8",
+                    LoadImages = true,
+                    EnableIntelligentShrinking = true
                 }
             }
+        }
         };
 
         byte[] pdf = _converter.Convert(doc);
         return File(pdf, "application/pdf", $"invoice-{invoice.InvoiceNo}.pdf");
     }
+
 
 
     [HttpPost("preview")]

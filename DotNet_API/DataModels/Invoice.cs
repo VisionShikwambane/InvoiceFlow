@@ -54,7 +54,7 @@ namespace DotNet_API.DataModels
         [Required]
         public int ClientId { get; set; }
 
-        public int? TemplateId { get; set; }
+        public string? templateName { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -79,6 +79,8 @@ namespace DotNet_API.DataModels
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Total { get; set; }
+
+        public bool isArchived { get; set; }
 
 
         // Navigation properties

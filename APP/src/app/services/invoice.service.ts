@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { InvoiceDetails } from '../models/create-invoice.interface';
+import { InvoiceDetails } from '../models/InvoiceDetails';
 
 import { Observable } from 'rxjs';
 import { ResponseResponse } from '../models/ResponseObject';

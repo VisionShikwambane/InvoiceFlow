@@ -22,6 +22,16 @@ namespace DotNet_API.Repositories
         }
 
 
+        public async Task<Invoice?> GetInvoiceById(int invoiceId) // Add '?' to Invoice
+        {
+            return await _context.Invoices
+                .Where(e => e.Id == invoiceId)
+                .Include(i => i.Client)
+                .Include(i => i.Items)
+                .FirstOrDefaultAsync();
+        }
+
+
 
 
 

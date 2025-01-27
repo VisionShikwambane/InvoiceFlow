@@ -132,12 +132,11 @@
         <!-- Header Section -->
         <div class="header">
             <div class="logo-container">
-                @if (Model.CompanyLogo != null)
+                @if (Model.CompanyLogo!.Length != 0)
                 {
                      @* Convert the byte array to Base64 string *@
-    string base64String = Convert.ToBase64String(Model.CompanyLogo);
-    
-    <img src="data:image/png;base64,@base64String" alt="Company Logo" />
+                      string base64String = Convert.ToBase64String(Model.CompanyLogo);
+                     <img src="data:image/png;base64,@base64String" alt="Company Logo" />
                 }
             </div>
             <div class="invoice-info">

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService } from '../../services/invoice.service';
-import { InvoiceDetails } from '../../models/create-invoice.interface';
+import { InvoiceDetails } from '../../models/InvoiceDetails';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
@@ -267,7 +267,7 @@ export class InvoicePageComponent implements OnInit {
   editInvoice(InvoiceDetails: InvoiceDetails) {
     //console.log("Invoice Details",InvoiceDetails);
     this.dataService.changeData(InvoiceDetails);
-    this.router.navigate([`/create-invoice/${InvoiceDetails.templateId}`]);
+    this.router.navigate([`/create-invoice/${InvoiceDetails.templateName}`]);
   }
 
   markAsPaid(invoice: InvoiceDetails) {

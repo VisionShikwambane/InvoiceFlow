@@ -38,6 +38,8 @@ namespace DotNet_API.Controllers
 
 
 
+
+
         [HttpPost]
         public async Task<ActionResult<ResponseObject<InvoiceDto>>> AddInvoice([FromBody] InvoiceDto invoiceDto)
         {
@@ -71,6 +73,10 @@ namespace DotNet_API.Controllers
             }
         }
 
+
+
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResponseObject<bool>>> DeleteInvoice(int id)
         {
@@ -93,7 +99,27 @@ namespace DotNet_API.Controllers
         }
 
 
-     
+        [HttpGet("GeneratePdf/{invoiceId}")]
+        public async Task<IActionResult> GenerateInvoicePdf(int invoiceId)
+        {
+            try
+            {
+                var fileResult = await this.invoiceService.GenerateInvoicePdf(invoiceId);
+                return fileResult;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseObject<bool>(false, ex.Message, false));
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"An error occurred while generating PDF: {ex.Message}";
+                return StatusCode(500, new ResponseObject<bool>(false, errorMessage, false));
+            }
+        }
+
+
+
 
 
     }

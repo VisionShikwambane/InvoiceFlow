@@ -13,7 +13,7 @@ export interface InvoiceDetails {
     signatureImage: string;
     signatureDate: Date;
     companyLogo: string
-    templateId: number;
+    templateName: string;
     clientId: number;
     status: string;
     client: Client;
@@ -26,9 +26,8 @@ export interface InvoiceDetails {
     tax: number;
     total: number;
     activities?: InvoiceActivity[];
-    archived: boolean;
     createdAt: string;
-   // isArchived: boolean;
+    isArchived: boolean;
 }
 
 export interface InvoiceItem {

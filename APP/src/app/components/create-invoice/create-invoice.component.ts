@@ -7,7 +7,7 @@ import { InvoiceSuccessDialogComponent } from '../invoice-success-dialog/invoice
 import { ReminderSettings } from '../../models/ReminderSettings';
 import { EmailSettings } from '../../models/EmailSettings';
 import { InvoiceService } from '../../services/invoice.service';
-import { InvoiceDetails } from '../../models/create-invoice.interface';
+import { InvoiceDetails } from '../../models/InvoiceDetails';
 import { ToastService } from '../../services/toast.service';
 import { ToastComponent } from '../toast/toast';
 import { DataService } from '../../services/DataService';
