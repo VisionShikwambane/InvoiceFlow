@@ -32,5 +32,7 @@ namespace DotNet_API.DataModels
 
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
+
+
     }
 }

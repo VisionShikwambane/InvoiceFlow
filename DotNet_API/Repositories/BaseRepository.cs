@@ -8,7 +8,7 @@ namespace DotNet_API.Repositories
     {
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
-        Task AddAsync(T entity);
+        Task<T> AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
 
@@ -35,13 +35,14 @@ namespace DotNet_API.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public virtual async Task AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             //await _context.Set<T>().AddAsync(entity);
             //await _context.SaveChangesAsync();
             _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
             _context.Entry(entity).State = EntityState.Detached;
+            return entity;
         }
 
         public virtual async Task UpdateAsync(T entity)

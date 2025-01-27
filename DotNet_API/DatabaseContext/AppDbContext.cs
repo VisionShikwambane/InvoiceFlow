@@ -19,6 +19,8 @@ namespace DotNet_API.DatabaseContext
 
         public DbSet<Client> Clients { get; set; }
 
+        public DbSet<InvoiceTemplate> InvoiceTemplates { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

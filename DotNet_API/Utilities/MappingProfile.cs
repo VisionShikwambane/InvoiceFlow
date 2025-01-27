@@ -14,6 +14,10 @@ namespace DotNet_API.Utilities
 
             CreateMap<InvoiceItemDto, InvoiceItem>().ReverseMap();
 
+            CreateMap<InvoiceTemplateDto, InvoiceTemplate>().ReverseMap();
+
+
+
         }
     }
 }

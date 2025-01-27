@@ -29,7 +29,6 @@ export class SelectInvoiceTemplateComponent {
       description: 'Clean and professional design for business use',
       preview: 'assets/templates-pictures/proffesional_template.png',
       tags: ['Business', 'Corporate', 'Clean'],
-      popularity: 45
     },
     {
       id: '2',
@@ -37,7 +36,7 @@ export class SelectInvoiceTemplateComponent {
       description: 'Contemporary design with minimal elements',
       preview: 'assets/templates-pictures/morderntemplate.png',
       tags: ['Modern', 'Minimal', 'Sleek'],
-      popularity: 38
+    
     }
    
   ];

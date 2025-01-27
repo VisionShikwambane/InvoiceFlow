@@ -28,6 +28,7 @@ namespace DotNet_API.Repositories
                 .Where(e => e.Id == invoiceId)
                 .Include(i => i.Client)
                 .Include(i => i.Items)
+                .Include(e=>e.InvoiceTemplate)
                 .FirstOrDefaultAsync();
         }
 

@@ -49,7 +49,7 @@ namespace DotNet_API.Services
         public async Task<FileResult> GenerateInvoicePdf(int invoiceId)
         {
             var invoice = await this.invoiceRepository.GetInvoiceById(invoiceId);
-            var invoiceDto = this.mapper.Map<InvoiceDto>(invoice);
+           
 
             if (invoice == null)
             {
@@ -58,8 +58,10 @@ namespace DotNet_API.Services
 
             try
             {
-                
-                var html = await this.viewRenderService.RenderToStringAsync($"~/TemplateViews/{invoiceDto.templateName}", invoiceDto);
+                var invoiceDto = this.mapper.Map<InvoiceDto>(invoice);
+
+
+                var html = await this.viewRenderService.RenderToStringAsync($"{invoiceDto.InvoiceTemplate!.TemplatePath}", invoiceDto);
 
                 var doc = new HtmlToPdfDocument()
                 {

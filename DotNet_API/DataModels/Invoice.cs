@@ -54,7 +54,7 @@ namespace DotNet_API.DataModels
         [Required]
         public int ClientId { get; set; }
 
-        public string? templateName { get; set; }
+        public int? TemplateId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -85,6 +85,10 @@ namespace DotNet_API.DataModels
 
         // Navigation properties
         public Client? Client { get; set; }
+
+
+        public InvoiceTemplate? InvoiceTemplate { get; set; }
+
         public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
     }
 }

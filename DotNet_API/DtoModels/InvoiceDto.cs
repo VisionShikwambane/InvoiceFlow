@@ -53,7 +53,7 @@ namespace DotNet_API.DtoModels
         [Required]
         public int ClientId { get; set; }
 
-        public string? templateName { get; set; }
+        public int? templateId { get; set; }
 
         [Required]
         [Range(0, double.MaxValue)]
@@ -82,6 +82,8 @@ namespace DotNet_API.DtoModels
         public bool isArchived { get; set; }
 
         public ClientDto? Client { get; set; }
+
+        public InvoiceTemplateDto? InvoiceTemplate { get; set; }
 
         public List<InvoiceItemDto>? Items { get; set; } = new List<InvoiceItemDto>();
     }
