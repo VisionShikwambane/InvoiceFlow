@@ -66,26 +66,14 @@ namespace DotNet_API.Services
                 var doc = new HtmlToPdfDocument()
                 {
                     GlobalSettings = {
-                     ColorMode = ColorMode.Color,
-                     PaperSize = PaperKind.A4,
-                     Margins = new MarginSettings {
+                    ColorMode = ColorMode.Color,
+                    PaperSize = PaperKind.A4,
+                    Margins = new MarginSettings {
                     Top = 10,
                     Bottom = 10,
                     Left = 10,
                     Right = 10
-                }
-
-               },
-                    Objects = {
-                    new ObjectSettings {
-                    HtmlContent = html,
-                    WebSettings = {
-                        DefaultEncoding = "utf-8",
-                        LoadImages = true,
-                        EnableIntelligentShrinking = true
-                    }
-                }
-            }
+                }}, Objects = { new ObjectSettings {HtmlContent = html, WebSettings = { DefaultEncoding = "utf-8", LoadImages = true, EnableIntelligentShrinking = true }}}
                 };
 
                 byte[] pdf = this.converter.Convert(doc);
@@ -104,9 +92,7 @@ namespace DotNet_API.Services
 
 
 
-
-
-
+ 
 
         public async Task<ResponseObject<InvoiceDto>> AddInvoiceAsync(InvoiceDto invoiceDto)
         {
@@ -158,6 +144,57 @@ namespace DotNet_API.Services
 
             return new ResponseObject<InvoiceDto>(true, "Invoice, Client, and InvoiceItems added successfully", savedInvoiceDto);
         }
+
+
+        public async Task<ResponseObject<InvoiceDto>> ArchiveInvoice(InvoiceDto invoiceDto)
+        {
+            var invoice = await this.invoiceRepository.GetInvoiceById(invoiceDto.Id);
+            if (invoice == null)
+            {
+                return new ResponseObject<InvoiceDto>(false, "Invoice not found", null);
+            }
+
+            invoice.isArchived = invoiceDto.isArchived;
+            await this.appDbContext.SaveChangesAsync();
+
+            var updatedInvoiceDto = this.mapper.Map<InvoiceDto>(invoice);
+
+            // Make sure we return the updated invoice in the Data property
+            return new ResponseObject<InvoiceDto>(
+                true,
+                invoiceDto.isArchived ? "Invoice archived successfully" : "Invoice unarchived successfully",
+                updatedInvoiceDto
+            );
+
+         
+        }
+
+
+        public async Task<ResponseObject<InvoiceDto>> UpdateStatus(InvoiceDto invoiceDto)
+        {
+            try
+            {
+                var invoice = await this.invoiceRepository.GetInvoiceById(invoiceDto.Id);
+
+                if (invoice == null)
+                {
+                    return new ResponseObject<InvoiceDto>(false, "Invoice not found", null!);
+                }
+                invoice.Status = invoiceDto.Status;
+                await this.appDbContext.SaveChangesAsync();
+                var savedInvoiceDto = this.mapper.Map<InvoiceDto>(invoice);
+
+                return new ResponseObject<InvoiceDto>(true, "Invoice archived successfully", savedInvoiceDto);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+          
+        }
+
 
 
     }

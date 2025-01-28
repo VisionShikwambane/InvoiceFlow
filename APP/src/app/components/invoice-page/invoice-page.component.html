@@ -48,25 +48,21 @@
 
       <div class="flex items-center space-x-1">
         <button *ngFor="let status of ['All', 'Draft', 'Paid', 'Overdue']"
-          [class.bg-indigo-100]="selectedStatus === status && !showArchived"
-          [class.text-indigo-700]="selectedStatus === status && !showArchived"
+          [class.bg-indigo-100]="selectedStatus === status" [class.text-indigo-700]="selectedStatus === status"
           [class.bg-white]="selectedStatus !== status || showArchived" (click)="filterByStatus(status)"
           class="px-3 py-1 rounded-md text-xs font-medium border border-gray-200 hover:bg-indigo-50 transition-colors duration-200">
           {{ status }}
         </button>
-      
+
         <!-- Archived Filter Button -->
-        <button
-          [class.bg-indigo-100]="showArchived"
-          [class.text-indigo-700]="showArchived"
-          [class.bg-white]="!showArchived"
-          (click)="filterArchived()"
+        <button [class.bg-indigo-100]="showArchived" [class.text-indigo-700]="showArchived"
+          [class.bg-white]="!showArchived" (click)="filterArchived()"
           class="flex items-center space-x-1 px-3 py-1 rounded-md text-xs font-medium border border-gray-200 hover:bg-indigo-50 transition-colors duration-200">
           <span class="material-icons text-sm">archive</span>
           <span>Archived</span>
         </button>
       </div>
-      
+
 
     </div>
 
@@ -119,39 +115,43 @@
               View Details
             </button>
             <div class="flex space-x-2">
-              <button class="p-2 text-gray-400 hover:text-green-500 transition-colors duration-200" title="Send Invoice">
+              <button class="p-2 text-gray-400 hover:text-green-500 transition-colors duration-200"
+                title="Send Invoice">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 12h4m0 0l-5-5m5 5l-5 5m5-5H8a4 4 0 01-4-4V4" />
                 </svg>
                 <span class="sr-only">Send Invoice</span>
               </button>
-              <button class="p-2 text-gray-400 hover:text-gray-500 transition-colors duration-200" title="Edit" (click)="editInvoice(invoice)">
+              <button class="p-2 text-gray-400 hover:text-gray-500 transition-colors duration-200" title="Edit"
+                (click)="editInvoice(invoice)">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
                 <span class="sr-only">Edit</span>
               </button>
-            
+
               <!-- Delete Button -->
-              <button class="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200" title="Delete"   (click)="openConfirmationDialog()">
+              <button class="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200" title="Delete"
+                (click)="deleteInvoice(invoice)">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 <span class="sr-only">Delete</span>
               </button>
-            
+
               <!-- Archive Button with File Icon -->
-              <button class="p-2 text-gray-400 hover:text-blue-500 transition-colors duration-200" title="Archive">
+              <!-- <button class="p-2 text-gray-400 hover:text-blue-500 transition-colors duration-200" title="Archive"
+                (click)="ArchiveInvoice(invoice)">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5V8h5.5M10 12h4m-4 4h4m-6-8h8" />
                 </svg>
                 <span class="sr-only">Archive</span>
-              </button>
-          
+              </button> -->
+
               <!-- Dropdown with proper CDK overlay origin -->
               <div class="relative inline-block">
                 <button #dropdownButton cdkOverlayOrigin (click)="toggleDropdown(invoice.id, $event)"
@@ -186,7 +186,7 @@
                     </button>
 
                     <!-- Mark as Paid - Only for non-paid invoices -->
-                    <button (click)="markAsPaid(invoice)"
+                    <button (click)="updateStatus(invoice, 'Paid')"
                       class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -197,7 +197,6 @@
 
                     <!-- Send Reminder - For non-draft, non-paid invoices -->
                     <button (click)="sendReminder(invoice)"
-                    
                       class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -205,7 +204,16 @@
                       </svg>
                       Send Reminder
                     </button>
-                   
+                    <!-- Archive/Unarchive Toggle -->
+                    <button
+                      class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" (click)="ArchiveInvoice(invoice)">
+                      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                      </svg>
+                      {{ invoice.isArchived ? 'Unarchive' : 'Archive' }}
+                    </button>
+
 
                     <!-- Delete Invoice - Only for draft invoices -->
                     <!-- <button (click)="deleteInvoice(invoice)" 
@@ -486,6 +494,6 @@
 </div>
 
 
-<app-confirm-dialog  #confirmDialog></app-confirm-dialog>
+<app-confirm-dialog #confirmDialog></app-confirm-dialog>
 <app-spinner [isLoading]="loading" message="Loading..."></app-spinner>
 <app-toast></app-toast>

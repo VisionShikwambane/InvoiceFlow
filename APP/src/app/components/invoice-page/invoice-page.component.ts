@@ -12,6 +12,8 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { ToastService } from '../../services/toast.service';
 import { ToastComponent } from '../toast/toast';
 import { DataService } from '../../services/DataService';
+import { lastValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface InvoiceActivity {
   id: string;
@@ -37,6 +39,7 @@ export class InvoicePageComponent implements OnInit {
   isModalOpen = false;
   loading = false;
   amount!: number;
+  showArchived: boolean = false; 
   @ViewChild('confirmDialog') confirmDialog!: ConfirmDialogComponent;
 
   constructor(
@@ -49,7 +52,7 @@ export class InvoicePageComponent implements OnInit {
   }
   ngOnInit(): void {
     this.getUserInvoices();
-    this.toastService.showError('Invoice saved successfully');
+   
   }
 
 
@@ -77,12 +80,6 @@ export class InvoicePageComponent implements OnInit {
     console.log('Cancelled delete');
   }
 
-  archiveInvoice(e: any) {
-
-  }
-
-
-  unarchiveInvoice(e: any) { }
 
   formatActivityTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
@@ -116,7 +113,7 @@ export class InvoicePageComponent implements OnInit {
     this.invoiceService.getUserInvoices(userId).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          console.log(response.data);
+          console.log("Retrived Invoices", response.data);
           this.loading = false;
           this.invoices = response.data.map((invoice: any) => {
             const amount = Array.isArray(invoice.items)
@@ -128,6 +125,7 @@ export class InvoicePageComponent implements OnInit {
 
             return { ...invoice, amount };
           });
+          console.log("Invoices", this.invoices)
 
         } else {
           this.loading = false;
@@ -140,9 +138,50 @@ export class InvoicePageComponent implements OnInit {
   }
 
 
+  ArchiveInvoice(invoice: InvoiceDetails): void {
+    invoice.isArchived = !invoice.isArchived;
+    
+    this.invoiceService.archiveInvoice(invoice).subscribe({
+      next: (response) => {
+          if (response?.isSuccess) {
+              this.toastService.showSuccess(response.message);
+          } else {
+              invoice.isArchived = !invoice.isArchived; // revert if failed
+              this.toastService.showError('Failed to archive invoice');
+          }
+      },
+      error: (error: HttpErrorResponse) => {
+          invoice.isArchived = !invoice.isArchived; // revert if error
+          console.error('Error archiving invoice:', error);
+          this.toastService.showError(error.message || 'Failed to archive invoice');
+      }
+  });
+  
+  }
 
 
+  async updateStatus(invoice: InvoiceDetails, status: string) {
+  try {
 
+    invoice.status = status;
+    const response = await lastValueFrom(this.invoiceService.updateStatus(invoice));
+
+    if(response?.isSuccess){
+      this.toastService.showSuccess(response.message);
+    }
+    else{
+
+      this.toastService.showError('Failed to archive invoice');
+    }
+
+  } catch (error) {
+
+    console.log('Error archiving invoice:', error);
+    
+  }
+ 
+  
+}
 
 
 
@@ -179,11 +218,11 @@ export class InvoicePageComponent implements OnInit {
 
   }
 
-  showArchived() {
+ // Change this from true to false
 
-  }
   filterArchived() {
-
+    this.showArchived = !this.showArchived;  // Toggle between archived and non-archived view
+    this.currentPage = 1;  // Reset to first page when switching views
   }
 
   createInvoice() {
@@ -195,21 +234,35 @@ export class InvoicePageComponent implements OnInit {
   itemsPerPage = 6; // Show 9 items per page
 
   get filteredInvoices(): InvoiceDetails[] {
+    if (!this.invoices) return [];
+  
     return this.invoices.filter(invoice => {
-      if (this.selectedStatus !== 'All' && invoice.status.toLowerCase() !== this.selectedStatus.toLowerCase()) {
+      // First filter by archived status
+      if (invoice.isArchived !== this.showArchived) {
         return false;
       }
-
-      if (!this.searchTerm) return true;
-
-      const searchLower = this.searchTerm.toLowerCase();
-      return (
-        invoice.client.name.toLowerCase().includes(searchLower) ||
-        invoice.id.toLowerCase().includes(searchLower)
-        // invoice.amount.toString().toString().includes(searchLower)
-      );
+  
+      // Then apply status filter
+      if (this.selectedStatus !== 'All' && 
+          invoice.status?.toLowerCase() !== this.selectedStatus.toLowerCase()) {
+        return false;
+      }
+  
+      // Finally apply search filter
+      if (this.searchTerm) {
+        const searchLower = this.searchTerm.toLowerCase();
+        return (
+          invoice.client?.name?.toLowerCase().includes(searchLower) ||
+          invoice.id?.toString().toLowerCase().includes(searchLower) ||
+          invoice.total?.toString().toLowerCase().includes(searchLower)
+        );
+      }
+  
+      return true;
     });
   }
+  
+  
 
   get paginatedInvoices(): InvoiceDetails[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -267,7 +320,7 @@ export class InvoicePageComponent implements OnInit {
   editInvoice(InvoiceDetails: InvoiceDetails) {
     //console.log("Invoice Details",InvoiceDetails);
     this.dataService.changeData(InvoiceDetails);
-    this.router.navigate([`/create-invoice/${InvoiceDetails.templateName}`]);
+    this.router.navigate([`/create-invoice/${InvoiceDetails.id}`]);
   }
 
   markAsPaid(invoice: InvoiceDetails) {

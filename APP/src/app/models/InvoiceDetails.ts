@@ -13,7 +13,7 @@ export interface InvoiceDetails {
     signatureImage: string;
     signatureDate: Date;
     companyLogo: string
-    templateName: string;
+    templateId: number;
     clientId: number;
     status: string;
     client: Client;

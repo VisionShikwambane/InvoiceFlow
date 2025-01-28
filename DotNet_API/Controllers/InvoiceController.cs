@@ -3,7 +3,6 @@ using DotNet_API.DtoModels;
 using DotNet_API.Repositories;
 using DotNet_API.Services;
 using DotNet_API.Utilities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet_API.Controllers
@@ -117,6 +116,42 @@ namespace DotNet_API.Controllers
                 return StatusCode(500, new ResponseObject<bool>(false, errorMessage, false));
             }
         }
+
+        [HttpPost("archive")]
+        public async Task<IActionResult> ArchiveInvoice([FromBody] InvoiceDto invoiceDto)
+        {
+            try
+            {
+                var response = await this.invoiceService.ArchiveInvoice(invoiceDto);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                var errorMessage = $"An unexpected error occurred: {ex.Message}";
+                return StatusCode(500, new ResponseObject<InvoiceDto>(false, errorMessage, null));
+            }
+          
+        }
+
+
+        [HttpPost("updateStatus")]
+        public async Task<IActionResult> UpdateStatus([FromBody] InvoiceDto invoiceDto)
+        {
+            try
+            {
+                var response = await this.invoiceService.UpdateStatus(invoiceDto);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                var errorMessage = $"An unexpected error occurred: {ex.Message}";
+                return StatusCode(500, new ResponseObject<InvoiceDto>(false, errorMessage, null!));
+            }
+
+        }
+
 
 
 
