@@ -52,6 +52,10 @@ export class InvoicePageComponent implements OnInit {
   }
   ngOnInit(): void {
     this.getUserInvoices();
+    //this.toastService.showSuccess('Operation completed');
+    // this.toastService.showError('Something went wrong');
+    this.toastService.showInfo('New updates available');
+    
    
   }
 
@@ -214,9 +218,7 @@ export class InvoicePageComponent implements OnInit {
     // Implement filtering logic if necessary
   }
 
-  downloadInvoicePDF(e: any) {
 
-  }
 
  // Change this from true to false
 
@@ -318,6 +320,11 @@ export class InvoicePageComponent implements OnInit {
   }
 
   editInvoice(InvoiceDetails: InvoiceDetails) {
+
+    if(InvoiceDetails.status != 'Draft'){
+    this.toastService.showInfo('Only Draft invoices can be edited');
+    return; 
+    }
     //console.log("Invoice Details",InvoiceDetails);
     this.dataService.changeData(InvoiceDetails);
     this.router.navigate([`/create-invoice/${InvoiceDetails.id}`]);
@@ -339,32 +346,39 @@ export class InvoicePageComponent implements OnInit {
 
   showDialog = false;
 
-  deleteInvoice(invoice: InvoiceDetails) {
-    this.showDialog = false;
-    // this.openDropdownId = null;
-    // if (confirm('Are you sure you want to delete this invoice?')) {
-    //   this.invoiceService.deleteInvoice(invoice.id).subscribe({
-    //     next: () => {
-    //       // Refresh the invoices list
-    //       this.getUserInvoices();
-    //     },
-    //     error: (error) => {
-    //       console.error('Error deleting invoice:', error);
-    //     }
-    //   });
-    // }
+  async deleteInvoice(invoice: InvoiceDetails) {
+    try {
+      const response = await lastValueFrom(this.invoiceService.deleteInvoice(invoice.id));
+  
+      if(response?.isSuccess){
+        this.invoices = this.invoices.filter(inv => inv.id !== invoice.id);
+        this.toastService.showSuccess("Invoice Deleted Successfully");
+      }
+      else{
+  
+        this.toastService.showError('Failed to archive invoice');
+      }
+  
+    } catch (error) {
+  
+      console.log('Error archiving invoice:', error);
+      
+    }
+   
   }
 
-  openConfirmationDialog() {
+  openConfirmationDialog(InvoiceDetails: InvoiceDetails) {
     this.confirmDialog.show(
       'Confirm Delete',
-      'Are you sure you want to clear all the Grid Lines?',
-      () => this.clear(),
+      'Are you sure you want to delete this invoice?',
+      () => this.deleteInvoice(InvoiceDetails),
       () => this.cancelClear()
     );
   }
-  clear() { }
-  cancelClear() { }
+  clear() {
+    console.log("Invoice Deleted");
+   }
+  cancelClear() {""}
 
 
   sendReminder(invoice: InvoiceDetails) {
@@ -480,4 +494,34 @@ export class InvoicePageComponent implements OnInit {
         return 'Activity recorded';
     }
   }
+
+
+  async downloadInvoicePdf(invoice: InvoiceDetails) {
+    if (this.loading) return;
+  
+    this.loading = true;
+    
+    try {
+      const blob = await lastValueFrom(this.invoiceService.generateInvoicePdf(invoice.id));
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${invoice.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      this.toastService.showSuccess('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      this.toastService.showError('Failed to download PDF');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+
 }

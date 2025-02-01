@@ -47,6 +47,12 @@
     updateStatus(invoiceDto: InvoiceDetails): Observable<ResponseObject<InvoiceDetails>> {
       return this.http.post<ResponseObject<InvoiceDetails>>(`${this.baseUrl}/updateStatus`, invoiceDto);
     }
+
+    generateInvoicePdf(invoiceId: string): Observable<Blob> {
+      return this.http.get(`${this.baseUrl}/GeneratePdf/${invoiceId}`, {
+        responseType: 'blob'
+      });
+    }
     
 
   }

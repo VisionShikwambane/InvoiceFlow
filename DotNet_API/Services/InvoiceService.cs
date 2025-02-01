@@ -155,6 +155,8 @@ namespace DotNet_API.Services
             }
 
             invoice.isArchived = invoiceDto.isArchived;
+            this.appDbContext.Invoices.Attach(invoice);
+            this.appDbContext.Entry(invoice).State = EntityState.Modified;
             await this.appDbContext.SaveChangesAsync();
 
             var updatedInvoiceDto = this.mapper.Map<InvoiceDto>(invoice);
@@ -163,7 +165,7 @@ namespace DotNet_API.Services
             return new ResponseObject<InvoiceDto>(
                 true,
                 invoiceDto.isArchived ? "Invoice archived successfully" : "Invoice unarchived successfully",
-                updatedInvoiceDto
+                null
             );
 
          
@@ -181,10 +183,12 @@ namespace DotNet_API.Services
                     return new ResponseObject<InvoiceDto>(false, "Invoice not found", null!);
                 }
                 invoice.Status = invoiceDto.Status;
+                this.appDbContext.Invoices.Attach(invoice);
+                this.appDbContext.Entry(invoice).State = EntityState.Modified;
                 await this.appDbContext.SaveChangesAsync();
                 var savedInvoiceDto = this.mapper.Map<InvoiceDto>(invoice);
 
-                return new ResponseObject<InvoiceDto>(true, "Invoice archived successfully", savedInvoiceDto);
+                return new ResponseObject<InvoiceDto>(true, "Invoice archived successfully", null);
 
             }
             catch (Exception ex)

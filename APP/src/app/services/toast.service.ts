@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 export interface ToastState {
   show: boolean;
   message: string;
-  type: 'success' | 'error';
+  type: 'success' | 'error' | 'info';  // Added 'info' to the type union
 }
 
 @Injectable({
@@ -32,6 +32,14 @@ export class ToastService {
       show: true,
       message,
       type: 'error'
+    });
+  }
+
+  showInfo(message: string) {  // Added new method for info toasts
+    this.toastState.next({
+      show: true,
+      message,
+      type: 'info'
     });
   }
 
