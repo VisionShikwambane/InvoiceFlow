@@ -14,6 +14,8 @@ import { ToastComponent } from '../toast/toast';
 import { DataService } from '../../services/DataService';
 import { lastValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SoundService } from '../../services/sound.service';
+
 
 interface InvoiceActivity {
   id: string;
@@ -40,13 +42,15 @@ export class InvoicePageComponent implements OnInit {
   loading = false;
   amount!: number;
   showArchived: boolean = false; 
+  
   @ViewChild('confirmDialog') confirmDialog!: ConfirmDialogComponent;
 
   constructor(
     private router: Router,
     private invoiceService: InvoiceService,
     private toastService: ToastService,
-    private dataService: DataService
+    private dataService: DataService,
+    private soundService: SoundService
   ) {
 
   }
@@ -497,6 +501,8 @@ export class InvoicePageComponent implements OnInit {
 
 
   async downloadInvoicePdf(invoice: InvoiceDetails) {
+     
+
     if (this.loading) return;
   
     this.loading = true;
@@ -521,6 +527,11 @@ export class InvoicePageComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  sendInvoice(Invoice: InvoiceDetails) {
+    this.toastService.showInfo('Invoice sent successfully');
+
   }
 
 
