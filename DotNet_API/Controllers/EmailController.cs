@@ -17,8 +17,8 @@ namespace DotNet_API.Controllers
             _emailService = emailService;
         }
 
-        [HttpPost("send-invoice")]
-        public async Task<ActionResult<ResponseObject<IEnumerable<bool>>>> SendInvoiceEmail([FromBody] int invoiceId)
+        [HttpPost("SendInvoice/{invoiceId}")]
+        public async Task<ActionResult<ResponseObject<IEnumerable<bool>>>> SendInvoiceEmail(int invoiceId)
         {
             try
             {
@@ -35,11 +35,4 @@ namespace DotNet_API.Controllers
 
     }
 
-
-    public class EmailRequest
-    {
-        public string ToEmail { get; set; }
-        public string Subject { get; set; }
-        public string Body { get; set; }
-    }
 }
