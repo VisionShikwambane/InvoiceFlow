@@ -21,6 +21,8 @@ namespace DotNet_API.DatabaseContext
 
         public DbSet<InvoiceTemplate> InvoiceTemplates { get; set; }
 
+        public DbSet<EmailSettings> EmailSettings { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

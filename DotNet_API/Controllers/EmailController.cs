@@ -1,4 +1,6 @@
-﻿using DotNet_API.Services;
+﻿using DotNet_API.DtoModels;
+using DotNet_API.Services;
+using DotNet_API.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +17,22 @@ namespace DotNet_API.Controllers
             _emailService = emailService;
         }
 
-        [HttpPost("send")]
-        public async Task<IActionResult> SendEmail([FromBody] EmailRequest request)
+        [HttpPost("send-invoice")]
+        public async Task<ActionResult<ResponseObject<IEnumerable<bool>>>> SendInvoiceEmail([FromBody] int invoiceId)
         {
-            await _emailService.SendEmailAsync(request.ToEmail, request.Subject, request.Body);
-            return Ok(new { Message = "Email Sent Successfully!" });
+            try
+            {
+                var results = await _emailService.SendInvoiceEmailAsync(invoiceId);
+                return Ok(results);
+
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to send invoice email.", Error = ex.Message });
+            }
         }
+
     }
 
 
