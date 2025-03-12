@@ -13,7 +13,7 @@ export class InvoiceSuccessDialogComponent {
   @Input() show = false;
   @Input() invoiceDetails: { number: string; client: string; amount: number; dueDate: Date } = {
     number: 'INV-001',
-    client: 'Client Name',
+    client: 'Masingita Pty',
     amount: 1000.00,
     dueDate: new Date()
   };
