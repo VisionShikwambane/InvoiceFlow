@@ -37,28 +37,38 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
             InvoiceFlow
           </div>
           
-          <!-- Mobile Menu Button -->
-          <button class="p-2 hover:bg-indigo-200 rounded-lg transition-colors duration-300" 
-                  (click)="toggleMobileMenu()">
-            <div class="w-6 h-4 flex flex-col justify-between relative">
-              <span class="w-full h-0.5 bg-gray-800 rounded-full transform transition-all duration-300"
-                    [class.rotate-45]="isOpen"
-                    [class.translate-y-1.5]="isOpen">
-              </span>
-              <span class="w-full h-0.5 bg-gray-800 rounded-full transition-opacity duration-300"
-                    [class.opacity-0]="isOpen">
-              </span>
-              <span class="w-full h-0.5 bg-gray-800 rounded-full transform transition-all duration-300"
-                    [class.-rotate-45]="isOpen"
-                    [class.-translate-y-1.5]="isOpen">
+          <div class="flex items-center space-x-2">
+            <!-- Notifications (Mobile) -->
+            <div class="relative">
+              <i class="fas fa-bell text-indigo-500 text-xl cursor-pointer hover:text-indigo-600 transition-colors duration-300"></i>
+              <span *ngIf="notificationCount > 0" 
+                    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {{ notificationCount > 9 ? '9+' : notificationCount }}
               </span>
             </div>
-          </button>
+            
+            <!-- Mobile Menu Button -->
+            <button class="p-2 hover:bg-indigo-200 rounded-lg transition-colors duration-300" 
+                    (click)="toggleMobileMenu()">
+              <div class="w-6 h-4 flex flex-col justify-between relative">
+                <span class="w-full h-0.5 bg-gray-800 rounded-full transform transition-all duration-300"
+                      [class.rotate-45]="isOpen"
+                      [class.translate-y-1.5]="isOpen">
+                </span>
+                <span class="w-full h-0.5 bg-gray-800 rounded-full transition-opacity duration-300"
+                      [class.opacity-0]="isOpen">
+                </span>
+                <span class="w-full h-0.5 bg-gray-800 rounded-full transform transition-all duration-300"
+                      [class.-rotate-45]="isOpen"
+                      [class.-translate-y-1.5]="isOpen">
+                </span>
+              </div>
+            </button>
+          </div>
         </div>
         
         <!-- Mobile Dropdown Menu -->
-        <div [@menuAnimation]="isOpen ? 'open' : 'closed'" 
-             class="overflow-hidden">
+        <div [@menuAnimation]="isOpen ? 'open' : 'closed'" class="overflow-hidden">
           <div class="py-2 space-y-1">
             <a *ngFor="let link of links" 
                [href]="link.href"
@@ -85,6 +95,18 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
       <div class="h-16 flex items-center px-6 border-b border-indigo-200">
         <div class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
           InvoiceFlow
+        </div>
+      </div>
+      
+      <!-- Notifications (Desktop) -->
+      <div class="px-6 py-2">
+        <div class="relative flex items-center">
+          <i class="fas fa-bell text-indigo-500 text-xl cursor-pointer hover:text-indigo-600 transition-colors duration-300 mr-4"></i>
+          <span class="text-gray-800">Notifications</span>
+          <span *ngIf="notificationCount > 0" 
+                class="absolute left-4 top-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+            {{ notificationCount > 9 ? '9+' : notificationCount }}
+          </span>
         </div>
       </div>
       
@@ -142,17 +164,17 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 export class NavigationComponent {
   isOpen = false;
   links = [
-    { text: 'Dashboard', href: '#', icon: 'fas fa-chart-line' },
-    { text: 'Invoices', href: '/invoices', icon: 'fas fa-file-invoice' },
-    { text: 'Clients', href: '#', icon: 'fas fa-users' },
-    { text: 'Items', href: '#', icon: 'fas fa-boxes' },
-    { text: 'Settings', href: '#', icon: 'fas fa-cog' }
+    { text: 'Dashboard', href: 'dashboard', icon: 'fas fa-chart-line' },
+    { text: 'Invoices', href: 'invoices', icon: 'fas fa-file-invoice' },
+    { text: 'Clients', href: 'clients', icon: 'fas fa-users' },
+    { text: 'Items', href: 'items', icon: 'fas fa-boxes' },
+    { text: 'Settings', href: 'settings', icon: 'fas fa-cog' }
   ];
 
-  // Profile data (hardcoded for now, could be dynamic via service)
   profileName = 'John Doe';
   profileEmail = 'john.doe@example.com';
-  profileInitials = 'JD'; // Computed or passed in
+  profileInitials = 'JD';
+  notificationCount = 3;
 
   toggleMobileMenu() {
     this.isOpen = !this.isOpen;

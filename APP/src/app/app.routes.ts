@@ -11,6 +11,11 @@ export const routes: Routes = [
       { path: 'invoices', loadComponent: () => import("./user-section/invoice-page/invoice-page.component").then(c => c.InvoicePageComponent) },
       { path: 'templates', loadComponent: () => import("./user-section/select-invoice-template/select-invoice-template.component").then(c => c.SelectInvoiceTemplateComponent) },
       { path: 'create-invoice/:templateId', loadComponent: () => import("./user-section/create-invoice/create-invoice.component").then(c => c.CreateInvoiceComponent) },
+      { path: 'settings', loadComponent: () => import("./user-section/settings/settings.component").then(c => c.SettingsComponent) },
+      { path: 'clients', loadComponent: () => import("./user-section/clients/clients.component").then(c => c.ClientsComponent) },
+      { path: 'dashboard', loadComponent: () => import("./user-section/dashboard/dashboard.component").then(c => c.DashboardComponent) },
+      { path: 'items', loadComponent: () => import("./user-section/items/items.component").then(c => c.ItemsComponent) },
+    
     ]
   },
 
