@@ -2,14 +2,13 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ModernTemplateComponent } from '../../invoice-templates/modern-template/modern-template.component';
 import { InvoiceSuccessDialogComponent } from '../invoice-success-dialog/invoice-success-dialog.component';
 import { ReminderSettings } from '../../models/ReminderSettings';
 import { EmailSettings } from '../../models/EmailSettings';
 import { InvoiceService } from '../../services/invoice.service';
 import { InvoiceDetails } from '../../models/InvoiceDetails';
 import { ToastService } from '../../services/toast.service';
-import { ToastComponent } from '../toast/toast';
+import { ToastComponent } from '../../components/toast/toast';
 import { DataService } from '../../services/DataService';
 
 
@@ -17,7 +16,7 @@ import { DataService } from '../../services/DataService';
 @Component({
     selector: 'app-create-invoice',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, ModernTemplateComponent, InvoiceSuccessDialogComponent, ToastComponent],
+    imports: [CommonModule, ReactiveFormsModule, InvoiceSuccessDialogComponent, ToastComponent],
     templateUrl: './create-invoice.component.html',
     styleUrl: './create-invoice.component.css'
 })
