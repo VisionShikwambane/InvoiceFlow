@@ -1,5 +1,4 @@
 import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component';
 import { UserSectionComponent } from './user-section/user-section.component';
 import { ClientSectionComponent } from './client-section/client-section.component';
 
