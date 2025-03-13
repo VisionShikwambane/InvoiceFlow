@@ -8,7 +8,7 @@ import { EmailSettings } from '../../models/EmailSettings';
 import { InvoiceService } from '../../services/invoice.service';
 import { InvoiceDetails } from '../../models/InvoiceDetails';
 import { ToastService } from '../../services/toast.service';
-import { ToastComponent } from '../../components/toast/toast';
+import { ToastComponent } from '../../shared-components/toast';
 import { DataService } from '../../services/DataService';
 
 
