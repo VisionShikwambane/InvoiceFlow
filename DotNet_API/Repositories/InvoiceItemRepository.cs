@@ -1,31 +1,32 @@
-﻿using DotNet_API.DatabaseContext;
+﻿using AutoMapper;
+using DotNet_API.DatabaseContext;
 using DotNet_API.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNet_API.Repositories
 {
-    public class InvoiceItemRepository : BaseRepository<InvoiceItem>
+    public class InvoiceItemRepository : BaseRepository<InvoiceItem, InvoiceItem>
     {
-        public InvoiceItemRepository(AppDbContext context) : base(context)
+        public InvoiceItemRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
 
         public override async Task UpdateAsync(InvoiceItem entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            dbContext.Entry(entity).State = EntityState.Modified;
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteByInvoiceIdAsync(int invoiceId)
         {
-            var items = await _context.Set<InvoiceItem>()
+            var items = await dbContext.Set<InvoiceItem>()
                 .Where(item => item.InvoiceId == invoiceId)
                 .ToListAsync();
 
             if (items.Any())
             {
-                _context.Set<InvoiceItem>().RemoveRange(items);
-                await _context.SaveChangesAsync();
+                dbContext.Set<InvoiceItem>().RemoveRange(items);
+                await dbContext.SaveChangesAsync();
             }
         }
     }

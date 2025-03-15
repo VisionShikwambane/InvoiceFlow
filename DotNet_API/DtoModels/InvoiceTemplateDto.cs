@@ -19,6 +19,6 @@ namespace DotNet_API.DtoModels
 
         public string[]? Tags { get; set; }
 
-        public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+     
     }
 }

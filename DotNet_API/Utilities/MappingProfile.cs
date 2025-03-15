@@ -8,7 +8,14 @@ namespace DotNet_API.Utilities
     {
         public MappingProfile()
         {
-            CreateMap<InvoiceDto, Invoice>().ReverseMap();
+            CreateMap<Invoice, InvoiceDto>()
+                .ForMember(dest => dest.ItemsDto, opt => opt.MapFrom(src => src.Items))
+                .ForMember(dest => dest.ClientDto, opt => opt.MapFrom(src => src.Client))
+                .ForMember(dest => dest.InvoiceTemplateDto, opt => opt.MapFrom(src => src.InvoiceTemplate))
+
+                .ReverseMap()
+                .ForMember(dest => dest.Client, opt => opt.Ignore())
+                .ForMember(dest => dest.InvoiceTemplate, opt => opt.Ignore());
 
             CreateMap<ClientDto, Client>().ReverseMap();
 

@@ -21,29 +21,29 @@ namespace DotNet_API.Services
             _invoiceRepository = invoiceRepository;
         }
 
-        public async Task<ResponseObject<bool>> SendInvoiceEmailAsync(int invoiceId)
-        {
+        //public async Task<ResponseObject<bool>> SendInvoiceEmailAsync(int invoiceId)
+        //{
             
 
-            var invoice = await _invoiceRepository.GetInvoiceById(invoiceId);
-            if (invoice == null)
-            {
-                return new ResponseObject<bool>(false, "Invoice not found", false);
-            }
+        //    var invoice = await _invoiceRepository.GetInvoiceById(invoiceId);
+        //    if (invoice == null)
+        //    {
+        //        return new ResponseObject<bool>(false, "Invoice not found", false);
+        //    }
 
-            string htmlBody = GetInvoiceEmailTemplate(invoice);
-            string subject = $"Invoice {invoice.InvoiceNo} from {invoice.CompanyName}";
+        //    string htmlBody = GetInvoiceEmailTemplate(invoice);
+        //    string subject = $"Invoice {invoice.InvoiceNo} from {invoice.CompanyName}";
 
-           var sendInvoice = await SendInvoice(invoice.Id, invoice.CompanyName, invoice.CompanyEmail, invoice.Client!.Email, subject, htmlBody);
+        //   var sendInvoice = await SendInvoice(invoice.Id, invoice.CompanyName, invoice.CompanyEmail, invoice.Client!.Email, subject, htmlBody);
 
-            if (!sendInvoice)
-            {
-                return new ResponseObject<bool>(false, "There was an error sending the invoice", false);
-            }
+        //    if (!sendInvoice)
+        //    {
+        //        return new ResponseObject<bool>(false, "There was an error sending the invoice", false);
+        //    }
 
-            return new ResponseObject<bool>(true, "Email sent sucessfully", true);
+        //    return new ResponseObject<bool>(true, "Email sent sucessfully", true);
 
-        }
+        //}
 
 
 

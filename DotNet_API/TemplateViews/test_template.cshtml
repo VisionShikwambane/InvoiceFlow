@@ -156,10 +156,10 @@
 
         <div class="client-details">
             <h2>Bill To:</h2>
-            <p>@Model.Client?.Name</p>
-            <p>@Model.Client?.Address</p>
-            <p>Email: @Model.Client?.Email</p>
-            <p>Phone: @Model.Client?.Phone</p>
+            <p>@Model.ClientDto?.Name</p>
+            <p>@Model.ClientDto?.Address</p>
+            <p>Email: @Model.ClientDto?.Email</p>
+            <p>Phone: @Model.ClientDto?.Phone</p>
         </div>
 
         <!-- Items Table -->
@@ -173,7 +173,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Items)
+                @foreach (var item in Model.ItemsDto)
                 {
                     <tr>
                         <td>@item.Description</td>

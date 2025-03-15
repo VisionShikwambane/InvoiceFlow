@@ -1,72 +1,197 @@
-﻿using DotNet_API.DatabaseContext;
+﻿using AutoMapper;
+using DotNet_API.DatabaseContext;
+using DotNet_API.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace DotNet_API.Repositories
 {
-    public interface IBaseRepository<T> where T : class
-    {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetByIdAsync(int id);
-        Task<T> AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(int id);
 
-        Task<T> GetByConditionAsync(Expression<Func<T, bool>> condition);
+    public interface IBaseRepository<T, TDTO> where T : class
+    {
+        Task<IEnumerable<TDTO>> GetAll();
+        Task<TDTO> GetById(long Id);
+        Task<ResponseObject<IEnumerable<TDTO>>> AddRange(IEnumerable<TDTO> dtos);
+        Task<ResponseObject<TDTO>> Add(TDTO dto);
+        Task<ResponseObject<bool>> Delete(int id);
+
+        Task<ResponseObject<bool>> DeleteRange(IEnumerable<int> ids);
+
+
     }
 
 
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public class BaseRepository<T, TDTO> : IBaseRepository<T, TDTO> where T : class
     {
-        protected readonly AppDbContext _context;
+        protected readonly AppDbContext dbContext;
+        protected readonly IMapper mapper;
 
-        public BaseRepository(AppDbContext context)
+        public BaseRepository(AppDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            this.dbContext = dbContext;
+            this.mapper = mapper;
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<TDTO>> GetAll()
         {
-            return await _context.Set<T>().ToListAsync();
+            try
+            {
+                var entities = await dbContext.Set<T>().ToListAsync();
+                return mapper.Map<IEnumerable<TDTO>>(entities);
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw new Exception("An unexpected error occurred.", ex);
+            }
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<TDTO> GetById(long id)
         {
-            return await _context.Set<T>().FindAsync(id);
+            try
+            {
+                var entity = await dbContext.Set<T>().FindAsync(id);
+
+                if (entity == null)
+                {
+                    throw new Exception("Record not found!");
+                }
+
+                return mapper.Map<TDTO>(entity);
+            }
+
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw new Exception("An unexpected error occurred. Please try again.", ex);
+            }
         }
 
-        public virtual async Task<T> AddAsync(T entity)
+
+
+
+        public virtual async Task<ResponseObject<TDTO>> Add(TDTO dto)
         {
-            //await _context.Set<T>().AddAsync(entity);
-            //await _context.SaveChangesAsync();
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
-            _context.Entry(entity).State = EntityState.Detached;
-            return entity;
+            try
+            {
+                var entity = mapper.Map<T>(dto);
+                var validationResult = IsValidated(entity, dto);
+
+                if (!validationResult.IsValid)
+                {
+                    return new ResponseObject<TDTO>(false, validationResult.Message, dto);
+                }
+
+
+                dbContext.Set<T>().Update(entity);
+                await dbContext.SaveChangesAsync();
+                dbContext.Entry(entity).State = EntityState.Detached;
+                var updatedDto = mapper.Map<TDTO>(entity);
+                return new ResponseObject<TDTO>(true, "Record saved successfully", updatedDto);
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseObject<TDTO>(false, $"Error adding entity: {ex.Message}");
+            }
         }
+
+
 
         public virtual async Task UpdateAsync(T entity)
         {
 
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
-            _context.Entry(entity).State = EntityState.Detached;
+            this.dbContext.Set<T>().Update(entity);
+            await this.dbContext.SaveChangesAsync();
+            this.dbContext.Entry(entity).State = EntityState.Detached;
         }
 
-        public virtual async Task DeleteAsync(int id)
+
+
+        public virtual async Task<ResponseObject<IEnumerable<TDTO>>> AddRange(IEnumerable<TDTO> dtos)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity != null)
+            try
             {
-                _context.Set<T>().Remove(entity);
-                await _context.SaveChangesAsync();
+                var entities = mapper.Map<IEnumerable<T>>(dtos);
+                foreach (var entity in entities)
+                {
+                    var validationResult = IsValidated(entity, mapper.Map<TDTO>(entity));
+                    if (!validationResult.IsValid)
+                    {
+                        return new ResponseObject<IEnumerable<TDTO>>(false, validationResult.Message);
+                    }
+                    dbContext.Set<T>().Update(entity);
+                    await dbContext.SaveChangesAsync();
+                    dbContext.Entry(entity).State = EntityState.Detached;
+                }
+
+
+                return new ResponseObject<IEnumerable<TDTO>>(true, "Records saved successfully", dtos);
+            }
+
+            catch (Exception ex)
+            {
+                return new ResponseObject<IEnumerable<TDTO>>(false, $"Error adding Records: {ex.Message}");
             }
         }
 
-        public virtual async Task<T> GetByConditionAsync(Expression<Func<T, bool>> condition)
+        public virtual async Task<ResponseObject<bool>> Delete(int id)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(condition);
+            try
+            {
+
+                var entity = await dbContext.Set<T>().FindAsync(id);
+                if (entity == null)
+                {
+                    return new ResponseObject<bool>(false, "Record not found", false);
+                }
+                dbContext.Set<T>().Remove(entity);
+                await dbContext.SaveChangesAsync();
+                return new ResponseObject<bool>(true, "Record deleted successfully", true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseObject<bool>(false, $"Error deleting entity: {ex.Message}", false);
+            }
         }
+
+
+
+
+        public virtual async Task<ResponseObject<bool>> DeleteRange(IEnumerable<int> ids)
+        {
+            try
+            {
+                foreach (var id in ids)
+                {
+                    var entity = await dbContext.Set<T>().FindAsync(id);
+
+                    if (entity == null)
+                    {
+                        return new ResponseObject<bool>(false, $"Record with ID {id} not found", false);
+                    }
+
+                    dbContext.Set<T>().Remove(entity);
+                    await dbContext.SaveChangesAsync();
+                }
+                return new ResponseObject<bool>(true, "Records deleted successfully", true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseObject<bool>(false, $"Error deleting entities: {ex.Message}", false);
+            }
+        }
+
+
+
+        public virtual ValidationResults IsValidated(T entity, TDTO entityDTO)
+        {
+            return new ValidationResults(true, "Validation successful");
+        }
+
+
 
 
     }

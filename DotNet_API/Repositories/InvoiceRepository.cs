@@ -1,36 +1,89 @@
-﻿using DotNet_API.DatabaseContext;
+﻿using AutoMapper;
+using DotNet_API.DatabaseContext;
 using DotNet_API.DataModels;
 using DotNet_API.DtoModels;
+using DotNet_API.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNet_API.Repositories
 {
-    public class InvoiceRepository : BaseRepository<Invoice>
+    public class InvoiceRepository : BaseRepository<Invoice, InvoiceDto>
     {
-        public InvoiceRepository(AppDbContext context) : base(context)
+        public InvoiceRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
-
-        }
-
-        public async Task<List<Invoice>> GetInvoicesWithDetailsAsync(int userId)
-        {
-            return await _context.Invoices
-                .Include(i => i.Client)
-                .Include(i => i.Items.OrderBy(item => item.Id))  // Add OrderBy here
-                .Where(i => i.UserId == userId)
-                .ToListAsync();
         }
 
 
-        public async Task<Invoice?> GetInvoiceById(int invoiceId) // Add '?' to Invoice
+        public override async Task<IEnumerable<InvoiceDto>> GetAll()
         {
-            return await _context.Invoices
-                .Where(e => e.Id == invoiceId)
-                .Include(i => i.Client)
-                .Include(i => i.Items)
-                .Include(e=>e.InvoiceTemplate)
-                .FirstOrDefaultAsync();
+            try
+            {
+                var entities = await dbContext.Invoices
+                    .Include(c => c.Items)
+                    .Include(e=>e.Client)
+                    .Include(e=>e.InvoiceTemplate)
+                    .ToListAsync();
+
+                var carDtos = mapper.Map<IEnumerable<InvoiceDto>>(entities);
+                    
+                return carDtos;
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw new Exception("An unexpected error occurred.", ex);
+            }
         }
+
+        public async override Task<ResponseObject<InvoiceDto>> Add(InvoiceDto dto)
+        {
+            try
+            {
+                var entity = mapper.Map<Invoice>(dto);
+                var validationResult = IsValidated(entity, dto);
+
+                if (!validationResult.IsValid)
+                {
+                    return new ResponseObject<InvoiceDto>(false, validationResult.Message, dto);
+                }
+
+
+                dbContext.Set<Invoice>().Update(entity);
+                await dbContext.SaveChangesAsync();
+                dbContext.Entry(entity).State = EntityState.Detached;
+                var updatedDto = mapper.Map<InvoiceDto>(entity);
+                return new ResponseObject<InvoiceDto>(true, "Record saved successfully", updatedDto);
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseObject<InvoiceDto>(false, $"Error adding entity: {ex.Message}");
+            }
+        }
+
+
+
+
+        //public async Task<List<Invoice>> GetInvoicesWithDetailsAsync(int userId)
+        //{
+        //    return await dbContext.Invoices
+        //        .Include(i => i.Client)
+        //        .Include(i => i.Items.OrderBy(item => item.Id))  // Add OrderBy here
+        //        .Where(i => i.UserId == userId)
+        //        .ToListAsync();
+        //}
+
+
+        //public async Task<Invoice?> GetInvoiceById(int invoiceId) // Add '?' to Invoice
+        //{
+        //    return await dbContext.Invoices
+        //        .Where(e => e.Id == invoiceId)
+        //        .Include(i => i.Client)
+        //        .Include(i => i.Items)
+        //        .Include(e=>e.InvoiceTemplate)
+        //        .FirstOrDefaultAsync();
+        //}
 
 
 
