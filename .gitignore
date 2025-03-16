@@ -2,4 +2,4 @@
 *.vsidx
 bin/
 obj/
-DotNet_API/appsettings.json
+appsettings.json
