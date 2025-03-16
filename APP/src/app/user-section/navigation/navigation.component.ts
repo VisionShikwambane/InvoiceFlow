@@ -167,7 +167,7 @@ export class NavigationComponent {
     { text: 'Dashboard', href: 'dashboard', icon: 'fas fa-chart-line' },
     { text: 'Invoices', href: 'invoices', icon: 'fas fa-file-invoice' },
     { text: 'Clients', href: 'clients', icon: 'fas fa-users' },
-    { text: 'Items', href: 'items', icon: 'fas fa-boxes' },
+    //{ text: 'Items', href: 'items', icon: 'fas fa-boxes' },
     { text: 'Settings', href: 'settings', icon: 'fas fa-cog' }
   ];
 

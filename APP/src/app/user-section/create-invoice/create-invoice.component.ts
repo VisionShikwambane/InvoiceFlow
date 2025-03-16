@@ -10,13 +10,14 @@ import { InvoiceDetails } from '../../models/InvoiceDetails';
 import { ToastService } from '../../services/toast.service';
 import { ToastComponent } from '../../shared-components/toast';
 import { DataService } from '../../services/DataService';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 
 @Component({
     selector: 'app-create-invoice',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, InvoiceSuccessDialogComponent, ToastComponent],
+    imports: [CommonModule, ReactiveFormsModule, InvoiceSuccessDialogComponent, ToastComponent, NgSelectModule],
     templateUrl: './create-invoice.component.html',
     styleUrl: './create-invoice.component.css'
 })
@@ -30,6 +31,17 @@ export class CreateInvoiceComponent implements OnInit {
   showSuccessDialog = false;
   activeTab: 'edit' | 'preview' = 'edit'; // Default to the edit tab
   sendInvoiceToEmail: string = '';
+  selectedClient: any
+
+  clients = [
+    { id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1 (555) 123-4567', address: '123 Main St' },
+    { id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+1 (555) 987-6543', address: '456 Oak Ave' },
+    { id: '3', name: 'Bob Johnson', email: 'bob@example.com', phone: '+1 (555) 555-5555', address: '789 Pine Rd' },
+  ];
+
+  onClientSelect(client: any) {
+    this.selectedClient = client;
+  }
 
 
   reminderSettings: ReminderSettings = {
@@ -173,21 +185,15 @@ export class CreateInvoiceComponent implements OnInit {
       issueDate: [this.getFormattedDate(new Date()), Validators.required],
       dueDate: ['', Validators.required],
       templateId: [0],
+      clientId: [0],
       companyName: ['', Validators.required],
       companyAddress: ['', Validators.required],
       companyEmail: ['', [Validators.required, Validators.email]],
       companyPhone: ['', Validators.required],
       companyLogo: [''],
-      client: this.fb.group({
-        id: [0],
-        name: ['', Validators.required],
-        address: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        phone: ['']
-      }),
       items: this.fb.array([]),
       taxRate: [10, [Validators.required, Validators.min(0), Validators.max(100)]], // Default 10% tax rate
-      currency: ['USD', Validators.required], // Default currency
+      currency: ['USD', Validators.required],
       notes: [''],
       termsAndConditions: [''],
       subtotal: [0],
@@ -223,10 +229,11 @@ export class CreateInvoiceComponent implements OnInit {
       this.calculateTotals();
       console.log(this.invoiceForm.value)
     } else {
-      //alert('At least one item is required.');
+   
     }
   }
 
+  
 
 
 
@@ -279,11 +286,7 @@ export class CreateInvoiceComponent implements OnInit {
 
 
   onDetachLogo(fileInput: HTMLInputElement): void {
-    // Clear the preview and reset the form control
     this.logoPreview = null;
-    //this.companyForm.get('company.logo')?.reset();
-
-    // Reset the file input to show "No file selected"
     fileInput.value = '';
   }
 
@@ -299,6 +302,8 @@ export class CreateInvoiceComponent implements OnInit {
       try {
     
         const invoiceData: InvoiceDetails = this.invoiceForm.value;
+        invoiceData.templateId = Number(this.selectedTemplateId);
+        invoiceData.clientId = this.selectedClient.id;
         invoiceData.userId = 2;
         invoiceData.status = "Draft"
         const companyLogo = invoiceData.companyLogo.split(',')[1];
@@ -306,29 +311,31 @@ export class CreateInvoiceComponent implements OnInit {
         invoiceData.companyLogo = companyLogo;
         invoiceData.signatureImage = signatureImage;
 
-        if (this.invoiceToEdit) {
-          invoiceData.id = this.invoiceToEdit.id;
-        }
-        const response = await this.invoiceService.createInvoice(invoiceData).toPromise();
+        console.log("Invoice data:", invoiceData);
 
-        if (response?.isSuccess) {
-         // this.toast.showSuccess(response.message);
+        // if (this.invoiceToEdit) {
+        //   invoiceData.id = this.invoiceToEdit.id;
+        // }
+        // const response = await this.invoiceService.createInvoice(invoiceData).toPromise();
 
-          if(this.invoiceToEdit){
-            this.showSuccessDialog = false;
-            this.toast.showSuccess("Invoice Draft Updated Successfully");
-          }
-          else{
-            this.toast.showSuccess("Invoice Saved Updated Successfully");
-            this.showSuccessDialog = true;
-          }
+        // if (response?.isSuccess) {
+        //  // this.toast.showSuccess(response.message);
+
+        //   if(this.invoiceToEdit){
+        //     this.showSuccessDialog = false;
+        //     this.toast.showSuccess("Invoice Draft Updated Successfully");
+        //   }
+        //   else{
+        //     this.toast.showSuccess("Invoice Saved Updated Successfully");
+        //     this.showSuccessDialog = true;
+        //   }
         
 
-        } else {
+        // } else {
 
-          console.error('Failed to save invoice:', response?.message);
+        //   console.error('Failed to save invoice:', response?.message);
 
-        }
+        // }
       } catch (error: any) {
 
         console.error('Error saving invoice:', error.message);
@@ -338,7 +345,7 @@ export class CreateInvoiceComponent implements OnInit {
         this.isLoading = false;
       }
     } else {
-      // Mark all fields as touched to show validation errors
+     
       this.markFormGroupTouched(this.invoiceForm);
     }
   }

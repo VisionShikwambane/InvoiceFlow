@@ -4,6 +4,7 @@ using DotNet_API.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNet_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250316101242_settings")]
+    partial class settings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,10 +302,6 @@ namespace DotNet_API.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("InvoicenNextNo")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("longtext");
 
