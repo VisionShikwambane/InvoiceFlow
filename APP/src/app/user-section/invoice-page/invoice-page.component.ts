@@ -116,77 +116,95 @@ export class InvoicePageComponent implements OnInit {
   }
 
   getUserInvoices() {
-    const userId = 2;
-    this.loading = true;
-    this.invoiceService.getUserInvoices(userId).subscribe({
-      next: (response) => {
-        if (response.isSuccess) {
-          console.log("Retrived Invoices", response.data);
-          this.loading = false;
-          this.invoices = response.data.map((invoice: any) => {
-            const amount = Array.isArray(invoice.items)
+  
+    
+    this.invoiceService.getAll().subscribe({
+      next: (data) => {
+       
+        
+        if (data && Array.isArray(data)) {
+
+          console.log("Retrieved Invoices", data);
+          
+          this.invoices = data.map((invoice: any) => {
+            const subtotal = Array.isArray(invoice.items)
               ? invoice.items.reduce(
-                (acc: number, item: any) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
-                0
-              )
+                  (acc: number, item: any) => 
+                    acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
+                  0
+                )
               : 0;
-
-            return { ...invoice, amount };
+              
+            // Calculate tax if taxRate exists
+            const taxAmount = invoice.taxRate 
+              ? subtotal * (Number(invoice.taxRate) / 100) 
+              : 0;
+              
+            const amount = subtotal + taxAmount;
+            
+            return { ...invoice, amount, subtotal, taxAmount };
           });
-          console.log("Invoices", this.invoices)
-
+          
+          console.log("Processed Invoices", this.invoices);
         } else {
-          this.loading = false;
+          console.warn("No invoices found or invalid data format");
+          this.invoices = [];
         }
       },
       error: (error: any) => {
-        this.loading = false;
+       
+        console.error("Error fetching invoices:", error);
+       
       },
+      complete: () => {
+        // Optional: Any cleanup needed when the observable completes
+      }
     });
   }
+  
 
 
   ArchiveInvoice(invoice: InvoiceDetails): void {
-    invoice.isArchived = !invoice.isArchived;
+  //   invoice.isArchived = !invoice.isArchived;
     
-    this.invoiceService.archiveInvoice(invoice).subscribe({
-      next: (response) => {
-          if (response?.isSuccess) {
-              this.toastService.showSuccess(response.message);
-          } else {
-              invoice.isArchived = !invoice.isArchived; // revert if failed
-              this.toastService.showError('Failed to archive invoice');
-          }
-      },
-      error: (error: HttpErrorResponse) => {
-          invoice.isArchived = !invoice.isArchived; // revert if error
-          console.error('Error archiving invoice:', error);
-          this.toastService.showError(error.message || 'Failed to archive invoice');
-      }
-  });
+  //   this.invoiceService.archiveInvoice(invoice).subscribe({
+  //     next: (response) => {
+  //         if (response?.isSuccess) {
+  //             this.toastService.showSuccess(response.message);
+  //         } else {
+  //             invoice.isArchived = !invoice.isArchived; // revert if failed
+  //             this.toastService.showError('Failed to archive invoice');
+  //         }
+  //     },
+  //     error: (error: HttpErrorResponse) => {
+  //         invoice.isArchived = !invoice.isArchived; // revert if error
+  //         console.error('Error archiving invoice:', error);
+  //         this.toastService.showError(error.message || 'Failed to archive invoice');
+  //     }
+  // });
   
   }
 
 
   async updateStatus(invoice: InvoiceDetails, status: string) {
-  try {
+  // try {
 
-    invoice.status = status;
-    const response = await lastValueFrom(this.invoiceService.updateStatus(invoice));
+  //   invoice.status = status;
+  //   const response = await lastValueFrom(this.invoiceService.updateStatus(invoice));
 
-    if(response?.isSuccess){
-      this.toastService.showSuccess(response.message);
-    }
-    else{
+  //   if(response?.isSuccess){
+  //     this.toastService.showSuccess(response.message);
+  //   }
+  //   else{
 
-      this.toastService.showError('Failed to archive invoice');
-    }
+  //     this.toastService.showError('Failed to archive invoice');
+  //   }
 
-  } catch (error) {
+  // } catch (error) {
 
-    console.log('Error archiving invoice:', error);
+  //   console.log('Error archiving invoice:', error);
     
-  }
+  // }
  
   
 }
@@ -335,39 +353,39 @@ export class InvoicePageComponent implements OnInit {
   }
 
   markAsPaid(invoice: InvoiceDetails) {
-    this.openDropdownId = null;
-    // Update the invoice status
-    this.invoiceService.updateInvoiceStatus(invoice.id, 'paid').subscribe({
-      next: () => {
-        // Refresh the invoices list
-        this.getUserInvoices();
-      },
-      error: (error) => {
-        console.error('Error marking invoice as paid:', error);
-      }
-    });
+    // this.openDropdownId = null;
+    // // Update the invoice status
+    // this.invoiceService.updateInvoiceStatus(invoice.id, 'paid').subscribe({
+    //   next: () => {
+    //     // Refresh the invoices list
+    //     this.getUserInvoices();
+    //   },
+    //   error: (error) => {
+    //     console.error('Error marking invoice as paid:', error);
+    //   }
+    // });
   }
 
   showDialog = false;
 
   async deleteInvoice(invoice: InvoiceDetails) {
-    try {
-      const response = await lastValueFrom(this.invoiceService.deleteInvoice(invoice.id));
+    // try {
+    //   const response = await lastValueFrom(this.invoiceService.deleteInvoice(invoice.id));
   
-      if(response?.isSuccess){
-        this.invoices = this.invoices.filter(inv => inv.id !== invoice.id);
-        this.toastService.showSuccess("Invoice Deleted Successfully");
-      }
-      else{
+    //   if(response?.isSuccess){
+    //     this.invoices = this.invoices.filter(inv => inv.id !== invoice.id);
+    //     this.toastService.showSuccess("Invoice Deleted Successfully");
+    //   }
+    //   else{
   
-        this.toastService.showError('Failed to archive invoice');
-      }
+    //     this.toastService.showError('Failed to archive invoice');
+    //   }
   
-    } catch (error) {
+    // } catch (error) {
   
-      console.log('Error archiving invoice:', error);
+    //   console.log('Error archiving invoice:', error);
       
-    }
+    // }
    
   }
 
@@ -386,15 +404,15 @@ export class InvoicePageComponent implements OnInit {
 
 
   sendReminder(invoice: InvoiceDetails) {
-    this.invoiceService.sendReminder(invoice.id).subscribe({
-      next: () => {
-        // You might want to show a success message here
-        console.log('Reminder sent successfully');
-      },
-      error: (error) => {
-        console.error('Error sending reminder:', error);
-      }
-    });
+    // this.invoiceService.sendReminder(invoice.id).subscribe({
+    //   next: () => {
+    //     // You might want to show a success message here
+    //     console.log('Reminder sent successfully');
+    //   },
+    //   error: (error) => {
+    //     console.error('Error sending reminder:', error);
+    //   }
+    // });
   }
 
   viewInvoiceDetails(invoice: InvoiceDetails) {
@@ -503,30 +521,30 @@ export class InvoicePageComponent implements OnInit {
   async downloadInvoicePdf(invoice: InvoiceDetails) {
      
 
-    if (this.loading) return;
+    // if (this.loading) return;
   
-    this.loading = true;
+    // this.loading = true;
     
-    try {
-      const blob = await lastValueFrom(this.invoiceService.generateInvoicePdf(invoice.id));
+    // try {
+    //   const blob = await lastValueFrom(this.invoiceService.generateInvoicePdf(invoice.id));
       
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `invoice-${invoice.id}.pdf`;
-      document.body.appendChild(link);
-      link.click();
+    //   const url = window.URL.createObjectURL(blob);
+    //   const link = document.createElement('a');
+    //   link.href = url;
+    //   link.download = `invoice-${invoice.id}.pdf`;
+    //   document.body.appendChild(link);
+    //   link.click();
       
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+    //   document.body.removeChild(link);
+    //   window.URL.revokeObjectURL(url);
       
-      this.toastService.showSuccess('PDF downloaded successfully');
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      this.toastService.showError('Failed to download PDF');
-    } finally {
-      this.loading = false;
-    }
+    //   this.toastService.showSuccess('PDF downloaded successfully');
+    // } catch (error) {
+    //   console.error('Error downloading PDF:', error);
+    //   this.toastService.showError('Failed to download PDF');
+    // } finally {
+    //   this.loading = false;
+    // }
   }
 
   sendInvoice(Invoice: InvoiceDetails) {

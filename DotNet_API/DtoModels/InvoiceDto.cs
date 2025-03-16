@@ -81,10 +81,10 @@ namespace DotNet_API.DtoModels
 
         public bool isArchived { get; set; }
 
-        public ClientDto? ClientDto { get; set; }
+        public ClientDto? Client { get; set; }
 
-        public InvoiceTemplateDto? InvoiceTemplateDto { get; set; }
+        public InvoiceTemplateDto? InvoiceTemplate { get; set; }
 
-        public List<InvoiceItemDto>? ItemsDto { get; set; } = new List<InvoiceItemDto>();
+        public List<InvoiceItemDto>? Items { get; set; } = new List<InvoiceItemDto>();
     }
 }

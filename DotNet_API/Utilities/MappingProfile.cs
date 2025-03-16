@@ -9,9 +9,9 @@ namespace DotNet_API.Utilities
         public MappingProfile()
         {
             CreateMap<Invoice, InvoiceDto>()
-                .ForMember(dest => dest.ItemsDto, opt => opt.MapFrom(src => src.Items))
-                .ForMember(dest => dest.ClientDto, opt => opt.MapFrom(src => src.Client))
-                .ForMember(dest => dest.InvoiceTemplateDto, opt => opt.MapFrom(src => src.InvoiceTemplate))
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items))
+                .ForMember(dest => dest.Client, opt => opt.MapFrom(src => src.Client))
+                .ForMember(dest => dest.InvoiceTemplate, opt => opt.MapFrom(src => src.InvoiceTemplate))
 
                 .ReverseMap()
                 .ForMember(dest => dest.Client, opt => opt.Ignore())

@@ -15,140 +15,70 @@ namespace DotNet_API.Services
     {
 
         private readonly InvoiceRepository invoiceRepository;
-        private readonly ClientRepository clientRepository;
-        private readonly InvoiceItemRepository invoiceitemRepository;
-        private readonly IMapper mapper;
         private readonly ViewRenderService viewRenderService;
         private readonly IConverter converter;
         private readonly AppDbContext appDbContext;
-        public InvoiceService(InvoiceRepository invoiceRepository, IMapper mapper, ClientRepository clientRepository, InvoiceItemRepository invoiceitemRepository, ViewRenderService viewRenderService, IConverter converter, AppDbContext appDbContext)
+        public InvoiceService(InvoiceRepository invoiceRepository, ViewRenderService viewRenderService, IConverter converter, AppDbContext appDbContext)
         {
 
             this.invoiceRepository = invoiceRepository;
-            this.mapper = mapper;
-            this.clientRepository = clientRepository;
-            this.invoiceitemRepository = invoiceitemRepository;
             this.viewRenderService = viewRenderService;
             this.converter = converter;
             this.appDbContext = appDbContext;
         }
 
 
-        //public async Task<List<InvoiceDto>> GetInvoicesWithDetailsAsync(int userId)
-        //{
-        //    // Fetch from the repository
-        //    var invoices = await this.invoiceRepository.GetInvoicesWithDetailsAsync(userId);
 
-        //    // Map to DTOs using AutoMapper
-        //    var invoiceDtos = this.mapper.Map<List<InvoiceDto>>(invoices);
+        public async Task<FileResult> GenerateInvoicePdf(int invoiceId)
+        {
+            InvoiceDto invoice = await this.invoiceRepository.GetById(invoiceId);
 
 
-        //    return invoiceDtos;
-        //}
+            if (invoice == null)
+            {
+                throw new KeyNotFoundException($"Invoice with ID {invoiceId} not found");
+            }
 
-        //public async Task<FileResult> GenerateInvoicePdf(int invoiceId)
-        //{
-        //    var invoice = await this.invoiceRepository.GetInvoiceById(invoiceId);
-           
+            try
+            {
+               
+                var html = await this.viewRenderService.RenderToStringAsync($"{invoice.InvoiceTemplate!.TemplatePath}", invoice);
 
-        //    if (invoice == null)
-        //    {
-        //        throw new KeyNotFoundException($"Invoice with ID {invoiceId} not found");
-        //    }
+                var doc = new HtmlToPdfDocument()
+                {
+                    GlobalSettings = {
+                    ColorMode = ColorMode.Color,
+                    PaperSize = PaperKind.A4,
+                    Margins = new MarginSettings {
+                    Top = 10,
+                    Bottom = 10,
+                    Left = 10,
+                    Right = 10
+                }},
+                    Objects = { new ObjectSettings { HtmlContent = html, WebSettings = { DefaultEncoding = "utf-8", LoadImages = true, EnableIntelligentShrinking = true } } }
+                };
 
-        //    try
-        //    {
-        //        var invoiceDto = this.mapper.Map<InvoiceDto>(invoice);
+                byte[] pdf = this.converter.Convert(doc);
+                return new FileContentResult(pdf, "application/pdf")
+                {
+                    FileDownloadName = $"invoice-{invoice.InvoiceNo}.pdf"
+                };
+            }
+            catch (Exception ex)
+            {
 
-
-        //        var html = await this.viewRenderService.RenderToStringAsync($"{invoiceDto.InvoiceTemplateDto!.TemplatePath}", invoiceDto);
-
-        //        var doc = new HtmlToPdfDocument()
-        //        {
-        //            GlobalSettings = {
-        //            ColorMode = ColorMode.Color,
-        //            PaperSize = PaperKind.A4,
-        //            Margins = new MarginSettings {
-        //            Top = 10,
-        //            Bottom = 10,
-        //            Left = 10,
-        //            Right = 10
-        //        }}, Objects = { new ObjectSettings {HtmlContent = html, WebSettings = { DefaultEncoding = "utf-8", LoadImages = true, EnableIntelligentShrinking = true }}}
-        //        };
-
-        //        byte[] pdf = this.converter.Convert(doc);
-        //        return new FileContentResult(pdf, "application/pdf")
-        //        {
-        //            FileDownloadName = $"invoice-{invoice.InvoiceNo}.pdf"
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        throw new ApplicationException($"Error generating PDF for invoice {invoiceId}: {ex.Message}", ex);
-        //    }
-        //}
+                throw new ApplicationException($"Error generating PDF for invoice {invoiceId}: {ex.Message}", ex);
+            }
+        }
 
 
 
 
- 
-
-     
 
 
-        //public async Task<ResponseObject<InvoiceDto>> ArchiveInvoice(InvoiceDto invoiceDto)
-        //{
-        //    var invoice = await this.invoiceRepository.GetInvoiceById(invoiceDto.Id);
-        //    if (invoice == null)
-        //    {
-        //        return new ResponseObject<InvoiceDto>(false, "Invoice not found", null);
-        //    }
-
-        //    invoice.isArchived = invoiceDto.isArchived;
-        //    this.appDbContext.Invoices.Attach(invoice);
-        //    this.appDbContext.Entry(invoice).State = EntityState.Modified;
-        //    await this.appDbContext.SaveChangesAsync();
-
-        //    var updatedInvoiceDto = this.mapper.Map<InvoiceDto>(invoice);
-
-        //    // Make sure we return the updated invoice in the Data property
-        //    return new ResponseObject<InvoiceDto>(
-        //        true,
-        //        invoiceDto.isArchived ? "Invoice archived successfully" : "Invoice unarchived successfully",
-        //        null
-        //    );
-
-         
-        //}
 
 
-        //public async Task<ResponseObject<InvoiceDto>> UpdateStatus(InvoiceDto invoiceDto)
-        //{
-        //    try
-        //    {
-        //        var invoice = await this.invoiceRepository.GetInvoiceById(invoiceDto.Id);
 
-        //        if (invoice == null)
-        //        {
-        //            return new ResponseObject<InvoiceDto>(false, "Invoice not found", null!);
-        //        }
-        //        invoice.Status = invoiceDto.Status;
-        //        this.appDbContext.Invoices.Attach(invoice);
-        //        this.appDbContext.Entry(invoice).State = EntityState.Modified;
-        //        await this.appDbContext.SaveChangesAsync();
-        //        var savedInvoiceDto = this.mapper.Map<InvoiceDto>(invoice);
-
-        //        return new ResponseObject<InvoiceDto>(true, "Invoice archived successfully", null);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        throw;
-        //    }
-          
-        //}
 
 
 

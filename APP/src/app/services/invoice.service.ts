@@ -5,54 +5,19 @@
 
   import { Observable } from 'rxjs';
   import { ResponseObject } from '../models/ResponseObject';
+import { BaseService } from './baseService';
 
   @Injectable({
     providedIn: 'root',
   })
-  export class InvoiceService {
-      
-    private baseUrl = `${environment.apiUrl}/Invoice`;
-
-    constructor(private http: HttpClient) {}
-
-    createInvoice(invoiceData: InvoiceDetails): Observable<ResponseObject<InvoiceDetails>> {
-      return this.http.post<ResponseObject<InvoiceDetails>>(this.baseUrl, invoiceData);
+  export class InvoiceService extends BaseService<InvoiceDetails> {
+  
+    protected route = 'Invoice'; 
+  
+    constructor(http: HttpClient) {
+      super(http);
     }
-
-    getUserInvoices(userId: number): Observable<ResponseObject<InvoiceDetails[]>> {
-      return this.http.get<ResponseObject<InvoiceDetails[]>>(`${this.baseUrl}/GetUserInvoices?userId=${userId}`);
-    }
-
-    updateInvoiceStatus(invoiceId: string, status: string): Observable<any> {
-      return this.http.patch(`${this.baseUrl}/${invoiceId}`, { status });
-    }
-
-    deleteInvoice(invoiceId: string): Observable<any> {
-      return this.http.delete(`${this.baseUrl}/${invoiceId}`);
-    }
-
-    sendReminder(invoiceId: string): Observable<any> {
-      return this.http.post(`${this.baseUrl}/${invoiceId}/reminder`, {});
-    }
-
-    updateInvoice(invoiceData: InvoiceDetails): Observable<ResponseObject<InvoiceDetails>> {
-      return this.http.put<ResponseObject<InvoiceDetails>>(`${this.baseUrl}`, invoiceData);
-    }
-    
-    archiveInvoice(invoiceDto: InvoiceDetails): Observable<ResponseObject<InvoiceDetails>> {
-      return this.http.post<ResponseObject<InvoiceDetails>>(`${this.baseUrl}/archive`, invoiceDto);
-    }
-    
-
-    updateStatus(invoiceDto: InvoiceDetails): Observable<ResponseObject<InvoiceDetails>> {
-      return this.http.post<ResponseObject<InvoiceDetails>>(`${this.baseUrl}/updateStatus`, invoiceDto);
-    }
-
-    generateInvoicePdf(invoiceId: string): Observable<Blob> {
-      return this.http.get(`${this.baseUrl}/GeneratePdf/${invoiceId}`, {
-        responseType: 'blob'
-      });
-    }
-    
-
+  
+   
   }
+  

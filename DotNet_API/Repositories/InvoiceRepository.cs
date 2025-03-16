@@ -18,7 +18,7 @@ namespace DotNet_API.Repositories
         {
             try
             {
-                var entities = await dbContext.Invoices
+                var entities = await dbContext.Invoices.Where(e=>e.UserId == 2)
                     .Include(c => c.Items)
                     .Include(e=>e.Client)
                     .Include(e=>e.InvoiceTemplate)
@@ -61,6 +61,10 @@ namespace DotNet_API.Repositories
                 return new ResponseObject<InvoiceDto>(false, $"Error adding entity: {ex.Message}");
             }
         }
+
+
+
+
 
 
 
