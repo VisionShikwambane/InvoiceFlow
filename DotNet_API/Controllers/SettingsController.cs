@@ -4,6 +4,7 @@ using DotNet_API.DataModels;
 using DotNet_API.DtoModels;
 using DotNet_API.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet_API.Controllers
@@ -12,7 +13,7 @@ namespace DotNet_API.Controllers
     [ApiController]
     public class SettingsController : BaseController<SettingsRepository, Settings, SettingsDto>
     {
-        public SettingsController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public SettingsController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
         {
 
         }

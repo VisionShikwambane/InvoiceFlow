@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DotNet_API.DatabaseContext;
+using DotNet_API.DataModels;
 using DotNet_API.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -25,11 +27,13 @@ namespace DotNet_API.Repositories
     {
         protected readonly AppDbContext dbContext;
         protected readonly IMapper mapper;
+        private readonly UserManager<AppUser> userManager;
 
-        public BaseRepository(AppDbContext dbContext, IMapper mapper)
+        public BaseRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager)
         {
             this.dbContext = dbContext;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
         public virtual async Task<IEnumerable<TDTO>> GetAll()

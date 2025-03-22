@@ -6,6 +6,7 @@ using DotNet_API.Repositories;
 using DotNet_API.Services;
 using DotNet_API.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet_API.Controllers
@@ -15,7 +16,7 @@ namespace DotNet_API.Controllers
     public class InvoiceTemplateController : BaseController<InvoiceTemplateRepository, InvoiceTemplate, InvoiceTemplate>
  
     {
-        public InvoiceTemplateController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public InvoiceTemplateController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
         {
         }
 

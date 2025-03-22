@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using DotNet_API.DatabaseContext;
 using DotNet_API.DataModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNet_API.Repositories
 {
     public class InvoiceItemRepository : BaseRepository<InvoiceItem, InvoiceItem>
     {
-        public InvoiceItemRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public InvoiceItemRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
         {
         }
 

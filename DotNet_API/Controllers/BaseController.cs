@@ -5,24 +5,25 @@ using Microsoft.AspNetCore.OData.Query;
 using DotNet_API.DatabaseContext;
 using AutoMapper;
 using DotNet_API.Repositories;
+using DotNet_API.DataModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNet_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BaseController<IRepository, T, TDTO> : ODataController where IRepository : class, IBaseRepository<T, TDTO> where T : class
     {
 
-        private readonly AppDbContext dbContext;
+      
         protected readonly IRepository repository;
-        private readonly IMapper mapper;
-       
-
-        public BaseController(AppDbContext dbContext, IMapper mapper)
+        private readonly UserManager<AppUser> userManager;
+        public BaseController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager)
         {
-            this.dbContext = dbContext;
-            this.mapper = mapper;
-            this.repository = (IRepository)Activator.CreateInstance(typeof(IRepository), dbContext, mapper)!;
+          
+            this.repository = (IRepository)Activator.CreateInstance(typeof(IRepository), dbContext, mapper, userManager)!;
            
         }
 

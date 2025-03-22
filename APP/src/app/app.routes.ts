@@ -15,6 +15,7 @@ export const routes: Routes = [
       { path: 'clients', loadComponent: () => import("./user-section/clients/clients.component").then(c => c.ClientsComponent) },
       { path: 'dashboard', loadComponent: () => import("./user-section/dashboard/dashboard.component").then(c => c.DashboardComponent) },
       { path: 'items', loadComponent: () => import("./user-section/items/items.component").then(c => c.ItemsComponent) },
+      { path: 'login', loadComponent: () => import("./user-section/login/login.component").then(c => c.LoginComponent) },
     
     ]
   },

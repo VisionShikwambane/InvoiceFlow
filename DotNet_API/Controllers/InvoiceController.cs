@@ -5,6 +5,7 @@ using DotNet_API.DtoModels;
 using DotNet_API.Repositories;
 using DotNet_API.Services;
 using DotNet_API.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet_API.Controllers
@@ -13,7 +14,7 @@ namespace DotNet_API.Controllers
     [ApiController]
     public class InvoiceController : BaseController<InvoiceRepository, Invoice, InvoiceDto>
     {
-        public InvoiceController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public InvoiceController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
         {
         }
 

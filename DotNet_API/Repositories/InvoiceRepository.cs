@@ -3,13 +3,14 @@ using DotNet_API.DatabaseContext;
 using DotNet_API.DataModels;
 using DotNet_API.DtoModels;
 using DotNet_API.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNet_API.Repositories
 {
     public class InvoiceRepository : BaseRepository<Invoice, InvoiceDto>
     {
-        public InvoiceRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public InvoiceRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
         {
         }
 
