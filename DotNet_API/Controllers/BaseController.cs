@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DotNet_API.Controllers
 {
-    [Authorize]
+  
     [Route("api/[controller]")]
     [ApiController]
     public class BaseController<IRepository, T, TDTO> : ODataController where IRepository : class, IBaseRepository<T, TDTO> where T : class
@@ -20,10 +20,18 @@ namespace DotNet_API.Controllers
       
         protected readonly IRepository repository;
         private readonly UserManager<AppUser> userManager;
-        public BaseController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager)
+        private readonly IMapper mapper;
+        private readonly AppDbContext dbContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        public BaseController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor )
         {
           
-            this.repository = (IRepository)Activator.CreateInstance(typeof(IRepository), dbContext, mapper, userManager)!;
+            this.userManager = userManager;
+            this.mapper = mapper;
+            this.dbContext = dbContext;
+            this.httpContextAccessor = httpContextAccessor;
+            this.repository = (IRepository)Activator.CreateInstance(typeof(IRepository), dbContext, mapper, userManager, httpContextAccessor)!;
            
         }
 

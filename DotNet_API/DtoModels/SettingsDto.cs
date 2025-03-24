@@ -30,7 +30,7 @@ namespace DotNet_API.DtoModels
 
         public string InvoicePrefix { get; set; } = string.Empty;
 
-        public string InvoicenNextNo { get; set; } = string.Empty;
+        public string InvoiceNextNo { get; set; } = string.Empty;
 
         public string DefaultCurrency { get; set; } = string.Empty;
 

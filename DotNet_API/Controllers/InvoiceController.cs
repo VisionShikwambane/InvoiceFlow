@@ -14,7 +14,7 @@ namespace DotNet_API.Controllers
     [ApiController]
     public class InvoiceController : BaseController<InvoiceRepository, Invoice, InvoiceDto>
     {
-        public InvoiceController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
+        public InvoiceController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor) : base(dbContext, mapper, userManager, httpContextAccessor)
         {
         }
 

@@ -2,9 +2,11 @@
 using DotNet_API.DatabaseContext;
 using DotNet_API.DataModels;
 using DotNet_API.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace DotNet_API.Repositories
 {
@@ -28,14 +30,28 @@ namespace DotNet_API.Repositories
         protected readonly AppDbContext dbContext;
         protected readonly IMapper mapper;
         private readonly UserManager<AppUser> userManager;
+        protected readonly IHttpContextAccessor httpContextAccessor;
 
-        public BaseRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager)
+        public BaseRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             this.dbContext = dbContext;
             this.mapper = mapper;
             this.userManager = userManager;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
+
+        protected async Task<AppUser> GetCurrentUser()
+        {
+            var principal = httpContextAccessor.HttpContext?.User;
+            if (principal == null || !principal.Identity.IsAuthenticated)
+            {
+                return null; // No user authenticated
+            }
+
+            var user = await userManager.GetUserAsync(principal);
+            return user;
+        }
         public virtual async Task<IEnumerable<TDTO>> GetAll()
         {
             try

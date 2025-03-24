@@ -10,7 +10,7 @@ namespace DotNet_API.Repositories
 {
     public class InvoiceRepository : BaseRepository<Invoice, InvoiceDto>
     {
-        public InvoiceRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
+        public InvoiceRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor) : base(dbContext, mapper, userManager, httpContextAccessor)
         {
         }
 

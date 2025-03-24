@@ -2,6 +2,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Setting } from '../../models/Settings';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
   selector: 'app-settings',
@@ -12,62 +14,49 @@ import { FormsModule } from '@angular/forms';
 })
 export class SettingsComponent {
 
-  activeTab = 'company';
-  logoPreview: string | null = null;
+activeTab = 'company';
+logoPreview: string | null = null;
   
-  @ViewChild('logoInput') logoInput!: ElementRef;
+@ViewChild('logoInput') logoInput!: ElementRef;
 
-  // Company settings with direct property binding
-  companySettings = {
-    name: '',
-    regNumber: '',
-    email: '',
-    phone: '',
-    address: '',
-    logo: null as File | null
-  };
+settings: Setting = new Setting();
 
-  // VAT settings with direct property binding
-  vatSettings = {
-    enabled: false,
-    rate: 20
-  };
 
-  // Invoice settings with direct property binding
-  invoiceSettings = {
-    prefix: 'INV-',
-    nextNumber: 1001,
-    dueDays: 30,
-    currency: 'USD',
-    notes: 'Thank you for your business.',
-    terms: 'Payment is due within the specified term.'
-  };
-
-  constructor() { }
+  constructor(private settingsService: SettingsService) { }
 
   ngOnInit(): void {
     this.loadSettings();
   }
 
   loadSettings() {
-    // Here you would typically load settings from your API or local storage
-    console.log('Loading settings...');
+    this.settingsService.getAll().subscribe(
+      (settings: Setting[]) => {
+        if (settings && settings.length > 0) {
+          this.settings = settings[0]; // Assuming we get a single settings object
+          this.logoPreview = this.settings.companyLogo ? URL.createObjectURL(new Blob([this.settings.companyLogo])) : null;
+        }
+      },
+      (error) => {
+        console.error('Failed to load settings', error);
+        // Handle error appropriately (e.g., show a message to the user)
+      }
+    );
+  }
+
+  saveSettings() {
+ 
+    console.log('Settings to save', this.settings);
+    this.settingsService.saveRecord(this.settings).subscribe(
+      (response) => {
+        console.log('Setting added successfully', response);
+        alert('Settings saved successfully!');
     
-    // Example of loading settings from localStorage (if available)
-    const savedCompanySettings = localStorage.getItem('companySettings');
-    if (savedCompanySettings) {
-      this.companySettings = { ...this.companySettings, ...JSON.parse(savedCompanySettings) };
-    }
+      },
+      (error) => {
+        console.error('Failed to add setting', error);
     
-    const savedVatSettings = localStorage.getItem('vatSettings');
-    if (savedVatSettings) {
-      this.vatSettings = { ...this.vatSettings, ...JSON.parse(savedVatSettings) };
-    }
-    
-    const savedInvoiceSettings = localStorage.getItem('invoiceSettings');
-    if (savedInvoiceSettings) {
-      this.invoiceSettings = { ...this.invoiceSettings, ...JSON.parse(savedInvoiceSettings) };
-    }
+      }
+    );
   }
 
   setActiveTab(tabId: string) {
@@ -85,48 +74,10 @@ export class SettingsComponent {
       reader.readAsDataURL(file);
       
       // Store the file
-      this.companySettings.logo = file;
+      this.settings.companyLogo = file;
     }
   }
 
-  saveSettings() {
-    // Combine all settings
-    const allSettings = {
-      company: this.companySettings,
-      vat: this.vatSettings,
-      invoice: this.invoiceSettings
-    };
 
-    // Save to localStorage for demo purposes
-    localStorage.setItem('companySettings', JSON.stringify({
-      name: this.companySettings.name,
-      regNumber: this.companySettings.regNumber,
-      email: this.companySettings.email,
-      phone: this.companySettings.phone,
-      address: this.companySettings.address
-      // Note: We don't save the File object
-    }));
-    
-    localStorage.setItem('vatSettings', JSON.stringify(this.vatSettings));
-    localStorage.setItem('invoiceSettings', JSON.stringify(this.invoiceSettings));
-    
-    console.log('Settings saved:', allSettings);
-    
-    // Here you would typically send the settings to your API
-    // For example:
-    // this.settingsService.saveSettings(allSettings).subscribe(
-    //   response => {
-    //     console.log('Settings saved successfully', response);
-    //     // Show success message
-    //   },
-    //   error => {
-    //     console.error('Error saving settings', error);
-    //     // Show error message
-    //   }
-    // );
-    
-    // Show success notification (placeholder)
-    alert('Settings saved successfully!');
-  }
 
 }

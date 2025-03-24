@@ -8,7 +8,7 @@ namespace DotNet_API.Repositories
 {
     public class SettingsRepository : BaseRepository<Settings, SettingsDto>
     {
-        public SettingsRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
+        public SettingsRepository(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor) : base(dbContext, mapper, userManager, httpContextAccessor)
         {
 
         }

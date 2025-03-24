@@ -1,6 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 import { UserSectionComponent } from './user-section/user-section.component';
 import { ClientSectionComponent } from './client-section/client-section.component';
+import { LoginComponent } from './user-section/login/login.component';
 
 export const routes: Routes = [
   {
@@ -15,9 +16,13 @@ export const routes: Routes = [
       { path: 'clients', loadComponent: () => import("./user-section/clients/clients.component").then(c => c.ClientsComponent) },
       { path: 'dashboard', loadComponent: () => import("./user-section/dashboard/dashboard.component").then(c => c.DashboardComponent) },
       { path: 'items', loadComponent: () => import("./user-section/items/items.component").then(c => c.ItemsComponent) },
-      { path: 'login', loadComponent: () => import("./user-section/login/login.component").then(c => c.LoginComponent) },
     
     ]
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+   
   },
 
   {
@@ -28,6 +33,8 @@ export const routes: Routes = [
 
     ]
   },
+  
+  
 
 
 ];

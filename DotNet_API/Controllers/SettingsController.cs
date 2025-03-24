@@ -13,7 +13,7 @@ namespace DotNet_API.Controllers
     [ApiController]
     public class SettingsController : BaseController<SettingsRepository, Settings, SettingsDto>
     {
-        public SettingsController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager) : base(dbContext, mapper, userManager)
+        public SettingsController(AppDbContext dbContext, IMapper mapper, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor) : base(dbContext, mapper, userManager, httpContextAccessor)
         {
 
         }
