@@ -28,7 +28,7 @@ namespace DotNet_API.DataModels
         [MaxLength(500)]
         public string Address { get; set; }
 
-        public int? UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 

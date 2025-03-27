@@ -49,7 +49,7 @@ namespace DotNet_API.DataModels
         public string? TermsAndConditions { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Required]
         public int ClientId { get; set; }

@@ -12,7 +12,7 @@ namespace DotNet_API.DatabaseContext
         {
         }
 
-        public DbSet<User> Users { get; set; }
+      
 
         public DbSet<Invoice> Invoices { get; set; }
 

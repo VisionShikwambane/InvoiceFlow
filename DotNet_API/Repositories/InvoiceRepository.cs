@@ -14,12 +14,13 @@ namespace DotNet_API.Repositories
         {
         }
 
+        
 
         public override async Task<IEnumerable<InvoiceDto>> GetAll()
         {
             try
             {
-                var entities = await dbContext.Invoices.Where(e=>e.UserId == 2)
+                var entities = await dbContext.Invoices
                     .Include(c => c.Items)
                     .Include(e=>e.Client)
                     .Include(e=>e.InvoiceTemplate)
@@ -49,6 +50,11 @@ namespace DotNet_API.Repositories
                     return new ResponseObject<InvoiceDto>(false, validationResult.Message, dto);
                 }
 
+                var currentUser = await GetCurrentUser();
+                if (currentUser == null)
+                {
+                    return new ResponseObject<InvoiceDto>(false, "No authenticated user found", dto);
+                }
 
                 dbContext.Set<Invoice>().Update(entity);
                 await dbContext.SaveChangesAsync();
@@ -67,28 +73,6 @@ namespace DotNet_API.Repositories
 
 
 
-
-
-
-        //public async Task<List<Invoice>> GetInvoicesWithDetailsAsync(int userId)
-        //{
-        //    return await dbContext.Invoices
-        //        .Include(i => i.Client)
-        //        .Include(i => i.Items.OrderBy(item => item.Id))  // Add OrderBy here
-        //        .Where(i => i.UserId == userId)
-        //        .ToListAsync();
-        //}
-
-
-        //public async Task<Invoice?> GetInvoiceById(int invoiceId) // Add '?' to Invoice
-        //{
-        //    return await dbContext.Invoices
-        //        .Where(e => e.Id == invoiceId)
-        //        .Include(i => i.Client)
-        //        .Include(i => i.Items)
-        //        .Include(e=>e.InvoiceTemplate)
-        //        .FirstOrDefaultAsync();
-        //}
 
 
 
